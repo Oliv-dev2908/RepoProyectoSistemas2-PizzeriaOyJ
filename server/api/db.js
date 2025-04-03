@@ -1,9 +1,16 @@
-import { usePostres } from './../utils/postgres';
-export default eventHandler(async event => {
-        const sql = usePostres()
+import { fetchExample } from "../services/exampleService";
 
-        const products = await sql`SELECT * FROM products`
-        event.waitUntil(sql.end())
-        return products;
+export default eventHandler(async event => {
+    if (method == 'get'){
+        try {
+            const products = fetchExample();
+            return products;
+        } catch (error) {
+            event.res.statusCode = 500;
+            return { error: 'Error al obtener productos'};
+        }
+    }else{
+        event.res.statusCode = 405;
+        return { error: 'Metodo no permitido'};
     }
-)
+})
