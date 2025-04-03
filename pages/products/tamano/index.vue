@@ -17,6 +17,9 @@
           <button @click="redirectToUpdate(tam.id_tamano)" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
             Actualizar
           </button>
+          <button @click="deleteTamano(tam.id_tamano)" class="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            Eliminar
+          </button>
         </li>
       </ul>
     </div>
@@ -52,6 +55,31 @@ const redirectToUpdate = (id) => {
 const redirectToInsert = () => {
   router.push('/products/tamano/insert');
 };
+
+const deleteTamano = async (id) => {
+  if (confirm('¿Estás seguro de que deseas eliminar este tamaño?')) {
+    try {
+      const response = await fetch(`/api/products/tamano`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id_tamano: id }), // Enviamos el ID de la categoría a eliminar
+      });
+
+      if (!response.ok) {
+        throw new Error('Error al eliminar el tamaño');
+      }
+
+      await response.json();
+      // Recargar la lista de categorías después de eliminar
+      loadTams();
+    } catch (error) {
+      console.error(error.message);
+    }
+  }
+};
+
 
 onMounted(loadTams);
 </script>

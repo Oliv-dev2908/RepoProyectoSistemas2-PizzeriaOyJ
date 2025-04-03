@@ -1,4 +1,4 @@
-import { createTamanos, modifyTamanos, fetchTamanos } from '../../services/products/tamanoService';
+import { createTamanos, modifyTamanos, fetchTamanos, deleteTamano } from '../../services/products/tamanoService';
 import { usePostres } from '../../utils/postgres'; // Asegúrate de importar tu conexión a la base de datos
 
 export default defineEventHandler(async (event) => {
@@ -50,7 +50,16 @@ export default defineEventHandler(async (event) => {
                 event.res.statusCode = 500; // Error interno del servidor
                 return { error: 'Error al actualizar tamaño', details: error.message };
             }
-
+        case 'DELETE':
+            // Borrado lógico de una categoría
+            try {
+                const { id_tamano } = await readBody(event); // Lee el cuerpo de la solicitud
+                const result = await deleteTamano({ id_tamano, activo: 0 }); // Actualiza el campo 'activo' a false
+                return { success: true, message: 'Tamaño eliminado correctamente', result };
+            } catch (error) {
+                event.res.statusCode = 500; // Error interno del servidor
+                return { error: 'Error al eliminar tamaño', details: error.message };
+            }
         default:
             event.res.statusCode = 405; // Método no permitido
             return { error: 'Método no permitido' };
