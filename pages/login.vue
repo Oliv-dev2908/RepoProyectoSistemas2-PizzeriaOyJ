@@ -31,12 +31,17 @@
         <div v-if="errorMsg" class="text-red-500 text-sm mb-4">
           {{ errorMsg }}
         </div>
-
         <button
           type="submit"
           class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
         >
           Iniciar Sesión
+        </button>        <button
+          type="button"
+          class="w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          @click="signInWithOAuth"
+        >
+          Google
         </button>
       </form>
 
@@ -77,7 +82,15 @@ async function signIn(){
         errorMsg.value = error.message; // Muestra el mensaje de error si la autenticación falla
     }
 }
-
+const signInWithOAuth = async () => {
+  const { error } = await client.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      redirectTo: 'http://localhost:3000/confirm',
+    },
+  })
+  if (error) console.log(error)
+}
 function irASignup() {
   router.push('/signup'); // Ajusta la ruta a tu página de registro
 }
