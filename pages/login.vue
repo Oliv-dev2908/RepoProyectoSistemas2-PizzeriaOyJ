@@ -26,8 +26,8 @@
         </button>
 
         <button
-          @click="onLogin"
           class="w-full flex items-center justify-center py-2 rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 bg-gradient-to-r from-green-500 to-red-500 text-black"
+          @click="signInWithFacebookAuth"
         >
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/2048px-2023_Facebook_icon.svg.png"
@@ -151,49 +151,16 @@ function irASignup() {
   router.push('/signup'); // Ajusta la ruta a tu página de registro
 }
 
-/*const signInWithFacebookAuth = async () => {
+const signInWithFacebookAuth = async () => {
   const { error } = await client.auth.signInWithOAuth({
-    provider: 'google',
+    provider: 'facebook',
     options: {
       redirectTo: 'http://localhost:3000/confirm',
     },
-  })
-  if (error) console.log(error)
-}*/
+  });
+  if (error) console.log(error);
+};
 
-// Inicializar Facebook SDK
-onMounted(() => {
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: '689046860246313',
-      cookie: true,
-      xfbml: true,
-      version: 'v22.0'
-    });
-    FB.AppEvents.logPageView();
-  };
-
-  const script = document.createElement('script');
-  script.src = "https://connect.facebook.net/en_US/sdk.js";
-  script.async = true;
-  script.defer = true;
-  document.body.appendChild(script);
-});
-
-// Función de login con Facebook
-function onLogin() {
-  FB.login((response) => {
-    if (response.authResponse) {
-      FB.api('/me', (response) => {
-         router.push("/about");
-         console.log(response);
-      });
-    }
-    else{
-      console.log('No autorizado');
-    }
-  }, { scope: 'public_profile,email' });
-}
 </script>
 
 <style scoped>
