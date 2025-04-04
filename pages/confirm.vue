@@ -10,7 +10,7 @@ watch(user, () => {
       // Clear cookie
       useCookie(`${cookieName}-redirect-path`).value = null
       // Redirect to path
-      return navigateTo(redirectPath || '/about'); 
+      return navigateTo(redirectPath || '/products/tamano'); 
   }
 }, { immediate: true })
 </script>

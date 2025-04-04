@@ -8,7 +8,7 @@ export const getAllTamanos = async (tamano) => {
         tamanos = await sql`SELECT * FROM "Tamano" WHERE id_tamano = ${id}`;
     }
     else{
-        tamanos = await sql`SELECT * FROM "Tamano"`;
+        tamanos = await sql`SELECT * FROM "Tamano" WHERE activo = 1`;
     }
     return tamanos;
 };
@@ -26,6 +26,16 @@ export const updateTamanos = async (tamano) => {
     const result = await sql`
         UPDATE "Tamano" 
         SET nombre = ${nombre}, descripcion = ${descripcion}, precio_base = ${precio_base} 
+        WHERE id_tamano = ${id_tamano}`;
+    return result;
+};
+
+export const deleteLogicTamano = async (tamano) => {
+    const { id_tamano, activo } = tamano;
+    const sql = usePostres();
+    const result = await sql`
+        UPDATE "Tamano" 
+        SET activo = ${activo} 
         WHERE id_tamano = ${id_tamano}`;
     return result;
 };
