@@ -39,6 +39,7 @@ const loading = ref(true);
 const loadCats = async () => {
   try {
     const response = await fetch('/api/products/categoria');
+    console.log(response); // Añade esto para verificar el response
     if (!response.ok) {
       throw new Error('Error fetching categories');
     }

@@ -10,6 +10,12 @@
       Cerrar sesión
     </button>
 
+    <button
+      @click="categoria"
+      class="w-full bg-red-500 text-white py-2 rounded-md hover:bg-red-600 transition duration-200">
+      Categorias  
+    </button>
+
     <NLink to="/">
       Home page
     </NLink>
@@ -29,6 +35,14 @@ async function logout() {
     router.push("/login"); // Redirige al login después de cerrar sesión
   } catch (error) {
     console.log(error);
+  }
+}
+
+async function categoria() {
+  try {
+    await router.push("/products/categoria");
+  } catch (error) {
+    console.error("Error al redirigir a /products/categoria:", error.message);
   }
 }
 </script>
