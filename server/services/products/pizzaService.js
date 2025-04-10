@@ -1,44 +1,50 @@
-import { getAllCategorias, insertCategorias, updateCategorias, deleteLogicCategorias } from "../../repositories/products/categoria";
+import {
+    fetchPizza as getAllPizzas,
+    createPizza as insertPizza,
+    modifyPizza as updatePizza,
+    deletePizza as deleteLogicPizza
+} from "../../repositories/products/pizza.js";
 
-export const fetchCategorias = async (categoria) => {
+// Obtener una o todas las pizzas
+export const fetchPizza = async (pizza) => {
     try {
-        const products = await getAllCategorias(categoria);
-        return products;
+        const pizzas = await getAllPizzas(pizza);
+        return pizzas;
     } catch (error) {
-        console.error("Error fetching categorías:", error);
+        console.error("Error fetching pizzas:", error);
         throw error;
     }
 };
 
-export const modifyCategorias = async (categoria) => {
+// Crear nueva pizza
+export const createPizza = async (pizza) => {
     try {
-        // Aquí puedes agregar validaciones si es necesario
-        const result = await updateCategorias(categoria);
+        const result = await insertPizza(pizza);
         return result;
     } catch (error) {
-        console.error("Error updating categoría:", error);
+        console.error("Error inserting pizza:", error);
         throw error;
     }
 };
 
-export const createCategorias = async (categoria) => {
+// Actualizar pizza
+export const modifyPizza = async (pizza) => {
     try {
-        // Aquí puedes agregar validaciones si es necesario
-        const result = await insertCategorias(categoria);
+        const result = await updatePizza(pizza);
         return result;
     } catch (error) {
-        console.error("Error inserting categoría:", error);
+        console.error("Error updating pizza:", error);
         throw error;
     }
 };
 
-export const deleteCategorias = async (categoria) => {
+// Eliminar pizza lógicamente
+export const deletePizza = async (pizza) => {
     try {
-        // Aquí puedes agregar validaciones si es necesario
-        const result = await deleteLogicCategorias(categoria);
+        const result = await deleteLogicPizza(pizza);
         return result;
     } catch (error) {
-        console.error("Error updating categoría:", error);
+        console.error("Error deleting pizza:", error);
         throw error;
     }
 };

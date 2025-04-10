@@ -27,7 +27,6 @@ export const createIngrediente = async (ingrediente) => {
 // Modificar ingrediente existente
 export const modifyIngrediente = async (ingrediente) => {
   const { id_ingrediente, nombre, costo_unitario, tipo } = ingrediente[0];
-  console.log("Datos del ingrediente:", { id_ingrediente, nombre, costo_unitario, tipo });
   const sql = usePostres();
   const result = await sql`
     UPDATE "Ingrediente"
