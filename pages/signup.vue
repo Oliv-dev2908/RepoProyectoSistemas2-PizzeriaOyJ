@@ -35,6 +35,19 @@
           />
         </div>
 
+        <div class="mb-4">
+          <label for="name" class="block text-sm font-medium text-gray-700">Nombre de Usuario</label>
+          <input
+            type="name"
+            id="name"
+            v-model="name"
+            class="mt-1 p-2 w-full border border-gray-300 rounded-md"
+            placeholder="User Name"
+            required
+          />
+        </div>
+
+
         <div v-if="errorMsg" class="text-red-500 text-sm mb-4">
           {{ errorMsg }}
         </div>
@@ -73,28 +86,29 @@ import { useRouter } from 'nuxt/app';
 const client = useSupabaseClient();
 const router = useRouter();
 const email = ref("");
+const name = ref("");
 const password = ref(null);
 const errorMsg = ref(null);
 const succesMsg = ref(null);
-
-async function signUp() {
-  try {
-    const { data, error } = await client.auth.signUp({
-      email: email.value,
-      password: password.value,
-      options: {
-        data: {
-          role: "client",
-        },
-      },
-    });
-    if (error) {
-      throw error;
+async function signUp(){
+    try {
+        var { data, error } = await client.auth.signUp({
+            email: email.value,
+            password: password.value,
+            options: {
+                data: {
+                    display_name: name.value,
+                }
+            }
+        });
+        if (error){
+          throw error;
+        }
+        const { errorUserName } = await client.auth.updateUser({ data });
+        succesMsg.value = "Check your email to confirm your account"; // Mensaje de éxito
+    } catch (error) {
+        errorMsg.value = error.message; // Muestra el mensaje de error si algo fall
     }
-    succesMsg.value = "Revisa tu correo para confirmar tu cuenta";
-  } catch (error) {
-    errorMsg.value = error.message;
-  }
 }
 
 function irALogin() {

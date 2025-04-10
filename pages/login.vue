@@ -131,6 +131,9 @@ async function signIn(){
             password: password.value,
         });
         if (error) throw error;
+        const user = useSupabaseUser();
+        const newUser = user.value;
+        await fetch(`/api/user/loginsignup?uuid=${newUser.id}&name=${newUser.user_metadata.display_name}`);
         router.push("/about"); // Redirige a la página "about" después del login exitoso
     } catch (error) {
         errorMsg.value = error.message; // Muestra el mensaje de error si la autenticación falla
