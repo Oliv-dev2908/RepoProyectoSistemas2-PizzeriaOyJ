@@ -5,8 +5,8 @@
   <div v-else class="container mx-auto p-4">
     <h1 class="text-2xl font-bold mb-4">Actualizar Categoría</h1>
     <form @submit.prevent="submitForm" class="space-y-4">
-      <input v-model="categoria[0].nombre" placeholder="Nombre" required class="border p-2 rounded w-full" />
-      <input v-model="categoria[0].precio_extra" placeholder="Precio Extra" type="number" required class="border p-2 rounded w-full" />
+      <input v-model="categoria.nombre" placeholder="Nombre" required class="border p-2 rounded w-full" />
+      <input v-model="categoria.precio_extra" placeholder="Precio Extra" type="number" required class="border p-2 rounded w-full" />
       <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">Actualizar</button>
     </form>
   </div>
