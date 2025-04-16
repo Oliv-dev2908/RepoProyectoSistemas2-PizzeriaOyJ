@@ -12,42 +12,62 @@ export const fetchPizzaIngredientes = async (idPizza) => {
   return ingredientes;
 };
 
-// Agregar un ingrediente a una pizza
+// Agregar o actualizar un ingrediente en una pizza
 export const addIngredienteToPizza = async (idPizza, idIngrediente, cantidad) => {
   const sql = usePostres();
-  
-  // Verificamos si el ingrediente ya existe para esta pizza
+
   const existingIngredient = await sql`
     SELECT 1 FROM "PizzaIngrediente" 
     WHERE id_pizza = ${idPizza} AND id_ingrediente = ${idIngrediente}
   `;
-  
+
   if (existingIngredient.length > 0) {
-    // Si el ingrediente ya existe, actualizamos la cantidad
-    const result = await sql`
+    await sql`
       UPDATE "PizzaIngrediente"
       SET cantidad = ${cantidad}
       WHERE id_pizza = ${idPizza} AND id_ingrediente = ${idIngrediente}
     `;
-    return result;
   } else {
-    // Si el ingrediente no existe, lo agregamos
-    const result = await sql`
+    await sql`
       INSERT INTO "PizzaIngrediente" (id_pizza, id_ingrediente, cantidad)
       VALUES (${idPizza}, ${idIngrediente}, ${cantidad})
     `;
-    return result;
   }
+
+  // Recalcular precio total
+  await actualizarPrecioPizza(idPizza);
 };
 
-// Eliminar un ingrediente de una pizza
+// Eliminar ingrediente
 export const removeIngredienteFromPizza = async (idPizza, idIngrediente) => {
   const sql = usePostres();
-  
-  // Eliminación lógica del ingrediente (activo = 0)
-  const result = await sql`
+
+  await sql`
     DELETE FROM "PizzaIngrediente"
     WHERE id_pizza = ${idPizza} AND id_ingrediente = ${idIngrediente};
   `;
-  return result;
+
+  // Recalcular precio total
+  await actualizarPrecioPizza(idPizza);
+};
+
+
+const actualizarPrecioPizza = async (idPizza) => {
+  const sql = usePostres();
+
+  const result = await sql`
+    SELECT 
+      SUM(pi.cantidad * i.costo_unitario) AS nuevo_precio
+    FROM "PizzaIngrediente" pi
+    JOIN "Ingrediente" i ON pi.id_ingrediente = i.id_ingrediente
+    WHERE pi.id_pizza = ${idPizza}
+  `;
+
+  const nuevoPrecio = result[0].nuevo_precio ?? 0;
+
+  await sql`
+    UPDATE "Pizza"
+    SET precio_base = ${nuevoPrecio}
+    WHERE id_pizza = ${idPizza}
+  `;
 };

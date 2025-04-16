@@ -26,21 +26,41 @@ export default defineEventHandler(async (event) => {
     case 'POST': {
       try {
         const body = await readBody(event);
-        const { id_cliente, id_pizza, id_tamano, cantidad, precio_unitario } = body;
-
-        if (!id_cliente || !id_pizza || !id_tamano || !cantidad || !precio_unitario) {
-          event.res.statusCode = 400;
-          return { error: 'Faltan datos para crear el pedido' };
-        }
-
-        const result = await crearPedidoConDetalles({
-          id_cliente,
+        const {
+          id_cliente,   // Se espera que el cliente esté incluido en el body
           id_pizza,
           id_tamano,
           cantidad,
-          precio_unitario
-        });
+          precio_unitario,
+          id_producto,  // Producto opcional
+          cantidad_producto, // Cantidad del producto opcional
+          fecha // Fecha del pedido
+        } = body;
+    
+        if (!id_cliente) {
+          event.res.statusCode = 400;
+          return { error: 'Falta el id_cliente' };
+        }
+    
+        // Validamos si la pizza y el tamaño están seleccionados y si la cantidad es válida
+        if (!id_pizza || !id_tamano || !cantidad || !precio_unitario) {
+          event.res.statusCode = 400;
+          return { error: 'Faltan datos para la pizza o el tamaño' };
+        }
 
+        // Si hay producto adicional, validamos los datos del producto
+        let productos = [];
+        if (id_producto && cantidad_producto > 0) {
+          productos = [{ id_producto, cantidad: cantidad_producto }];
+        }
+
+        // Paso 1: Crear pedido en la base de datos
+        const result = await crearPedidoConDetalles({
+          id_cliente,
+          pizza: { id_pizza, id_tamano, cantidad, precio_unitario, fecha },
+          productos: productos
+        });
+    
         return { success: true, message: 'Pedido creado correctamente', result };
       } catch (error) {
         event.res.statusCode = 500;
