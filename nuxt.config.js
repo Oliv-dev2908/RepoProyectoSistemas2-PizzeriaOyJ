@@ -10,6 +10,7 @@ export default defineNuxtConfig({
       exclude: ['/signup'],
     }
   },
+
   css: [
     '@/assets/css/tailwind.css',
     'element-plus/theme-chalk/index.css',
@@ -19,5 +20,16 @@ export default defineNuxtConfig({
     importStyle: 'css', // Importa los estilos CSS
     themes: ['dark']    // Habilita el tema oscuro
   },
+  head: {
+    link: [
+      {
+        rel: 'preload',
+        href: '/_nuxt/builds/meta/dev.json',
+        as: 'json' // Asegúrate de que el tipo sea correcto
+      }
+    ]
+  },
+
+
   compatibilityDate: '2025-03-28'
 })

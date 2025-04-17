@@ -9,22 +9,28 @@
         Agregar Pizza
       </button>
       <ul class="space-y-2 mt-4">
-        <li v-for="pizza in pizzas" :key="pizza.id_pizza" class="flex justify-between items-center border p-4 rounded shadow">
+        <li v-for="pizza in pizzas" :key="pizza.id_pizza"
+          class="flex justify-between items-center border p-4 rounded shadow">
           <div>
             <h2 class="text-lg font-semibold">{{ pizza.nombre }}</h2>
             <p class="text-gray-600">Descripción: {{ pizza.descripcion }}</p>
+            <p class="text-gray-800 font-medium">Precio base: ${{ pizza.precio_base }}</p>
           </div>
           <div>
-            <button @click="redirectToDetalles(pizza.id_pizza)" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
+            <button @click="redirectToDetalles(pizza.id_pizza)"
+              class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
               Detalles
             </button>
-            <button @click="redirectToIngredientes(pizza.id_pizza)" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button @click="redirectToIngredientes(pizza.id_pizza)"
+              class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
               Agregar/Eliminar Ingredientes
             </button>
-            <button @click="redirectToUpdate(pizza.id_pizza)" class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
+            <button @click="redirectToUpdate(pizza.id_pizza)"
+              class="ml-2 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
               Actualizar
             </button>
-            <button @click="deletePizza(pizza.id_pizza)" class="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
+            <button @click="deletePizza(pizza.id_pizza)"
+              class="ml-2 bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
               Eliminar
             </button>
           </div>
