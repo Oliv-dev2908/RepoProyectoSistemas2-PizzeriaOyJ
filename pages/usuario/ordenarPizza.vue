@@ -5,7 +5,7 @@
     <div v-if="loading" class="text-center">Cargando...</div>
 
     <div v-else class="space-y-4">
-      <!-- Pizza -->
+      <!-- Selección Pizza -->
       <div>
         <label class="block font-semibold mb-1">Selecciona una Pizza:</label>
         <select v-model="selectedPizza" class="w-full border p-2 rounded">
@@ -16,7 +16,7 @@
         </select>
       </div>
 
-      <!-- Tamaño -->
+      <!-- Selección Tamaño -->
       <div>
         <label class="block font-semibold mb-1">Selecciona un Tamaño:</label>
         <select v-model="selectedTamano" class="w-full border p-2 rounded">
@@ -27,7 +27,7 @@
         </select>
       </div>
 
-      <!-- Producto -->
+      <!-- Selección Producto -->
       <div>
         <label class="block font-semibold mb-1">Selecciona un Producto (opcional):</label>
         <select v-model="selectedProducto" class="w-full border p-2 rounded">
@@ -38,25 +38,51 @@
         </select>
       </div>
 
-      <!-- Cantidad producto -->
+      <!-- Cantidad Producto -->
       <div v-if="selectedProducto">
         <label class="block font-semibold mb-1">Cantidad de Producto:</label>
         <input v-model.number="cantidadProducto" type="number" min="1" class="w-full border p-2 rounded" />
       </div>
 
-      <!-- Cantidad -->
+      <!-- Cantidad de Pizzas -->
       <div>
-        <label class="block font-semibold mb-1">Cantidad:</label>
+        <label class="block font-semibold mb-1">Cantidad de Pizzas:</label>
         <input v-model.number="cantidad" type="number" min="1" class="w-full border p-2 rounded" />
       </div>
 
-      <!-- Confirmación -->
-      <div>
-        <button @click="realizarPedido" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-          Confirmar Pedido
+      <!-- Botones de acción -->
+      <div class="flex space-x-4">
+        <button @click="agregarAlCarrito" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
+          Agregar al carrito
+        </button>
+        <button @click="finalizarPedido" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
+          Finalizar Pedido
         </button>
       </div>
 
+      <!-- Carrito -->
+      <div v-if="carrito.length > 0" class="mt-8">
+        <h2 class="text-xl font-bold mb-2">Carrito</h2>
+        <ul class="space-y-2">
+          <li v-for="(item, index) in carrito" :key="index" class="border p-2 rounded">
+            <div v-if="item.tipo === 'pizza'">
+              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+            </div>
+            <div v-else-if="item.tipo === 'producto'">
+              🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
+              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+            </div>
+          </li>
+
+        </ul>
+
+        <div class="mt-4 font-bold text-right">
+          Total: ${{ calcularTotal().toFixed(2) }}
+        </div>
+      </div>
+
+      <!-- Mensaje de confirmación -->
       <div v-if="mensaje" class="mt-4 p-3 bg-blue-100 border border-blue-300 rounded">
         {{ mensaje }}
       </div>
@@ -68,11 +94,13 @@
 import { ref, onMounted } from 'vue';
 import { useSupabaseUser } from '#imports'
 
-const user = useSupabaseUser(); // Obtener el usuario actual de Supabase
+const user = useSupabaseUser();
 
 const pizzas = ref([]);
 const tamanos = ref([]);
 const productos = ref([]);
+const carrito = ref([]);
+
 const selectedPizza = ref('');
 const selectedTamano = ref('');
 const cantidad = ref(1);
@@ -81,62 +109,108 @@ const cantidadProducto = ref(1);
 const mensaje = ref('');
 const loading = ref(true);
 
-// Obtener todas las pizzas
+// Cargar datos
 const cargarPizzas = async () => {
   const res = await fetch('/api/products/pizza');
   pizzas.value = await res.json();
 };
 
-// Obtener todos los tamaños
 const cargarTamanos = async () => {
   const res = await fetch('/api/products/tamano');
   tamanos.value = await res.json();
 };
 
-// Obtener todos los productos
 const cargarProductos = async () => {
   const res = await fetch('/api/products/producto');
-  productos.value = await res.json();
+  const data = await res.json();
+  productos.value = Array.isArray(data) ? data : (data.data ?? []);
 };
 
-// Realizar pedido
-const realizarPedido = async () => {
-  if (!selectedPizza.value || !selectedTamano.value || cantidad.value < 1) {
-    alert("Por favor selecciona todos los campos.");
+// Agregar al carrito
+const agregarAlCarrito = () => {
+  if (!selectedPizza.value && !selectedProducto.value) {
+    alert("Por favor selecciona al menos una pizza o un producto.");
     return;
   }
 
-  const tamanoSeleccionado = tamanos.value.find(t => t.id_tamano === selectedTamano.value);
-  const precioUnitario = 100;
-  
-  // Obtener el id_cliente desde el usuario de Supabase
+  // Agregar pizza si se seleccionó
+  if (selectedPizza.value && selectedTamano.value) {
+    const pizza = pizzas.value.find(p => p.id_pizza === selectedPizza.value);
+    const tamano = tamanos.value.find(t => t.id_tamano === selectedTamano.value);
+
+    if (!pizza || !tamano) {
+      alert("Pizza o tamaño inválido.");
+      return;
+    }
+
+    // Cambiamos la multiplicación por la suma:
+    const precioCalculo = parseFloat(pizza.precio_base) + parseFloat(tamano.precio_base);
+    console.log(pizza.precio_base);
+    console.log(tamano.precio_base);
+    console.log(precioCalculo);
+    const precioFinal = precioCalculo;
+
+    carrito.value.push({
+      tipo: 'pizza',
+      id_pizza: selectedPizza.value,
+      pizzaNombre: pizza.nombre,
+      id_tamano: selectedTamano.value,
+      tamanoNombre: tamano.nombre,
+      cantidad: cantidad.value,
+      precioUnitario: precioFinal,
+      id_producto: null,
+      productoNombre: null,
+      cantidadProducto: 0,
+    });
+  }
+
+  // Agregar producto si se seleccionó
+  if (selectedProducto.value) {
+    const producto = productos.value.find(p => p.id_producto === selectedProducto.value);
+
+    if (!producto) {
+      alert("Producto inválido.");
+      return;
+    }
+
+    carrito.value.push({
+      tipo: 'producto',
+      id_producto: selectedProducto.value,
+      productoNombre: producto.nombre,
+      cantidadProducto: cantidadProducto.value,
+      precioUnitario: producto.precio, // Aquí debes asegurarte de que tu producto tenga `precio`
+      id_pizza: null,
+      pizzaNombre: null,
+      id_tamano: null,
+      tamanoNombre: null,
+      cantidad: 0,
+    });
+  }
+
+  // Reset campos
+  selectedPizza.value = '';
+  selectedTamano.value = '';
+  cantidad.value = 1;
+  selectedProducto.value = '';
+  cantidadProducto.value = 1;
+};
+
+// Finalizar pedido (enviar todo el carrito)
+const finalizarPedido = async () => {
+  if (carrito.value.length === 0) {
+    alert("Tu carrito está vacío.");
+    return;
+  }
+
   const id_cliente = user.value?.identities?.[0]?.user_id;
-
-  console.log("ID Cliente:", id_cliente);
-
-  console.log({
-  id_cliente,
-  id_pizza: selectedPizza.value,
-  id_tamano: selectedTamano.value,
-  cantidad: cantidad.value,
-  precio_unitario: precioUnitario,
-  id_producto: selectedProducto.value || null,
-  cantidad_producto: selectedProducto.value ? cantidadProducto.value : 0,
-  fecha: new Date().toISOString(),
-});
 
   try {
     const res = await fetch('/api/usuario/pedirPizza', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id_cliente, // Enviar el id_cliente en el body
-        id_pizza: selectedPizza.value,
-        id_tamano: selectedTamano.value,
-        cantidad: cantidad.value,
-        precio_unitario: precioUnitario,
-        id_producto: selectedProducto.value || null,
-        cantidad_producto: selectedProducto.value ? cantidadProducto.value : 0,
+        id_cliente,
+        pedido: carrito.value,
         fecha: new Date().toISOString()
       }),
     });
@@ -145,11 +219,7 @@ const realizarPedido = async () => {
 
     if (res.ok) {
       mensaje.value = 'Pedido realizado con éxito.';
-      selectedPizza.value = '';
-      selectedTamano.value = '';
-      selectedProducto.value = '';
-      cantidad.value = 1;
-      cantidadProducto.value = 1;
+      carrito.value = []; // Limpiar carrito
     } else {
       mensaje.value = resultado.message || 'Hubo un error al realizar el pedido.';
     }
@@ -157,6 +227,13 @@ const realizarPedido = async () => {
     console.error(error);
     mensaje.value = 'Hubo un error al realizar el pedido.';
   }
+};
+
+// Calcular total
+const calcularTotal = () => {
+  return carrito.value.reduce((total, item) => {
+    return total + (item.precioUnitario * (item.tipo === 'pizza' ? item.cantidad : item.cantidadProducto));
+  }, 0);
 };
 
 onMounted(async () => {
