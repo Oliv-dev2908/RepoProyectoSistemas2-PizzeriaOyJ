@@ -1,4 +1,4 @@
-// composables/useUserRole.ts
+// composables/useUserRole.js
 import { ref } from 'vue';
 
 const userRole = ref(null);
