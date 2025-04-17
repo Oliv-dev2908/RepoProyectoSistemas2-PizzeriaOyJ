@@ -10,6 +10,15 @@ export default defineNuxtConfig({
       exclude: ['/signup'],
     }
   },
+  head: {
+    link: [
+      {
+        rel: 'preload',
+        href: '/_nuxt/builds/meta/dev.json',
+        as: 'json' // Asegúrate de que el tipo sea correcto
+      }
+    ]
+  },
   css: ['@/assets/css/tailwind.css'],
   compatibilityDate: '2025-03-28'
 })
