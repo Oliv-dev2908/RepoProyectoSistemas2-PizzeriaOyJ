@@ -64,23 +64,60 @@
       <div v-if="carrito.length > 0" class="mt-8">
         <h2 class="text-xl font-bold mb-2">Carrito</h2>
         <ul class="space-y-2">
-          <li v-for="(item, index) in carrito" :key="index" class="border p-2 rounded">
-            <div v-if="item.tipo === 'pizza'">
-              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+          <li v-for="(item, index) in carrito" :key="index"
+            class="border p-2 rounded flex justify-between items-center">
+            <div>
+              <div v-if="item.tipo === 'pizza'">
+                🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+                ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+              </div>
+              <div v-else-if="item.tipo === 'producto'">
+                🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
+                ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+              </div>
             </div>
-            <div v-else-if="item.tipo === 'producto'">
-              🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+
+            <div class="flex space-x-2">
+              <button @click="editarItem(item)" class="text-blue-600 hover:underline">Editar</button>
+              <button @click="eliminarDelCarrito(index)" class="text-red-600 hover:underline">Eliminar</button>
             </div>
           </li>
-
         </ul>
 
         <div class="mt-4 font-bold text-right">
           Total: ${{ calcularTotal().toFixed(2) }}
         </div>
       </div>
+
+      <!--Modal de confirmacion-->
+      <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="600px"
+        :before-close="() => dialogVisible = false">
+        <div>
+          <h3 class="font-semibold mb-4">Resumen de tu pedido:</h3>
+          <ul class="space-y-2">
+            <li v-for="(item, index) in carrito" :key="index">
+              <div v-if="item.tipo === 'pizza'">
+                🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+                ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+              </div>
+              <div v-else-if="item.tipo === 'producto'">
+                🛒 {{ item.productoNombre }} x{{ item.cantidadProducto }} -
+                ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+              </div>
+            </li>
+          </ul>
+
+          <div class="mt-4 font-bold text-right">
+            Total: ${{ calcularTotal().toFixed(2) }}
+          </div>
+        </div>
+
+        <template #footer>
+          <el-button @click="dialogVisible = false">Cancelar</el-button>
+          <el-button type="primary" @click="confirmarPedido">Confirmar</el-button>
+        </template>
+      </el-dialog>
+
 
       <!-- Mensaje de confirmación -->
       <div v-if="mensaje" class="mt-4 p-3 bg-blue-100 border border-blue-300 rounded">
@@ -93,8 +130,10 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useSupabaseUser } from '#imports'
+import { ElDialog, ElButton } from 'element-plus'
 
 const user = useSupabaseUser();
+const dialogVisible = ref(false); // controla si se muestra la ventana
 
 const pizzas = ref([]);
 const tamanos = ref([]);
@@ -133,7 +172,7 @@ const agregarAlCarrito = () => {
     return;
   }
 
-  // Agregar pizza si se seleccionó
+  // Pizza
   if (selectedPizza.value && selectedTamano.value) {
     const pizza = pizzas.value.find(p => p.id_pizza === selectedPizza.value);
     const tamano = tamanos.value.find(t => t.id_tamano === selectedTamano.value);
@@ -143,28 +182,33 @@ const agregarAlCarrito = () => {
       return;
     }
 
-    // Cambiamos la multiplicación por la suma:
-    const precioCalculo = parseFloat(pizza.precio_base) + parseFloat(tamano.precio_base);
-    console.log(pizza.precio_base);
-    console.log(tamano.precio_base);
-    console.log(precioCalculo);
-    const precioFinal = precioCalculo;
+    const precioFinal = parseFloat(pizza.precio_base) + parseFloat(tamano.precio_base);
 
-    carrito.value.push({
-      tipo: 'pizza',
-      id_pizza: selectedPizza.value,
-      pizzaNombre: pizza.nombre,
-      id_tamano: selectedTamano.value,
-      tamanoNombre: tamano.nombre,
-      cantidad: cantidad.value,
-      precioUnitario: precioFinal,
-      id_producto: null,
-      productoNombre: null,
-      cantidadProducto: 0,
-    });
+    const existente = carrito.value.find(item =>
+      item.tipo === 'pizza' &&
+      item.id_pizza === selectedPizza.value &&
+      item.id_tamano === selectedTamano.value
+    );
+
+    if (existente) {
+      existente.cantidad += cantidad.value;
+    } else {
+      carrito.value.push({
+        tipo: 'pizza',
+        id_pizza: selectedPizza.value,
+        pizzaNombre: pizza.nombre,
+        id_tamano: selectedTamano.value,
+        tamanoNombre: tamano.nombre,
+        cantidad: cantidad.value,
+        precioUnitario: precioFinal,
+        id_producto: null,
+        productoNombre: null,
+        cantidadProducto: 0,
+      });
+    }
   }
 
-  // Agregar producto si se seleccionó
+  // Producto
   if (selectedProducto.value) {
     const producto = productos.value.find(p => p.id_producto === selectedProducto.value);
 
@@ -173,21 +217,34 @@ const agregarAlCarrito = () => {
       return;
     }
 
-    carrito.value.push({
-      tipo: 'producto',
-      id_producto: selectedProducto.value,
-      productoNombre: producto.nombre,
-      cantidadProducto: cantidadProducto.value,
-      precioUnitario: producto.precio, // Aquí debes asegurarte de que tu producto tenga `precio`
-      id_pizza: null,
-      pizzaNombre: null,
-      id_tamano: null,
-      tamanoNombre: null,
-      cantidad: 0,
-    });
+    const existente = carrito.value.find(item =>
+      item.tipo === 'producto' &&
+      item.id_producto === selectedProducto.value
+    );
+
+    if (existente) {
+      existente.cantidadProducto += cantidadProducto.value;
+    } else {
+      carrito.value.push({
+        tipo: 'producto',
+        id_producto: selectedProducto.value,
+        productoNombre: producto.nombre,
+        cantidadProducto: cantidadProducto.value,
+        precioUnitario: producto.precio,
+        id_pizza: null,
+        pizzaNombre: null,
+        id_tamano: null,
+        tamanoNombre: null,
+        cantidad: 0,
+      });
+    }
   }
 
   // Reset campos
+  resetCampos();
+};
+
+const resetCampos = () => {
   selectedPizza.value = '';
   selectedTamano.value = '';
   cantidad.value = 1;
@@ -195,14 +252,19 @@ const agregarAlCarrito = () => {
   cantidadProducto.value = 1;
 };
 
+
 // Finalizar pedido (enviar todo el carrito)
-const finalizarPedido = async () => {
+const finalizarPedido = () => {
   if (carrito.value.length === 0) {
     alert("Tu carrito está vacío.");
     return;
   }
+  dialogVisible.value = true; // abre la ventana de confirmación
+};
 
+const confirmarPedido = async () => {
   const id_cliente = user.value?.identities?.[0]?.user_id;
+  console.log(carrito);
 
   try {
     const res = await fetch('/api/usuario/pedirPizza', {
@@ -226,6 +288,8 @@ const finalizarPedido = async () => {
   } catch (error) {
     console.error(error);
     mensaje.value = 'Hubo un error al realizar el pedido.';
+  } finally {
+    dialogVisible.value = false; // cerrar el modal
   }
 };
 
@@ -235,6 +299,24 @@ const calcularTotal = () => {
     return total + (item.precioUnitario * (item.tipo === 'pizza' ? item.cantidad : item.cantidadProducto));
   }, 0);
 };
+
+//Eliminar del carrito
+const eliminarDelCarrito = (index) => {
+  carrito.value.splice(index, 1);
+};
+
+//Editar articulo del carrito
+const editarItem = (item) => {
+  if (item.tipo === 'pizza') {
+    selectedPizza.value = item.id_pizza;
+    selectedTamano.value = item.id_tamano;
+    cantidad.value = item.cantidad;
+  } else if (item.tipo === 'producto') {
+    selectedProducto.value = item.id_producto;
+    cantidadProducto.value = item.cantidadProducto;
+  }
+};
+
 
 onMounted(async () => {
   await cargarPizzas();
