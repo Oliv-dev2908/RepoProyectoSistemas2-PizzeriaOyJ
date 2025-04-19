@@ -29,10 +29,15 @@ export const getPedidosPorCliente = async (id_cliente) => {
 };
 
 // Función para agregar detalles de un producto adicional al pedido
-export const agregarDetalleProducto = async ({ id_pedido, id_producto, cantidad, precio_unitario }) => {
+export const agregarDetalleProducto = async ({ id_pedido, id_producto, cantidad }) => {
   const sql = usePostres();
   await sql`
     INSERT INTO "PedidoProducto" (id_pedido, id_producto, cantidad, precio_unitario)
-    VALUES (${id_pedido}, ${id_producto}, ${cantidad}, ${precio_unitario})
+    VALUES (
+      ${id_pedido},
+      ${id_producto},
+      ${cantidad},
+      (SELECT precio FROM "Producto" WHERE id_producto = ${id_producto})
+    )
   `;
 };

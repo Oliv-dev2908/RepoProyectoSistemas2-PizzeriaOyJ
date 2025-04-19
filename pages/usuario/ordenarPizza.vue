@@ -264,6 +264,7 @@ const finalizarPedido = () => {
 
 const confirmarPedido = async () => {
   const id_cliente = user.value?.identities?.[0]?.user_id;
+  const total = calcularTotal(); // Calculas el total aquí
   console.log(carrito);
 
   try {
@@ -273,7 +274,8 @@ const confirmarPedido = async () => {
       body: JSON.stringify({
         id_cliente,
         pedido: carrito.value,
-        fecha: new Date().toISOString()
+        fecha: new Date().toISOString(),
+        total // <-- Aquí estás enviando el total también
       }),
     });
 
