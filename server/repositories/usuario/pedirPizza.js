@@ -4,7 +4,7 @@ import { usePostres } from '../../utils/postgres.js';
 export const crearPedido = async ({ id_cliente, total }) => {
   const sql = usePostres();
   const result = await sql`
-    INSERT INTO "pedido" (id_cliente, estado, total)
+    INSERT INTO "Pedido" (id_cliente, estado, total)
     VALUES (${id_cliente}, 'Pendiente', ${total})
     RETURNING id_pedido
   `;
@@ -29,42 +29,15 @@ export const getPedidosPorCliente = async (id_cliente) => {
 };
 
 // Función para agregar detalles de un producto adicional al pedido
-export const agregarDetalleProducto = async ({ id_pedido, id_producto, cantidad, precio_unitario }) => {
+export const agregarDetalleProducto = async ({ id_pedido, id_producto, cantidad }) => {
   const sql = usePostres();
   await sql`
     INSERT INTO "PedidoProducto" (id_pedido, id_producto, cantidad, precio_unitario)
-    VALUES (${id_pedido}, ${id_producto}, ${cantidad}, ${precio_unitario})
+    VALUES (
+      ${id_pedido},
+      ${id_producto},
+      ${cantidad},
+      (SELECT precio FROM "Producto" WHERE id_producto = ${id_producto})
+    )
   `;
-};
-
-// Función para crear un pedido con los detalles de pizza y productos
-export const crearPedidoConDetalles = async ({ id_cliente, pizza, productos }) => {
-  const sql = usePostres();
-  const { id_pizza, id_tamano, cantidad, precio_unitario, fecha } = pizza;
-
-  // Paso 1: Crear el pedido
-  const pedido = await crearPedido({ id_cliente, total: cantidad * precio_unitario });
-
-  // Paso 2: Agregar el detalle de la pizza al pedido
-  await agregarDetallePizza({ 
-    id_pedido: pedido.id_pedido,
-    id_pizza,
-    id_tamano,
-    cantidad,
-    precio_unitario
-  });
-
-  // Paso 3: Agregar detalles de productos (si hay productos adicionales)
-  if (productos && productos.length > 0) {
-    for (const producto of productos) {
-      await agregarDetalleProducto({
-        id_pedido: pedido.id_pedido,
-        id_producto: producto.id_producto,
-        cantidad: producto.cantidad,
-        precio_unitario: producto.precio_unitario
-      });
-    }
-  }
-
-  return pedido;  // Devuelve el pedido completo con sus detalles
 };

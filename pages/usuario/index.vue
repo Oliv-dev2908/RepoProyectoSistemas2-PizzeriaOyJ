@@ -1,17 +1,20 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-tr from-slate-100 to-slate-200 p-6">
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-xl">
+  <center>
+    
+    <el-card 
+    style="width: 75vh">
 
       <!-- Header de usuario -->
       <div class="flex items-center gap-6 mb-8">
         <img
           :src="fotoPerfil"
           alt="Foto de perfil"
-          class="w-24 h-24 rounded-full border-4 border-indigo-200 shadow-md object-cover"
+          style="max-width: 10vh; max-height: 10vh; width: 10vh; height: 10vh;"
+          class="rounded-full border-4 border-indigo-200 shadow-md object-cover"
         />
         <div>
-          <h1 class="text-3xl font-bold text-gray-800">{{ nombreCompleto }}</h1>
-          <p class="text-gray-600">{{ user?.email }}</p>
+          <h1>{{ nombreCompleto }}</h1>
+          <p>{{ user?.email }}</p>
         </div>
       </div>
 
@@ -26,9 +29,9 @@
         <button @click="irASugerencia" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg shadow">
           Enviar Sugerencia
        </button>
-       </div>
       </div>
-  </div>
+    </el-card>
+  </center>
 </template>
 
 <script setup lang="ts">
@@ -42,14 +45,14 @@ const nombreCompleto = user.value?.user_metadata?.full_name || user.value?.user_
 const fotoPerfil = user.value?.user_metadata?.avatar_url || user.value?.user_metadata?.picture || 'https://via.placeholder.com/96'
 
 function irAPerfil() {
-  router.push('usuario/perfil')
+  router.push('perfil')
 }
 
 function irAOrdenarPizza() {
-  router.push('usuario/ordenarPizza')
+  router.push('ordenarPizza')
 }
 
 function irASugerencia() {
-  router.push('/sugerencia')
+  router.push('sugerencia')
 }
 </script>

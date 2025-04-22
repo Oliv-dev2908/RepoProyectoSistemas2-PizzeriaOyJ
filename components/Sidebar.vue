@@ -16,7 +16,7 @@
           <el-menu-item v-if="filteredRoutes.length > 0" v-for="route in filteredRoutes" :key="route.path"
             :index="route.path">
             <el-icon>
-              <component :is="route.icon"/>
+              <component :is="route.icon" />
             </el-icon>
             <template #title>{{ route.name }}</template>
           </el-menu-item>
@@ -25,12 +25,12 @@
             :key="route.path" :index="route.path">
             <template #title>
               <el-icon>
-                <component :is="route.icon"/>
+                <component :is="route.icon" />
               </el-icon>
               <span>{{ route.name }}</span>
             </template>
             <el-menu-item-group>
-              <template #title><span>{{route.name}}</span></template>
+              <template #title><span>{{ route.name }}</span></template>
               <el-menu-item v-for="child in route.children" :index="`/${route.path}/${child.path}`">
                 {{ child.name }}
               </el-menu-item>
@@ -73,7 +73,8 @@ const routes = ref([
     name: 'User ',
     icon: ElementPlusIcons.UserFilled,
     roles: ['comun'],
-    children: [],
+    children: [
+    ],
   },
   {
     path: 'products',
@@ -81,16 +82,11 @@ const routes = ref([
     icon: ElementPlusIcons.KnifeFork,
     roles: ['comun'],
     children: [
-      {
-        path: 'tamano',
-        name: 'Sizes',
-        roles: ['comun'],
-      },
-      {
-        path: 'categoria',
-        name: 'Category',
-        roles: ['comun'],
-      },
+      { path: 'categoria', name: 'Categoria', roles: ['comun'] },
+      { path: 'ingrediente', name: 'Ingrediente', roles: ['comun'] },
+      { path: 'pizza', name: 'Pizza', roles: ['comun'] },
+      { path: 'producto', name: 'Producto', roles: ['comun'] },
+      { path: 'tamano', name: 'Tamaño', roles: ['comun'] },
     ],
   },
   {
@@ -99,16 +95,19 @@ const routes = ref([
     icon: ElementPlusIcons.KnifeFork,
     roles: ['admin'],
     children: [
-      {
-        path: 'tamanos',
-        name: 'Sizes',
-        roles: ['admin'],
-      },
-      {
-        path: 'categoria',
-        name: 'Category',
-        roles: ['admin'],
-      },
+    
+    ],
+  },
+
+  {
+    path: 'usuario',
+    name: 'User',
+    icon: ElementPlusIcons.UserFilled,
+    roles: ['comun'],
+    children: [
+      { path: '', name: 'Usuario', roles: ['comun'] }, // Para ir a /usuario
+      { path: 'ordenarPizza', name: 'Ordenar Pizza', roles: ['comun'] },
+      { path: 'perfil', name: 'Perfil', roles: ['comun'] },
     ],
   },
 ]);
