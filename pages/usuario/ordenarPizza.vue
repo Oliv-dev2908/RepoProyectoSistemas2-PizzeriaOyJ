@@ -1,85 +1,65 @@
 <template>
   <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Realizar nuevo pedido</h1>
+    <h1 class="text-2xl font-bold mb-6">¿Qué quieres agregar?</h1>
 
-    <div v-if="loading" class="text-center">Cargando...</div>
-
-    <div v-else class="space-y-4">
-      <!-- Selección Pizza -->
-      <div>
-        <label class="block font-semibold mb-1">Selecciona una Pizza:</label>
-        <select v-model="selectedPizza" class="w-full border p-2 rounded">
-          <option disabled value="">-- Selecciona una pizza --</option>
-          <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
-            {{ pizza.nombre }}
-          </option>
-        </select>
+    <!-- Cartas para elegir -->
+    <div class="grid grid-cols-2 gap-8">
+      <div @click="abrirModal('pizza')"
+        class="cursor-pointer bg-yellow-200 p-6 rounded-lg shadow hover:scale-105 transition">
+        <h2 class="text-xl font-semibold text-center">🍕 Pizza</h2>
       </div>
 
-      <!-- Selección Tamaño -->
-      <div>
-        <label class="block font-semibold mb-1">Selecciona un Tamaño:</label>
-        <select v-model="selectedTamano" class="w-full border p-2 rounded">
-          <option disabled value="">-- Selecciona un tamaño --</option>
-          <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
-            {{ tam.nombre }}
-          </option>
-        </select>
+      <div @click="abrirModal('producto')"
+        class="cursor-pointer bg-green-200 p-6 rounded-lg shadow hover:scale-105 transition">
+        <h2 class="text-xl font-semibold text-center">🛒 Producto</h2>
       </div>
+    </div>
 
-      <!-- Selección Producto -->
-      <div>
-        <label class="block font-semibold mb-1">Selecciona un Producto (opcional):</label>
-        <select v-model="selectedProducto" class="w-full border p-2 rounded">
-          <option disabled value="">-- Selecciona un producto --</option>
-          <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
-            {{ producto.nombre }}
-          </option>
-        </select>
-      </div>
-
-      <!-- Cantidad Producto -->
-      <div v-if="selectedProducto">
-        <label class="block font-semibold mb-1">Cantidad de Producto:</label>
-        <input v-model.number="cantidadProducto" type="number" min="1" class="w-full border p-2 rounded" />
-      </div>
-
-      <!-- Cantidad de Pizzas -->
-      <div>
-        <label class="block font-semibold mb-1">Cantidad de Pizzas:</label>
-        <input v-model.number="cantidad" type="number" min="1" class="w-full border p-2 rounded" />
-      </div>
-
-      <!-- Botones de acción -->
-      <div class="flex space-x-4">
-        <button @click="agregarAlCarrito" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">
-          Agregar al carrito
-        </button>
-        <button @click="finalizarPedido" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">
-          Finalizar Pedido
-        </button>
-      </div>
-
-      <!-- Carrito -->
-      <div v-if="carrito.length > 0" class="mt-8">
-        <h2 class="text-xl font-bold mb-2">Carrito</h2>
-        <ul class="space-y-2">
-          <li v-for="(item, index) in carrito" :key="index"
-            class="border p-2 rounded flex justify-between items-center">
-            <div>
-              <div v-if="item.tipo === 'pizza'">
-                🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-                ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
-              </div>
-              <div v-else-if="item.tipo === 'producto'">
-                🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-                ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
-              </div>
+    <!-- Carrito -->
+    <!-- Carrito -->
+    <div v-if="carrito.length > 0" class="mt-8">
+      <h2 class="text-xl font-bold mb-2">Carrito</h2>
+      <ul class="space-y-2">
+        <li v-for="(item, index) in carrito" :key="index" class="border p-2 rounded flex justify-between items-center">
+          <div>
+            <div v-if="item.tipo === 'pizza'">
+              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
             </div>
+            <div v-else-if="item.tipo === 'producto'">
+              🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
+              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+            </div>
+          </div>
 
-            <div class="flex space-x-2">
-              <button @click="editarItem(item)" class="text-blue-600 hover:underline">Editar</button>
-              <button @click="eliminarDelCarrito(index)" class="text-red-600 hover:underline">Eliminar</button>
+          <div class="flex space-x-2">
+            <button @click="editarItem(item)" class="text-blue-600 hover:underline">Editar</button>
+            <button @click="eliminarDelCarrito(index)" class="text-red-600 hover:underline">Eliminar</button>
+          </div>
+        </li>
+      </ul>
+
+      <div class="mt-4 font-bold text-right">
+        Total: ${{ calcularTotal().toFixed(2) }}
+      </div>
+    </div>
+    <div v-if="carrito.length > 0" class="mt-4 text-right">
+      <el-button type="primary" @click="finalizarPedido">Finalizar Pedido</el-button>
+    </div>
+
+    <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="600px"
+      :before-close="() => dialogVisible = false">
+      <div>
+        <h3 class="font-semibold mb-4">Resumen de tu pedido:</h3>
+        <ul class="space-y-2">
+          <li v-for="(item, index) in carrito" :key="index">
+            <div v-if="item.tipo === 'pizza'">
+              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+            </div>
+            <div v-else-if="item.tipo === 'producto'">
+              🛒 {{ item.productoNombre }} x{{ item.cantidadProducto }} -
+              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
             </div>
           </li>
         </ul>
@@ -89,48 +69,79 @@
         </div>
       </div>
 
-      <!--Modal de confirmacion-->
-      <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="600px"
-        :before-close="() => dialogVisible = false">
-        <div>
-          <h3 class="font-semibold mb-4">Resumen de tu pedido:</h3>
-          <ul class="space-y-2">
-            <li v-for="(item, index) in carrito" :key="index">
-              <div v-if="item.tipo === 'pizza'">
-                🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-                ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
-              </div>
-              <div v-else-if="item.tipo === 'producto'">
-                🛒 {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-                ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
-              </div>
-            </li>
-          </ul>
-
-          <div class="mt-4 font-bold text-right">
-            Total: ${{ calcularTotal().toFixed(2) }}
-          </div>
-        </div>
-
-        <template #footer>
-          <el-button @click="dialogVisible = false">Cancelar</el-button>
-          <el-button type="primary" @click="confirmarPedido">Confirmar</el-button>
-        </template>
-      </el-dialog>
+      <template #footer>
+        <el-button @click="dialogVisible = false">Cancelar</el-button>
+        <el-button type="primary" @click="confirmarPedido">Confirmar</el-button>
+      </template>
+    </el-dialog>
 
 
-      <!-- Mensaje de confirmación -->
-      <div v-if="mensaje" class="mt-4 p-3 bg-blue-100 border border-blue-300 rounded">
-        {{ mensaje }}
-      </div>
+    <!-- Mensaje de confirmación -->
+    <div v-if="mensaje" class="mt-4 p-3 bg-blue-100 border border-blue-300 rounded">
+      {{ mensaje }}
     </div>
+
+    <!-- Modal de Pizza -->
+    <el-dialog v-model="modalPizza" title="Agregar Pizza" width="500px">
+      <div class="space-y-4">
+        <select v-model="selectedPizza" class="w-full p-2 border rounded">
+          <option disabled value="">-- Selecciona una pizza --</option>
+          <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
+            {{ pizza.nombre }}
+          </option>
+        </select>
+
+        <select v-model="selectedTamano" class="w-full p-2 border rounded">
+          <option disabled value="">-- Selecciona un tamaño --</option>
+          <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
+            {{ tam.nombre }}
+          </option>
+        </select>
+
+        <input type="number" v-model.number="cantidad" min="1" class="w-full p-2 border rounded"
+          placeholder="Cantidad" />
+      </div>
+
+      <template #footer>
+        <el-button @click="modalPizza = false">Cancelar</el-button>
+        <el-button type="primary" @click="agregarPizza">Agregar</el-button>
+      </template>
+    </el-dialog>
+
+    <!-- Modal de Producto -->
+    <el-dialog v-model="modalProducto" title="Agregar Producto" width="500px">
+      <div class="space-y-4">
+        <select v-model="selectedProducto" class="w-full p-2 border rounded">
+          <option disabled value="">-- Selecciona un producto --</option>
+          <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
+            {{ producto.nombre }}
+          </option>
+        </select>
+
+        <input type="number" v-model.number="cantidadProducto" min="1" class="w-full p-2 border rounded"
+          placeholder="Cantidad" />
+      </div>
+
+      <template #footer>
+        <el-button @click="modalProducto = false">Cancelar</el-button>
+        <el-button type="primary" @click="agregarProducto">Agregar</el-button>
+      </template>
+    </el-dialog>
+
+
+
+    <!-- Spinner de carga -->
+    <div v-if="loading" class="flex justify-center items-center mt-4">
+      <el-loading :loading="loading" text="Procesando tu pedido..." spinner-size="50"></el-loading>
+    </div>
+
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useSupabaseUser } from '#imports'
-import { ElDialog, ElButton } from 'element-plus'
+import { ElDialog, ElButton, ElLoading } from 'element-plus'; 
 
 const user = useSupabaseUser();
 const dialogVisible = ref(false); // controla si se muestra la ventana
@@ -147,6 +158,26 @@ const selectedProducto = ref('');
 const cantidadProducto = ref(1);
 const mensaje = ref('');
 const loading = ref(true);
+const modalPizza = ref(false);
+const modalProducto = ref(false);
+
+const abrirModal = (tipo) => {
+  if (tipo === 'pizza') {
+    modalPizza.value = true;
+  } else if (tipo === 'producto') {
+    modalProducto.value = true;
+  }
+};
+
+const agregarPizza = () => {
+  agregarAlCarrito(); // Tu misma función actual
+  modalPizza.value = false;
+};
+
+const agregarProducto = () => {
+  agregarAlCarrito(); // Igual
+  modalProducto.value = false;
+};
 
 // Cargar datos
 const cargarPizzas = async () => {
@@ -259,13 +290,14 @@ const finalizarPedido = () => {
     alert("Tu carrito está vacío.");
     return;
   }
+  loading.value = true;  // Activar carga
   dialogVisible.value = true; // abre la ventana de confirmación
 };
+
 
 const confirmarPedido = async () => {
   const id_cliente = user.value?.identities?.[0]?.user_id;
   const total = calcularTotal(); // Calculas el total aquí
-  console.log(carrito);
 
   try {
     const res = await fetch('/api/usuario/pedirPizza', {
@@ -291,6 +323,7 @@ const confirmarPedido = async () => {
     console.error(error);
     mensaje.value = 'Hubo un error al realizar el pedido.';
   } finally {
+    loading.value = false;  // Desactivar carga
     dialogVisible.value = false; // cerrar el modal
   }
 };
