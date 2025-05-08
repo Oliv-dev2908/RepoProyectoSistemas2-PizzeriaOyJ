@@ -42,10 +42,10 @@ export const recuperarPedidosDeCliente = async (id_cliente) => {
 /**
 * Función para cancelar un pedido y agregar un comentario.
 */
-export const cancelarPedido = async (id_pedido, comentario) => {
+export const cancelarPedido = async (id_pedido, id_cliente, comentario) => {
     try {
         // Llamar al repositorio para cancelar el pedido y guardar el comentario
-        const result = await cancelarPedidoConComentario(id_pedido, comentario);
+        const result = await cancelarPedidoConComentario(id_pedido, id_cliente, comentario);
 
         if (result.success) {
             return { success: true, message: 'Pedido cancelado con éxito' };

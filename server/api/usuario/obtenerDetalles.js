@@ -20,36 +20,16 @@ export default defineEventHandler(async (event) => {
 
         // Verificar si es una solicitud para cancelar un pedido
         if (id_cliente && id_pedido && comentario) {
-          // 1. Actualizar el estado del pedido
-          const { error: updateError } = await supabase
-            .from('pedidos')
-            .update({ estado: 'Cancelado por el Cliente' })
-            .eq('id_pedido', id_pedido);
-
-          if (updateError) {
+          const result = await cancelarPedido(id_pedido, id_cliente, comentario);
+        
+          if (result.success) {
+            return { success: true, message: result.message };
+          } else {
             event.res.statusCode = 500;
-            return { error: 'Error al actualizar el estado del pedido', details: updateError.message };
+            return { error: 'Error al cancelar el pedido', details: result.error };
           }
-
-          // 2. Insertar el comentario en la base de datos
-          const { data, error: insertError } = await supabase
-            .from('comentarios')
-            .insert([
-              {
-                id_cliente,
-                id_pedido,
-                texto: comentario,
-                fecha: new Date().toISOString(),
-              },
-            ]);
-
-          if (insertError) {
-            event.res.statusCode = 500;
-            return { error: 'Error al guardar el comentario', details: insertError.message };
-          }
-
-          return { success: true, message: 'Pedido cancelado y comentario guardado' };
         }
+        
 
         // Si no hay parámetros suficientes
         event.res.statusCode = 400;
