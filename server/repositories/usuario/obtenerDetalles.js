@@ -49,18 +49,34 @@ export const getDetallesProductosPorPedidos = async (pedidosIds) => {
 };
 
 
-export const cancelarPedidoConComentario = async (id_pedido, id_cliente, comentario) => {
+export const cancelarPedidoConComentario = async (id_pedido, supabase_uuid, comentario) => {
   const sql = usePostres();
+
+  try {
+    const result = await sql`
+      SELECT public.get_client_by_user(${supabase_uuid}) AS id_cliente
+    `;
+    const id_cliente = result[0]?.id_cliente;
+
+    if (!id_cliente) {
+      return { success: false, error: 'No se encontró un cliente con ese UUID' };
+    }
+
     await sql`
       UPDATE "Pedido"
       SET estado = 'Cancelado por el Cliente'
       WHERE id_pedido = ${id_pedido}
     `;
 
-    // Insertar el comentario
     await sql`
       INSERT INTO "Comentario" (id_cliente, id_pedido, texto)
       VALUES (${id_cliente}, ${id_pedido}, ${comentario})
     `;
+
+    return { success: true };
+  } catch (error) {
+    console.error('Error en cancelarPedidoConComentario:', error);
+    return { success: false, error: 'Error al cancelar y comentar el pedido' };
+  }
 };
 

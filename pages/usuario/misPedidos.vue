@@ -45,6 +45,34 @@
             <el-button type="primary" @click="guardarComentario">Guardar</el-button>
         </template>
     </el-dialog>
+
+    <!-- Modal de ver detalles-->
+    <el-dialog title="Detalles del Pedido" v-model="isDetallesVisible" width="600px">
+        <div v-if="pedidoSeleccionado">
+            <!-- Sección de Pizzas -->
+            <h2 class="text-lg font-semibold mb-2">Pizzas</h2>
+            <ul v-if="pedidoSeleccionado.pizzas.length > 0" class="mb-4 list-disc list-inside">
+                <li v-for="pizza in pedidoSeleccionado.pizzas" :key="pizza.id_pizza">
+                    {{ pizza.nombre }} - Tamaño: {{ pizza.tamaño }} - Cantidad: {{ pizza.cantidad }}
+                </li>
+            </ul>
+            <p v-else class="text-gray-500 mb-4">No hay pizzas en este pedido.</p>
+
+            <!-- Sección de Productos -->
+            <h2 class="text-lg font-semibold mb-2">Productos</h2>
+            <ul v-if="pedidoSeleccionado.productos.length > 0" class="list-disc list-inside">
+                <li v-for="producto in pedidoSeleccionado.productos" :key="producto.id_producto">
+                    {{ producto.nombre }} - Cantidad: {{ producto.cantidad }}
+                </li>
+            </ul>
+            <p v-else class="text-gray-500">No hay productos en este pedido.</p>
+        </div>
+
+        <template #footer>
+            <el-button @click="isDetallesVisible = false">Cerrar</el-button>
+        </template>
+    </el-dialog>
+
 </template>
 
 <script setup>
@@ -60,6 +88,8 @@ const pedidos = ref([])
 // Variables para el modal
 const isModalVisible = ref(false)
 const comentario = ref('')
+const isDetallesVisible = ref(false)
+const pedidoSeleccionado = ref(null)
 let idPedidoSeleccionado = null // Variable para almacenar el id del pedido seleccionado
 
 // Traer los pedidos del usuario
@@ -138,8 +168,13 @@ function clearComentario() {
 
 // Función para ver detalles (sin lógica todavía)
 function verDetallesPedido(idPedido) {
-    console.log('Ver detalles del pedido', idPedido)
-    // Aquí podrías hacer router.push a /misPedidos/[id]
+    const pedido = pedidos.value.find(p => p.id_pedido === idPedido)
+    if (pedido) {
+        pedidoSeleccionado.value = pedido
+        isDetallesVisible.value = true
+    } else {
+        console.warn('Pedido no encontrado con ID:', idPedido)
+    }
 }
 
 // Formatear fecha
