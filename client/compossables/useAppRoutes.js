@@ -15,7 +15,7 @@ export function useAppRoutes() {
       path: 'products',
       name: 'UserPaths',
       icon: markRaw(ElementPlusIcons.KnifeFork),
-      roles: ['admin'],
+      roles: ['comun'],
       children: [
         { path: 'categoria', name: 'Categoria', roles: ['admin'] },
         { path: 'ingrediente', name: 'Ingrediente', roles: ['admin'] },
