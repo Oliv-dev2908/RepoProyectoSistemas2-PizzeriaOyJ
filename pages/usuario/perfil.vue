@@ -64,6 +64,10 @@
                 <span class="ml-2" :class="estadoProveedor('facebook')">{{ estadoTexto('facebook') }}</span>
               </p>
               <p>
+                <strong>Twitter:</strong>
+                <span class="ml-2" :class="estadoProveedor('twitter')">{{ estadoTexto('twitter') }}</span>
+              </p>
+              <p>
                 <strong>Email:</strong>
                 <span class="ml-2" :class="estadoProveedor('email')">{{ estadoTexto('email') }}</span>
               </p>
