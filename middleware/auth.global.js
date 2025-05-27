@@ -1,32 +1,69 @@
-import { useUserRole } from './../client/compossables/useUserRole';
-import { navigateTo, useRoute } from '#app';
+import { useUserRole } from './../client/compossables/useUserRole'
+import { useAppRoutes } from './../client/compossables/useAppRoutes'
+import { navigateTo } from '#app'
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
-  const route = useRoute();
-  const { setRole } = useUserRole();
-  const user = useSupabaseUser();
+  const user = useSupabaseUser()
+  const { setRole } = useUserRole()
 
-  // Array of route names or paths where the middleware should NOT run
-  const excludedRoutes = ['login', 'signup']; // Use route names
+  const excludedRoutes = ['login', 'signup']
 
-  // Check if the current route name is in the excludedRoutes array
-  if (excludedRoutes.includes(route.name)) {
-    return; // If it's an excluded route, just return and don't execute the rest of the middleware
-  }
+  if (!user.value?.id) return
 
-  // If the user is not logged in, redirect to login (you might have separate auth middleware for this)
-  if (!user.value?.id) {
-    return
-  }
-
-  console.log("Middleware Ejecutandose");
   try {
-    const roleData = await $fetch(`/api/user/role?id=${user.value.id}`);
-    console.log(roleData);
-    const userRole = roleData;
-    setRole(userRole); // Store the role in the composable
+    // Redirigir si usuario autenticado intenta acceder a login o signup
+    if (excludedRoutes.includes(to.name)) {
+      return navigateTo('/')
+    }
+
+    // Obtener rol desde API
+    const roleData = await $fetch(`/api/user/role?id=${user.value.id}`)
+    const userRole = roleData
+    setRole(userRole)
+
+    // Obtener todas las rutas disponibles
+    const { allRoutes } = useAppRoutes()
+
+    // Normaliza el path: une padre e hijo
+    const normalizePath = (base, child) => {
+      if (!child) return `/${base.replace(/^\//, '')}`
+      return `/${base.replace(/^\//, '')}/${child.replace(/^\//, '')}`
+    }
+
+    // Aplana todas las rutas con sus roles
+    const getFlattenedRoutes = (routes) => {
+      const result = []
+
+      routes.forEach(route => {
+        // Ruta principal
+        const mainPath = route.path.startsWith('/') ? route.path : `/${route.path}`
+        result.push({ path: mainPath, roles: route.roles })
+
+        // Hijos
+        if (route.children && route.children.length) {
+          route.children.forEach(child => {
+            const fullPath = normalizePath(route.path, child.path)
+            result.push({ path: fullPath, roles: child.roles })
+          })
+        }
+      })
+
+      return result
+    }
+
+    const flattenedRoutes = getFlattenedRoutes(allRoutes)
+
+    // Verifica si la ruta actual comienza con alguna ruta válida para el rol
+    const isAuthorized = flattenedRoutes.some(route => {
+      return to.path.startsWith(route.path) && route.roles.includes(userRole)
+    })
+    console.log(isAuthorized);
+    if (!isAuthorized && to.path != '/') {
+      return navigateTo('/')
+    }
+
   } catch (error) {
-    console.error('Error fetching user role:', error);
-    return navigateTo('/login');
+    console.error('Error fetching user role:', error)
+    return navigateTo('/login')
   }
-});
+})

@@ -2,8 +2,7 @@
   <el-container class="layout-container-demo" style="height: 100vh">
     <el-aside :class="{ 'collapsed': isCollapse }" :style="{ width: isCollapse ? '64px' : '200px' }">
       <el-scrollbar class="el-scrollbar-menu">
-        <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" @open="handleOpen"
-          @close="handleClose" :collapse-transition="false" v-if="sidebarOpened" router>
+        <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse":collapse-transition="false" v-if="sidebarOpened">
           <el-menu-item @click="toggleDark()" center="true" index="#">
             <el-icon v-if="isDark">
               <ElementPlusIcons.Moon />
@@ -14,7 +13,8 @@
             <span class="ml-2">{{ isDark ? 'Dark' : 'Light' }}</span>
           </el-menu-item>
           <el-menu-item v-if="filteredRoutes.length > 0" v-for="route in filteredRoutes" :key="route.path"
-            :index="route.path">
+            :index="route.path"
+            @click="navigateWithLoading(route.path)">
             <el-icon>
               <component :is="route.icon" />
             </el-icon>
@@ -22,7 +22,7 @@
           </el-menu-item>
 
           <el-sub-menu v-for="route in filteredRoutesChildren" v-if="filteredRoutesChildren.length > 0"
-            :key="route.path" :index="route.path">
+            :key="route.path":index="route.path">
             <template #title>
               <el-icon>
                 <component :is="route.icon" />
@@ -31,7 +31,7 @@
             </template>
             <el-menu-item-group>
               <template #title><span>{{ route.name }}</span></template>
-              <el-menu-item v-for="child in route.children" :index="`/${route.path}/${child.path}`">
+              <el-menu-item v-for="child in route.children":index="`/${route.path}/${child.path}`" @click="navigateWithLoading(`/${route.path}/${child.path}`)">
                 {{ child.name }}
               </el-menu-item>
             </el-menu-item-group>
@@ -43,6 +43,7 @@
     <el-container>
       <el-main>
         <el-scrollbar>
+          
           <slot></slot>
         </el-scrollbar>
       </el-main>
@@ -53,104 +54,52 @@
 <script setup>
 import { useDark } from '@vueuse/core';
 import { useCookie } from '#app';
-import { ref, computed, onMounted, onUnmounted } from 'vue';
-import { useUserRole } from './../client/compossables/useUserRole';
+import { ref, computed, onMounted, onUnmounted, markRaw } from 'vue';
 import * as ElementPlusIcons from '@element-plus/icons-vue';
 import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs';
+import { useRouter } from 'vue-router';
+import { useAppRoutes } from './../client/compossables/useAppRoutes'
+const { filteredRoutes, filteredRoutesChildren } = useAppRoutes()
+//Pantalla de carga
+const router = useRouter();
+const navigateWithLoading = async (path) => {
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: 'Loading...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  });
 
+  try {
+    await router.push(path);
+  } finally {
+    loadingInstance.close();
+  }
+};
+//Modo Oscuro
 const themeCookie = useCookie('theme');
 const isDark = useDark({
   initialValue: themeCookie.value
 });
-
-const sidebarOpened = ref(true);
-const isCollapse = ref(false);
-const { userRole } = useUserRole(); // Accede al rol del usuario desde el composable
-
-const routes = ref([
-  {
-    path: '/user',
-    name: 'User ',
-    icon: ElementPlusIcons.UserFilled,
-    roles: ['comun'],
-    children: [
-    ],
-  },
-  {
-    path: 'products',
-    name: 'UserPaths ',
-    icon: ElementPlusIcons.KnifeFork,
-    roles: ['comun'],
-    children: [
-      { path: 'categoria', name: 'Categoria', roles: ['comun'] },
-      { path: 'ingrediente', name: 'Ingrediente', roles: ['comun'] },
-      { path: 'pizza', name: 'Pizza', roles: ['comun'] },
-      { path: 'producto', name: 'Producto', roles: ['comun'] },
-      { path: 'tamano', name: 'Tamaño', roles: ['comun'] },
-    ],
-  },
-  {
-    path: '/products',
-    name: 'Products',
-    icon: ElementPlusIcons.KnifeFork,
-    roles: ['admin'],
-    children: [
-    
-    ],
-  },
-
-  {
-    path: 'usuario',
-    name: 'User',
-    icon: ElementPlusIcons.UserFilled,
-    roles: ['comun'],
-    children: [
-      { path: '', name: 'Usuario', roles: ['comun'] }, // Para ir a /usuario
-      { path: 'ordenarPizza', name: 'Ordenar Pizza', roles: ['comun'] },
-      { path: 'perfil', name: 'Perfil', roles: ['comun'] },
-    ],
-  },
-]);
-
-const filteredRoutes = computed(() => {
-  return routes.value.filter(route => {
-    return !route.roles || route.roles.includes(userRole.value) && route.children.length == 0;
-  });
-});
-console.log(filteredRoutes.value[0].icon.setup);
-const filteredRoutesChildren = computed(() => {
-  return routes.value.filter(route => {
-    return !route.roles || route.roles.includes(userRole.value) && route.children.length > 0;
-  })
-})
 const toggleDark = () => {
   isDark.value = !isDark.value;
   themeCookie.value = isDark.value ? 'dark' : 'light';
   localStorage.setItem('dark-mode', isDark.value);
 };
-
-const handleOpen = (key, keyPath) => {
-  console.log(key, keyPath);
-};
-
-const handleClose = (key, keyPath) => {
-  console.log(key, keyPath);
-};
-
+//Variable de router
+const sidebarOpened = ref(true);
+const isCollapse = ref(false);
+//Pantalla
 const checkScreenSize = () => {
   isCollapse.value = window.innerWidth < 768;
 };
-
 onMounted(() => {
   checkScreenSize();
   window.addEventListener('resize', checkScreenSize);
 });
-
 onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize);
 });
 </script>
-
 <style scoped>
 .common-layout {
   height: 100vh;

@@ -1,5 +1,4 @@
 import { createTamanos, modifyTamanos, fetchTamanos, deleteTamano } from '../../services/products/tamanoService';
-import { usePostres } from '../../utils/postgres'; // Asegúrate de importar tu conexión a la base de datos
 
 export default defineEventHandler(async (event) => {
     const method = event.node.req.method;
