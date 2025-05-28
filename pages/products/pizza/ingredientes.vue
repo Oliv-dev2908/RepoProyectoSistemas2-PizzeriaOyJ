@@ -1,66 +1,78 @@
 <template>
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-4">Ingredientes de la Pizza</h1>
+  <h1 class="text-4xl font-pizza-title mb-8 text-pizza-red text-center drop-shadow-lg">
+    Ingredientes de la Pizza
+  </h1>
 
-    <div v-if="loading" class="text-center">
-      Cargando...
-    </div>
+  <el-button type="info" class="absolute top-4 left-4 pizza-button-back" size="small" @click="goBack">
+    ←Volver
+  </el-button>
 
-    <div v-else>
-      <!-- Pizza seleccionada -->
-      <div class="mb-4">
-        <label class="font-semibold">Pizza seleccionada:</label>
-        <select disabled class="w-full p-2 border rounded mt-1 bg-gray-100">
-          <option :value="pizzaActual[0].id_pizza" v-if="pizzaActual">
-            {{ pizzaActual[0].nombre }}
-          </option>
-        </select>
-      </div>
+  <el-card class="pizza-card p-6 max-w-lg mx-auto" v-if="!loading">
+    <!-- Pizza seleccionada -->
+    <el-form label-position="top" class="space-y-4">
+      <el-form-item label="Pizza Seleccionada">
+        <el-select v-model="pizzaActual[0].id_pizza" disabled class="w-full">
+          <el-option :label="pizzaActual[0].nombre" :value="pizzaActual[0].id_pizza" />
+        </el-select>
+      </el-form-item>
 
       <!-- Ingredientes actuales -->
-      <div v-if="ingredientes.length === 0">
+      <div v-if="ingredientes.length === 0" class="text-center text-gray-600">
         <p>Aún no se agregaron ingredientes a esta pizza.</p>
       </div>
       <div v-else>
-        <h3 class="text-lg font-semibold">Ingredientes Actuales:</h3>
-        <ul class="space-y-2 mt-2">
+        <h3 class="text-lg font-semibold mb-2">Ingredientes Actuales:</h3>
+        <ul class="space-y-2">
           <li v-for="ingrediente in ingredientes" :key="ingrediente.id_ingrediente"
-              class="flex justify-between items-center border p-2 rounded shadow">
-            <p>{{ ingrediente.nombre }} - Cantidad: {{ ingrediente.cantidad }}</p>
-            <button @click="removeIngrediente(ingrediente.id_ingrediente)"
-                    class="ml-2 bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600">
+            class="flex justify-between items-center border p-2 rounded shadow-inner bg-white">
+            <span class="font-medium text-pizza-brown">
+              {{ ingrediente.nombre }} - Cantidad: {{ ingrediente.cantidad }}
+            </span>
+            <el-button type="danger" size="small" @click="removeIngrediente(ingrediente.id_ingrediente)">
               Eliminar
-            </button>
+            </el-button>
           </li>
         </ul>
       </div>
 
       <!-- Agregar ingrediente -->
       <div class="mt-4">
-        <h3 class="text-lg font-semibold">Agregar Ingredientes:</h3>
-        <select v-model="selectedIngrediente" class="mt-2 p-2 border rounded w-full">
-          <option v-for="ingrediente in allIngredientes"
-                  :key="ingrediente.id_ingrediente"
-                  :value="ingrediente.id_ingrediente">
-            {{ ingrediente.nombre }}
-          </option>
-        </select>
-        <input v-model="cantidad" type="number" placeholder="Cantidad"
-               class="mt-2 p-2 border rounded w-full" />
-        <button @click="addIngrediente"
-                class="mt-2 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600">
+        <h3 class="text-lg font-semibold mb-2">Agregar Ingredientes:</h3>
+        <el-form-item label="Ingrediente">
+          <el-select v-model="selectedIngrediente" placeholder="Seleccionar ingrediente" class="w-full">
+            <el-option v-for="ingrediente in allIngredientes" :key="ingrediente.id_ingrediente"
+              :label="ingrediente.nombre" :value="ingrediente.id_ingrediente" />
+          </el-select>
+        </el-form-item>
+
+        <el-form-item label="Cantidad">
+          <div class="flex items-center gap-2 w-full">
+            <el-input-number v-model="cantidad" :min="5" :max="1300" class="flex-grow" placeholder="Cantidad"
+              :controls="false" />
+            <span class="text-gray-600 font-semibold">gramos</span>
+          </div>
+        </el-form-item>
+
+
+        <el-button type="success" class="w-full pulse-button"
+          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
+          @click="addIngrediente">
           Agregar Ingrediente
-        </button>
+        </el-button>
       </div>
-    </div>
-  </div>
+    </el-form>
+  </el-card>
+
+  <div v-else class="text-center text-gray-600">Cargando...</div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { ElMessage } from 'element-plus';
 
 const route = useRoute();
+const router = useRouter(); 
 const pizzaId = route.query.id;
 
 const loading = ref(true);
@@ -72,18 +84,18 @@ const cantidad = ref(0);
 
 // Obtener información de la pizza seleccionada
 const loadPizzaInfo = async (id) => {
-    try {
-      const response = await fetch(`/api/products/pizza?id=${id}`);
-      if (!response.ok) {
-        throw new Error('Error al obtener los detalles de la pizza');
-      }
-      pizzaActual.value = await response.json();
-    } catch (error) {
-      console.error(error.message);
-    } finally {
-      loading.value = false;
+  try {
+    const response = await fetch(`/api/products/pizza?id=${id}`);
+    if (!response.ok) {
+      throw new Error('Error al obtener los detalles de la pizza');
     }
-  };
+    pizzaActual.value = await response.json();
+  } catch (error) {
+    console.error(error.message);
+  } finally {
+    loading.value = false;
+  }
+};
 
 // Cargar ingredientes actuales de la pizza
 const loadIngredientes = async () => {
@@ -109,29 +121,43 @@ const loadAllIngredientes = async () => {
 
 // Agregar ingrediente
 const addIngrediente = async () => {
-  if (!selectedIngrediente.value || cantidad.value <= 0) {
-    alert('Selecciona un ingrediente y una cantidad válida.');
+  const cantidadNum = Number(cantidad.value);
+
+  if (!selectedIngrediente.value) {
+    ElMessage.error('Selecciona un ingrediente.');
     return;
   }
+
+  if (isNaN(cantidadNum) || cantidadNum < 5 || cantidadNum > 1300) {
+    ElMessage.error('La cantidad debe estar entre 5 y 1300 gramos.');
+    return;
+  }
+
   try {
-    const response = await fetch("/api/products/pizzaIngrediente", {
+    const response = await fetch('/api/products/pizzaIngrediente', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id_pizza: pizzaId,
+        id_pizza: pizzaActual.value[0].id_pizza,
         id_ingrediente: selectedIngrediente.value,
-        cantidad: cantidad.value
+        cantidad: cantidadNum,
       }),
     });
-    if (!response.ok) throw new Error("Error al agregar ingrediente");
+
+    if (!response.ok) throw new Error('Error al agregar ingrediente.');
+
+    ElMessage.success('Ingrediente agregado correctamente.');
     await loadIngredientes();
     cantidad.value = 0;
     selectedIngrediente.value = null;
   } catch (error) {
-    console.error(error.message);
+    ElMessage.error(error.message);
   }
 };
 
+const goBack = () => {
+  router.push('/products/pizza');
+};
 // Eliminar ingrediente
 const removeIngrediente = async (idIngrediente) => {
   try {
@@ -156,4 +182,57 @@ onMounted(async () => {
   await loadAllIngredientes();
   loading.value = false;
 });
+
+
 </script>
+
+<style scoped>
+.pizza-button-back {
+  background: linear-gradient(45deg, #e63946, #f1faee);
+  color: #7f1d1d;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(230, 57, 70, 0.6);
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.pizza-button-back:hover {
+  background-color: #e63946;
+  color: #fff;
+  box-shadow: 0 6px 15px rgba(230, 57, 70, 0.7);
+}
+
+.pulse-button {
+  animation: pulse 2s infinite;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  box-shadow: 0 4px 8px rgba(230, 57, 70, 0.6);
+  border-radius: 8px;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
+  }
+
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(230, 57, 70, 0);
+  }
+
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(230, 57, 70, 0);
+  }
+}
+
+.el-input input,
+.el-textarea__inner,
+.el-select,
+.el-input-number {
+  border-radius: 10px !important;
+  font-weight: 600;
+  color: var(--pizza-brown);
+}
+</style>
