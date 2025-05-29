@@ -17,12 +17,14 @@
 
         <el-form-item label="Nombre de la Categoría" :error="errors.nombre">
           <el-input v-model="categoria.nombre" placeholder="Ej: Bebidas, Postres, Entradas"
-            class="shadow-inner rounded-lg" />
+            class="shadow-inner rounded-lg" maxlength="100" />
+
+
         </el-form-item>
 
         <el-form-item label="Precio Extra ($)" :error="errors.precio_extra">
-          <el-input v-model.number="categoria.precio_extra" placeholder="Ej: 10" type="number" min="0"
-            class="shadow-inner rounded-lg" />
+          <el-input v-model.number="categoria.precio_extra" placeholder="Ej: 10" type="number" min="0" max="1000"
+            class="shadow-inner rounded-lg" @input="onPrecioInput" />
         </el-form-item>
 
         <el-form-item>
@@ -71,7 +73,28 @@ const errors = ref({
 const success = ref(false);
 
 // Validar formulario
-// Validar formulario (igual que en agregar)
+
+const onPrecioInput = () => {
+  // Limitar a 2 decimales y máximo 1000
+  let val = categoria.value.precio_extra;
+
+  if (val > 1000) {
+    categoria.value.precio_extra = 1000;
+  }
+
+  // Forzar máximo 2 decimales
+  if (val !== null && val !== undefined) {
+    const strVal = val.toString();
+    if (strVal.includes('.')) {
+      const parts = strVal.split('.');
+      if (parts[1].length > 2) {
+        categoria.value.precio_extra = parseFloat(parts[0] + '.' + parts[1].slice(0, 2));
+      }
+    }
+  }
+};
+
+
 const validateForm = () => {
   let valid = true;
   errors.value.nombre = '';
@@ -79,25 +102,44 @@ const validateForm = () => {
 
   const nombreTrim = categoria.value.nombre.trim();
 
+  const palabrasProhibidas = ['script', 'drop', 'delete', 'update', 'insert', 'select', 'truncate', 'alert', 'onerror', 'onload'];
+  const contienePalabraProhibida = palabrasProhibidas.some(p => nombreTrim.toLowerCase().includes(p));
+
   if (!nombreTrim) {
     errors.value.nombre = 'El nombre es obligatorio.';
+    valid = false;
+  } else if (nombreTrim.length < 3) {
+    errors.value.nombre = 'El nombre debe tener al menos 3 caracteres.';
     valid = false;
   } else if (nombreTrim.length > 100) {
     errors.value.nombre = 'El nombre no puede exceder los 100 caracteres.';
     valid = false;
-  } else if (!/[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]/.test(nombreTrim)) {
-    errors.value.nombre = 'El nombre debe contener al menos una letra.';
+  } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(nombreTrim)) {
+    errors.value.nombre = 'El nombre solo puede contener letras y espacios.';
     valid = false;
-  } else if (/^(.)\1+$/.test(nombreTrim)) {
-    errors.value.nombre = 'El nombre no puede ser una repetición del mismo carácter.';
+  } else if (/^(.)\1{2,}$/.test(nombreTrim)) {
+    errors.value.nombre = 'El nombre no puede tener el mismo carácter repetido muchas veces.';
+    valid = false;
+  } else if (contienePalabraProhibida) {
+    errors.value.nombre = 'El nombre contiene palabras no permitidas.';
     valid = false;
   }
 
-  if (categoria.value.precio_extra === null || categoria.value.precio_extra < 0) {
+  const precio = categoria.value.precio_extra;
+  if (precio === null || precio === '') {
+    errors.value.precio_extra = 'El precio es obligatorio.';
+    valid = false;
+  } else if (isNaN(precio)) {
+    errors.value.precio_extra = 'El precio debe ser un número.';
+    valid = false;
+  } else if (precio < 0) {
     errors.value.precio_extra = 'El precio debe ser 0 o mayor.';
     valid = false;
-  } else if (categoria.value.precio_extra > 1000) {
+  } else if (precio > 1000) {
     errors.value.precio_extra = 'El precio no puede ser mayor a 1000.';
+    valid = false;
+  } else if (!Number.isInteger(precio * 100)) {
+    errors.value.precio_extra = 'El precio solo puede tener hasta 2 decimales.';
     valid = false;
   }
 
@@ -189,8 +231,10 @@ onMounted(() => {
 <style scoped>
 .pizza-button-back {
   position: absolute;
-  top: 1rem; /* 16px */
-  left: 1rem; /* 16px */
+  top: 1rem;
+  /* 16px */
+  left: 1rem;
+  /* 16px */
   z-index: 9999;
   background: linear-gradient(45deg, #e63946, #f1faee);
   color: #7f1d1d;
@@ -212,10 +256,12 @@ onMounted(() => {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(230, 57, 70, 0.7);
   }
+
   70% {
     transform: scale(1.05);
     box-shadow: 0 0 0 10px rgba(230, 57, 70, 0);
   }
+
   100% {
     transform: scale(1);
     box-shadow: 0 0 0 0 rgba(230, 57, 70, 0);
@@ -238,10 +284,13 @@ onMounted(() => {
 }
 
 /* Transición fade para el mensaje de éxito */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter-from, .fade-leave-to {
+
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

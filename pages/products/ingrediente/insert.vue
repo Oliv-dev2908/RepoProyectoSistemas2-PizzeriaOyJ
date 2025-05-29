@@ -168,7 +168,29 @@ const submitForm = async () => {
   }
 };
 
-const goBack = () => {
-  router.push('/products/ingrediente');
+const goBack = async () => {
+  const hasChanges =
+    ingrediente.value.nombre.trim() !== '' ||
+    ingrediente.value.costo_unitario !== null ||
+    ingrediente.value.tipo !== '';
+
+  if (hasChanges && !success.value) {
+    try {
+      await ElMessageBox.confirm(
+        'Tienes cambios sin guardar. ¿Seguro que quieres salir?',
+        'Confirmar salida',
+        {
+          confirmButtonText: 'Sí, salir',
+          cancelButtonText: 'Cancelar',
+          type: 'warning',
+        }
+      );
+      router.push('/products/ingrediente');
+    } catch {
+      // Cancelado
+    }
+  } else {
+    router.push('/products/ingrediente');
+  }
 };
 </script>

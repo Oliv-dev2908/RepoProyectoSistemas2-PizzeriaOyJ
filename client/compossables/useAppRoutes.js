@@ -6,22 +6,28 @@ export function useAppRoutes() {
 
   const allRoutes = [
     {
+      path: '/admin/asignar',
+      name: 'Asignar Admins',
+      icon: markRaw(ElementPlusIcons.UserFilled),
+      roles: ['admin']
+    },
+    {
       path: '/user',
       name: 'User',
       icon: markRaw(ElementPlusIcons.UserFilled),
-      roles: ['admin'],
+      roles: ['aaa'],
     },
     {
       path: 'products',
       name: 'UserPaths',
       icon: markRaw(ElementPlusIcons.KnifeFork),
-      roles: ['comun'],
+      roles: ['admin'],
       children: [
         { path: 'categoria', name: 'Categoria', roles: ['admin'] },
         { path: 'ingrediente', name: 'Ingrediente', roles: ['admin'] },
         { path: 'pizza', name: 'Pizza', roles: ['admin'] },
         { path: 'producto', name: 'Producto', roles: ['admin'] },
-        { path: 'tamano', name: 'Tamaño', roles: ['admin'] },
+        { path: 'tamano', name: 'Tamaño', roles: ['admin'] }
       ]
     },
     {
@@ -36,6 +42,7 @@ export function useAppRoutes() {
       ]
     }
   ]
+
 
   const filteredRoutes = computed(() =>
     allRoutes.filter(route => (!route.roles || route.roles.includes(userRole.value)) && !route.children)

@@ -149,8 +149,29 @@ const submitForm = async () => {
   }
 };
 
-const goBack = () => {
-  router.push('/products/pizza');
+const goBack = async () => {
+  const hasChanges =
+    pizza.value.nombre.trim() !== '' ||
+    pizza.value.descripcion.trim() !== '';
+
+  if (hasChanges && !success.value) {
+    try {
+      await ElMessageBox.confirm(
+        'Tienes cambios sin guardar. ¿Seguro que quieres salir? Se perderán los datos.',
+        'Confirmar salida',
+        {
+          confirmButtonText: 'Sí, salir',
+          cancelButtonText: 'Cancelar',
+          type: 'warning',
+        }
+      );
+      router.push('/products/pizza');
+    } catch {
+      // Usuario canceló
+    }
+  } else {
+    router.push('/products/pizza');
+  }
 };
 </script>
 

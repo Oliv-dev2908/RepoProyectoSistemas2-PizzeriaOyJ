@@ -16,7 +16,6 @@
     </div>
 
     <!-- Carrito -->
-    <!-- Carrito -->
     <div v-if="carrito.length > 0" class="mt-8">
       <h2 class="text-xl font-bold mb-2">Carrito</h2>
       <ul class="space-y-2">
@@ -100,6 +99,7 @@
 
         <input type="number" v-model.number="cantidad" min="1" class="w-full p-2 border rounded"
           placeholder="Cantidad" />
+        <div v-if="mensajeError" class="text-red-600 text-sm">{{ mensajeError }}</div>
       </div>
 
       <template #footer>
@@ -120,6 +120,9 @@
 
         <input type="number" v-model.number="cantidadProducto" min="1" class="w-full p-2 border rounded"
           placeholder="Cantidad" />
+        <div v-if="mensajeError" class="text-red-600 text-sm">
+          {{ mensajeError }}
+        </div>
       </div>
 
       <template #footer>
@@ -141,7 +144,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useSupabaseUser } from '#imports'
-import { ElDialog, ElButton, ElLoading } from 'element-plus'; 
+import { ElDialog, ElButton, ElLoading } from 'element-plus';
 
 const user = useSupabaseUser();
 const dialogVisible = ref(false); // controla si se muestra la ventana
@@ -160,8 +163,10 @@ const mensaje = ref('');
 const loading = ref(true);
 const modalPizza = ref(false);
 const modalProducto = ref(false);
+const mensajeError = ref('');
 
 const abrirModal = (tipo) => {
+  mensajeError.value = ''; // limpiar cualquier error anterior
   if (tipo === 'pizza') {
     modalPizza.value = true;
   } else if (tipo === 'producto') {
@@ -169,15 +174,21 @@ const abrirModal = (tipo) => {
   }
 };
 
+
 const agregarPizza = () => {
-  agregarAlCarrito(); // Tu misma función actual
-  modalPizza.value = false;
+  const exito = agregarAlCarrito();
+  if (exito) {
+    modalPizza.value = false;
+  }
 };
 
 const agregarProducto = () => {
-  agregarAlCarrito(); // Igual
-  modalProducto.value = false;
+  const exito = agregarAlCarrito();
+  if (exito) {
+    modalProducto.value = false;
+  }
 };
+
 
 // Cargar datos
 const cargarPizzas = async () => {
@@ -198,19 +209,39 @@ const cargarProductos = async () => {
 
 // Agregar al carrito
 const agregarAlCarrito = () => {
+  mensajeError.value = ''; // Limpiar errores previos
+
   if (!selectedPizza.value && !selectedProducto.value) {
-    alert("Por favor selecciona al menos una pizza o un producto.");
-    return;
+    mensajeError.value = "Por favor selecciona al menos una pizza o un producto.";
+    return false;
   }
 
-  // Pizza
+  const totalActual = obtenerTotalUnidades();
+  const nuevaCantidad = selectedPizza.value ? cantidad.value : cantidadProducto.value;
+
+  if (totalActual + nuevaCantidad > 100) {
+    mensajeError.value = "No puedes agregar más de 100 unidades al carrito en total.";
+    return false;
+  }
+
+  if ((cantidad.value <= 0 || cantidad.value > 100) && selectedPizza.value) {
+    mensajeError.value = "La cantidad de pizzas debe ser entre 1 y 100.";
+    return false;
+  }
+
+  if ((cantidadProducto.value <= 0 || cantidadProducto.value > 100) && selectedProducto.value) {
+    mensajeError.value = "La cantidad de productos debe ser entre 1 y 100.";
+    return false;
+  }
+
+  // Lógica de agregar pizza
   if (selectedPizza.value && selectedTamano.value) {
     const pizza = pizzas.value.find(p => p.id_pizza === selectedPizza.value);
     const tamano = tamanos.value.find(t => t.id_tamano === selectedTamano.value);
 
     if (!pizza || !tamano) {
-      alert("Pizza o tamaño inválido.");
-      return;
+      mensajeError.value = "Pizza o tamaño inválido.";
+      return false;
     }
 
     const precioFinal = parseFloat(pizza.precio_base) + parseFloat(tamano.precio_base);
@@ -239,13 +270,13 @@ const agregarAlCarrito = () => {
     }
   }
 
-  // Producto
+  // Lógica de agregar producto
   if (selectedProducto.value) {
     const producto = productos.value.find(p => p.id_producto === selectedProducto.value);
 
     if (!producto) {
-      alert("Producto inválido.");
-      return;
+      mensajeError.value = "Producto inválido.";
+      return false;
     }
 
     const existente = carrito.value.find(item =>
@@ -261,27 +292,43 @@ const agregarAlCarrito = () => {
         id_producto: selectedProducto.value,
         productoNombre: producto.nombre,
         cantidadProducto: cantidadProducto.value,
-        precioUnitario: producto.precio,
+        precioUnitario: parseFloat(producto.precio),
         id_pizza: null,
         pizzaNombre: null,
-        id_tamano: null,
-        tamanoNombre: null,
         cantidad: 0,
+        tamanoNombre: null,
+        id_tamano: null,
       });
     }
   }
-
-  // Reset campos
-  resetCampos();
+  limpiarCampos();
+  return true;
 };
 
-const resetCampos = () => {
+
+
+const obtenerTotalUnidades = () => {
+  return carrito.value.reduce((total, item) => {
+    if (item.tipo === 'pizza') {
+      return total + item.cantidad;
+    } else if (item.tipo === 'producto') {
+      return total + item.cantidadProducto;
+    }
+    return total;
+  }, 0);
+};
+
+const limpiarCampos = () => {
   selectedPizza.value = '';
   selectedTamano.value = '';
   cantidad.value = 1;
+
   selectedProducto.value = '';
   cantidadProducto.value = 1;
+
+  mensajeError.value = '';
 };
+
 
 
 // Finalizar pedido (enviar todo el carrito)

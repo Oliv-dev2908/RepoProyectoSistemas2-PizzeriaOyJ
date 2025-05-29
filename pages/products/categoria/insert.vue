@@ -87,7 +87,7 @@ const errors = ref({
 
 const success = ref(false);
 
-// Validar formulario
+// Validar formulario de categoría con reglas estrictas
 const validateForm = () => {
   let valid = true;
   errors.value.nombre = '';
@@ -95,30 +95,50 @@ const validateForm = () => {
 
   const nombreTrim = categoria.value.nombre.trim();
 
+  const palabrasProhibidas = ['script', 'drop', 'delete', 'update', 'insert', 'select', 'truncate', 'alert', 'onerror', 'onload'];
+  const contienePalabraProhibida = palabrasProhibidas.some(p => nombreTrim.toLowerCase().includes(p));
+
   if (!nombreTrim) {
     errors.value.nombre = 'El nombre es obligatorio.';
+    valid = false;
+  } else if (nombreTrim.length < 3) {
+    errors.value.nombre = 'El nombre debe tener al menos 3 caracteres.';
     valid = false;
   } else if (nombreTrim.length > 100) {
     errors.value.nombre = 'El nombre no puede exceder los 100 caracteres.';
     valid = false;
-  } else if (!/[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ]/.test(nombreTrim)) {
-    errors.value.nombre = 'El nombre debe contener al menos una letra.';
+  } else if (!/^[a-zA-ZáéíóúÁÉÍÓÚüÜñÑ\s]+$/.test(nombreTrim)) {
+    errors.value.nombre = 'El nombre solo puede contener letras y espacios.';
     valid = false;
-  } else if (/^(.)\1+$/.test(nombreTrim)) {
-    errors.value.nombre = 'El nombre no puede ser una repetición del mismo carácter.';
+  } else if (/^(.)\1{2,}$/.test(nombreTrim)) {
+    errors.value.nombre = 'El nombre no puede tener el mismo carácter repetido muchas veces.';
+    valid = false;
+  } else if (contienePalabraProhibida) {
+    errors.value.nombre = 'El nombre contiene palabras no permitidas.';
     valid = false;
   }
 
-  if (categoria.value.precio_extra === null || categoria.value.precio_extra < 0) {
+  const precio = categoria.value.precio_extra;
+  if (precio === null || precio === '') {
+    errors.value.precio_extra = 'El precio es obligatorio.';
+    valid = false;
+  } else if (isNaN(precio)) {
+    errors.value.precio_extra = 'El precio debe ser un número.';
+    valid = false;
+  } else if (precio < 0) {
     errors.value.precio_extra = 'El precio debe ser 0 o mayor.';
     valid = false;
-  } else if (categoria.value.precio_extra > 1000) {
+  } else if (precio > 1000) {
     errors.value.precio_extra = 'El precio no puede ser mayor a 1000.';
+    valid = false;
+  } else if (!/^\d+(\.\d{1,2})?$/.test(precio.toString())) {
+    errors.value.precio_extra = 'El precio solo puede tener hasta 2 decimales.';
     valid = false;
   }
 
   return valid;
 };
+
 
 const submitForm = async () => {
   if (!validateForm()) return;
@@ -140,8 +160,29 @@ const submitForm = async () => {
   }
 };
 
-const goBack = () => {
-  router.push('/products/categoria');
+const goBack = async () => {
+  const hasChanges =
+    categoria.value.nombre.trim() !== '' ||
+    categoria.value.precio_extra !== 0;
+
+  if (hasChanges && !success.value) {
+    try {
+      await ElMessageBox.confirm(
+        'Tienes cambios sin guardar. ¿Seguro que quieres salir? Se perderán los datos.',
+        'Confirmar salida',
+        {
+          confirmButtonText: 'Sí, salir',
+          cancelButtonText: 'Cancelar',
+          type: 'warning',
+        }
+      );
+      router.push('/products/categoria');
+    } catch {
+      // No hacemos nada si cancela
+    }
+  } else {
+    router.push('/products/categoria');
+  }
 };
 </script>
 

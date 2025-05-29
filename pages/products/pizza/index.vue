@@ -8,9 +8,8 @@
     <div v-else>
       <div class="flex justify-between mb-6 items-center">
         <!-- Para Buscar-->
-        <el-input v-model="searchTerm" placeholder="Buscar Pizza..." clearable
-          class="max-w-xs shadow-inner rounded-lg" @clear="currentPage = 1" @input="currentPage = 1"
-          prefix-icon="el-icon-search" />
+        <el-input v-model="searchTerm" placeholder="Buscar Pizza..." clearable class="max-w-xs shadow-inner rounded-lg"
+          @clear="currentPage = 1" @input="currentPage = 1" prefix-icon="el-icon-search" />
         <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert"
           style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;">
           Agregar Pizza
@@ -41,7 +40,7 @@
                   <el-dropdown-item @click="redirectToUpdate(pizza.id_pizza)">
                     ✏️ Actualizar
                   </el-dropdown-item>
-                  <el-dropdown-item @click="redirectToDetalles(pizza.id_pizza)">
+                  <el-dropdown-item @click="openIngredientesModal(pizza.id_pizza)">
                     🔗 Detalles
                   </el-dropdown-item>
                   <el-dropdown-item @click="redirectToIngredientes(pizza.id_pizza)">
@@ -68,12 +67,29 @@
         <el-pagination background layout="prev, pager, next" :page-size="pageSize" :total="filteredPizza.length"
           v-model:current-page="currentPage" class="pizza-pagination" />
       </div>
+
+
     </div>
+    <!-- Modal para mostrar ingredientes -->
+    <el-dialog v-model="isModalVisible" title="Ingredientes de la Pizza" width="500px">
+      <div v-if="ingredientes.length === 0" class="text-center text-pizza-red font-semibold">
+        Esta pizza no tiene ingredientes asignados.
+      </div>
+      <ul v-else class="list-disc list-inside text-pizza-brown">
+        <li v-for="ingrediente in ingredientes" :key="ingrediente.id_ingrediente">
+          {{ ingrediente.nombre }}
+        </li>
+      </ul>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="isModalVisible = false">Cerrar</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { ElMessage, ElMessageBox } from 'element-plus';
 import { MoreFilled, Plus } from '@element-plus/icons-vue';
@@ -85,7 +101,12 @@ const loading = ref(true);
 const searchTerm = ref('');
 const currentPage = ref(1);
 const pageSize = 9;
+const isModalVisible = ref(false);
 
+const selectedPizzaId = ref(null);
+const ingredientes = ref([]);
+
+// Cargar pizzas
 const loadPizzas = async () => {
   try {
     const response = await fetch('/api/products/pizza');
@@ -95,11 +116,13 @@ const loadPizzas = async () => {
     pizzas.value = await response.json();
   } catch (error) {
     console.error(error.message);
+    ElMessage.error(error.message);
   } finally {
     loading.value = false;
   }
 };
 
+// Filtrar pizzas según búsqueda
 const filteredPizza = computed(() => {
   if (!searchTerm.value.trim()) return pizzas.value;
   return pizzas.value.filter(pizza =>
@@ -107,65 +130,79 @@ const filteredPizza = computed(() => {
   );
 });
 
+// Paginación: pizzas visibles en la página actual
 const pagedCategorias = computed(() => {
   const start = (currentPage.value - 1) * pageSize;
   return filteredPizza.value.slice(start, start + pageSize);
 });
 
-const redirectToUpdate = (id) => {
-  router.push(`/products/pizza/update?id=${id}`);
+// Abrir modal y cargar ingredientes
+const openIngredientesModal = async (idPizza) => {
+  console.log("ID de pizza seleccionada:", idPizza); // Verifica el ID
+  selectedPizzaId.value = idPizza;
+  isModalVisible.value = true;
+
+  // Cargar ingredientes para la pizza seleccionada
+  try {
+    const response = await fetch(`/api/products/pizzaIngrediente?id_pizza=${idPizza}`);
+    if (!response.ok) throw new Error('Error al cargar ingredientes');
+    ingredientes.value = await response.json();
+    console.log("Ingredientes cargados:", ingredientes.value); // Verifica los ingredientes
+  } catch (error) {
+    console.error(error.message);
+    ElMessage.error('No se pudieron cargar los ingredientes');
+    ingredientes.value = [];
+  }
 };
 
+
+// Redirecciones para botones (puedes ajustar las rutas)
 const redirectToInsert = () => {
   router.push('/products/pizza/insert');
 };
-
-const redirectToDetalles = (id) => {
-  router.push(`/products/pizza/details?id=${id}`);
+const redirectToUpdate = (id) => {
+  router.push(`/products/pizza/update?id=${id}`);
 };
-
 const redirectToIngredientes = (id) => {
   router.push(`/products/pizza/ingredientes?id=${id}`);
 };
 
-const confirmDelete = async (id) => {
-  try {
-    await ElMessageBox.confirm(
-      '¿Estás seguro de eliminar esta categoría?',
-      'Confirmar eliminación',
-      {
-        confirmButtonText: 'Sí',
-        cancelButtonText: 'Cancelar',
-        type: 'warning',
-      }
-    );
-    await deletePizza(id);
-  } catch { }
-};
-
-const deletePizza = async (id) => {
-  try {
-    const response = await fetch(`/api/products/pizza`, {
-      method: 'DELETE',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ id_pizza: id }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Error al eliminar la pizza');
+// Confirmar eliminación (ejemplo con Element Plus MessageBox)
+const confirmDelete = (id) => {
+  ElMessageBox.confirm(
+    '¿Seguro que quieres eliminar esta pizza?',
+    'Confirmar eliminación',
+    {
+      confirmButtonText: 'Sí',
+      cancelButtonText: 'No',
+      type: 'warning',
     }
-
-    await response.json();
-    loadPizzas();
-  } catch (error) {
-    console.error(error.message);
-  }
+  ).then(async () => {
+    try {
+      const response = await fetch(`/api/products/pizza?id=${id}`, {
+        method: 'DELETE',
+      });
+      if (!response.ok) throw new Error('Error al eliminar pizza');
+      ElMessage.success('Pizza eliminada correctamente');
+      await loadPizzas();
+    } catch (error) {
+      ElMessage.error(error.message);
+    }
+  }).catch(() => {
+    // Cancelado
+  });
 };
 
-onMounted(loadPizzas);
+const handleClose = () => {
+  isModalVisible.value = false;
+  ingredientes.value = [];
+};
+
+onMounted(async () => {
+  await loadPizzas();
+});
 </script>
+
 
 
 <style scoped>
