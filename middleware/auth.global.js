@@ -9,7 +9,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
   const excludedRoutes = ['login', 'signup']
 
   if (!user.value?.id) return
-
+  if(to.name == 'confirm') return
   try {
     // Redirigir si usuario autenticado intenta acceder a login o signup
     if (excludedRoutes.includes(to.name)) {
