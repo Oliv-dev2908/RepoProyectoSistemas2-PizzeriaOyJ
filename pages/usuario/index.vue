@@ -1,38 +1,62 @@
 <template>
-  <center>
-    
-    <el-card 
-    style="width: 75vh">
-
+  <div class="min-h-screen py-10 px-4 flex justify-center items-start bg-[var(--el-bg-color)] transition-colors duration-300">
+    <el-card
+      class="w-full max-w-2xl shadow-xl border-none"
+      :body-style="{ padding: '2rem' }"
+    >
       <!-- Header de usuario -->
-      <div class="flex items-center gap-6 mb-8">
-        <img
+      <div class="flex items-center gap-6 mb-4">
+        <el-avatar
           :src="fotoPerfil"
-          alt="Foto de perfil"
-          style="max-width: 10vh; max-height: 10vh; width: 10vh; height: 10vh;"
-          class="rounded-full border-4 border-indigo-200 shadow-md object-cover"
+          size="large"
+          class="!w-24 !h-24 !rounded-full shadow-lg object-cover border-4"
+          style="border-color: var(--el-color-danger-light-3);"
         />
-        <div>
-          <h1>{{ nombreCompleto }}</h1>
-          <p>{{ user?.email }}</p>
+        <div class="flex flex-col justify-center">
+          <h1 class="text-2xl font-bold text-[var(--el-color-danger)]">
+            {{ nombreCompleto }}
+          </h1>
+          <p class="text-[var(--el-text-color-secondary)] italic">
+            {{ user?.email }}
+          </p>
         </div>
       </div>
 
-      <!-- Navbar simple -->
-      <div class="flex gap-4">
-        <button @click="irAPerfil" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg shadow">
-         Perfil
-        </button>
-        <button @click="irAOrdenarPizza" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg shadow">
-          Ordenar Pizza
-       </button>
-        <button @click="irAMisPedidos" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg shadow">
-          Mis Pedidos
-       </button>
+      <!-- Divider visual -->
+      <el-divider />
+
+      <!-- Botones de navegación -->
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-6">
+        <el-button
+          @click="irAPerfil"
+          type="danger"
+          round
+          class="w-full"
+        >
+          👤 Perfil
+        </el-button>
+        <el-button
+          @click="irAOrdenarPizza"
+          type="warning"
+          round
+          class="w-full"
+        >
+          🍕 Ordenar Pizza
+        </el-button>
+        <el-button
+          @click="irAMisPedidos"
+          type="info"
+          round
+          class="w-full"
+        >
+          📦 Mis Pedidos
+        </el-button>
       </div>
     </el-card>
-  </center>
+  </div>
 </template>
+
+
 
 <script setup lang="ts">
 import { useSupabaseUser } from '#imports'
