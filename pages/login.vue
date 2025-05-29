@@ -120,7 +120,7 @@ const signInWithOAuth = async () => {
   const { error } = await client.auth.signInWithOAuth({
     provider: 'google',
     options: {
-      redirectTo: 'http://localhost:3000/confirm',
+      redirectTo: `${window.location.origin}/confirm`,
     },
   })
   if (error) console.log(error)
@@ -133,7 +133,7 @@ const signInWithTwitterAuth = async () => {
   const { error } = await client.auth.signInWithOAuth({
     provider: 'twitter',
     options: {
-      redirectTo: 'http://localhost:3000/confirm',
+      redirectTo: `${window.location.origin}/confirm`,
     },
   })
   if (error) console.log(error)
@@ -142,7 +142,7 @@ const signInWithFacebookAuth = async () => {
   const { error } = await client.auth.signInWithOAuth({
     provider: 'facebook',
     options: {
-      redirectTo: 'http://localhost:3000/confirm',
+      redirectTo: `${window.location.origin}/confirm`,
     },
   });
   if (error) console.log(error);
