@@ -2,15 +2,49 @@
   <div class="dashboard-container">
     <h1>Dashboard</h1>
 
-    <el-row :gutter="20">
+    <!-- FILA 1 -->
+    <el-row :gutter="20" class="dashboard-row">
+      <!-- Costos y uso de ingredientes -->
       <el-col :span="12">
+        <el-form :inline="true" style="margin-bottom: 10px;">
+          <el-form-item label="Top Ingredientes por:">
+            <el-select v-model="filtroIngredientes" @change="drawCostosIngredientesChart">
+              <el-option label="Costo Total" value="costo" />
+              <el-option label="Cantidad Usada" value="cantidad" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Mostrar">
+            <el-select v-model="topIngredientes" @change="drawCostosIngredientesChart">
+              <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
+            </el-select>
+          </el-form-item>
+        </el-form>
+
         <section class="charts">
           <h2>Costos y Uso de Ingredientes</h2>
           <canvas id="costosIngredientesChart"></canvas>
         </section>
       </el-col>
 
+      <!-- Evolución mensual de ventas por producto -->
       <el-col :span="12">
+        <el-form :inline="true" class="filtros-form">
+          <el-form-item label="Productos">
+            <el-select v-model="productosSeleccionados" multiple filterable clearable collapse-tags
+              @change="drawEvolucionVentasChart">
+              <el-option v-for="prod in productosDisponibles" :key="prod" :label="prod" :value="prod" />
+            </el-select>
+          </el-form-item>
+          <el-form-item label="Estado">
+            <el-select v-model="estadoSeleccionado" placeholder="Filtrar por estado" clearable
+              @change="drawEvolucionVentasChart">
+              <el-option label="Aprobado" value="Aprobado" />
+              <el-option label="Pendiente" value="Pendiente" />
+              <el-option label="Cancelado por el Cliente" value="Cancelado por el Cliente" />
+              <el-option label="Cancelado por el Administrador" value="Cancelado por el Administrador" />
+            </el-select>
+          </el-form-item>
+        </el-form>
         <section class="charts">
           <h2>Evolución Mensual Ventas por Producto</h2>
           <canvas id="evolucionVentasChart"></canvas>
@@ -18,15 +52,33 @@
       </el-col>
     </el-row>
 
-    <el-row :gutter="20" style="margin-top: 20px;">
+    <!-- FILA 2 -->
+    <el-row :gutter="20" class="dashboard-row">
+      <!-- Productos más vendidos -->
       <el-col :span="12">
+        <el-form :inline="true" class="filtros-form">
+          <el-form-item label="Top Productos">
+            <el-select v-model="topProductos" @change="drawProductosMasVendidosChart">
+              <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
+            </el-select>
+          </el-form-item>
+        </el-form>
         <section class="charts">
           <h2>Productos Más Vendidos</h2>
           <canvas id="productosMasVendidosChart"></canvas>
         </section>
       </el-col>
 
+      <!-- Ventas por categoría -->
       <el-col :span="12">
+        <el-form :inline="true" class="filtros-form">
+          <el-form-item label="Orden">
+            <el-select v-model="ordenCategoria" @change="drawVentasPorCategoriaChart">
+              <el-option label="Mayor a menor" value="desc" />
+              <el-option label="Menor a mayor" value="asc" />
+            </el-select>
+          </el-form-item>
+        </el-form>
         <section class="charts">
           <h2>Ventas Totales por Categoría</h2>
           <canvas id="ventasPorCategoriaChart"></canvas>
@@ -35,6 +87,7 @@
     </el-row>
   </div>
 </template>
+
 
 
 <script setup>
@@ -73,25 +126,33 @@ const fetchDashboardData = async () => {
 }
 
 // 1. Costos y Uso de Ingredientes (ejemplo: barras dobles, cantidad y costo)
+const filtroIngredientes = ref('costo')
+const topIngredientes = ref(10)
+
 const drawCostosIngredientesChart = () => {
   const ctx = document.getElementById('costosIngredientesChart').getContext('2d')
   if (costosChart) costosChart.destroy()
 
-  if (!costosIngredientesData.value.length) return
+  let datos = [...costosIngredientesData.value]
+  datos.sort((a, b) => {
+    const campo = filtroIngredientes.value === 'costo' ? 'costo_total' : 'cantidad_usada'
+    return Number(b[campo]) - Number(a[campo])
+  })
+  datos = datos.slice(0, topIngredientes.value)
 
   costosChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: costosIngredientesData.value.map(i => i.ingrediente),
+      labels: datos.map(i => i.ingrediente),
       datasets: [
         {
           label: 'Cantidad Usada',
-          data: costosIngredientesData.value.map(i => Number(i.cantidad_usada)),
+          data: datos.map(i => Number(i.cantidad_usada)),
           backgroundColor: 'rgba(75, 192, 192, 0.7)'
         },
         {
           label: 'Costo Total',
-          data: costosIngredientesData.value.map(i => Number(i.costo_total)),
+          data: datos.map(i => Number(i.costo_total)),
           backgroundColor: 'rgba(153, 102, 255, 0.7)'
         }
       ]
@@ -105,24 +166,37 @@ const drawCostosIngredientesChart = () => {
   })
 }
 
+
 // 2. Evolución Mensual Ventas por Producto (líneas múltiples, cada producto una línea)
+const productosSeleccionados = ref([])
+const estadoSeleccionado = ref('')
+const productosDisponibles = computed(() => {
+  return [...new Set(evolucionVentasData.value.map(v => v.producto))]
+})
+
 const drawEvolucionVentasChart = () => {
   const ctx = document.getElementById('evolucionVentasChart').getContext('2d')
   if (evolucionChart) evolucionChart.destroy()
   if (!evolucionVentasData.value.length) return
 
-  // Obtener meses únicos ordenados
-  const meses = [...new Set(evolucionVentasData.value.map(v => v.mes))].sort()
-  // Obtener productos únicos
-  const productos = [...new Set(evolucionVentasData.value.map(v => v.producto))]
+  // FILTRAR POR ESTADO
+  let dataFiltrada = [...evolucionVentasData.value]
+  if (estadoSeleccionado.value) {
+    dataFiltrada = dataFiltrada.filter(item => item.estado === estadoSeleccionado.value)
+  }
 
-  // Construir datasets por producto
+  const meses = [...new Set(dataFiltrada.map(v => v.mes))].sort()
+
+  const productos = productosSeleccionados.value.length
+    ? productosSeleccionados.value
+    : [...new Set(dataFiltrada.map(v => v.producto))]
+
   const datasets = productos.map((prod, idx) => {
     const color = `hsl(${(idx * 60) % 360}, 70%, 50%)`
     return {
       label: prod,
       data: meses.map(mes => {
-        const record = evolucionVentasData.value.find(v => v.producto === prod && v.mes === mes)
+        const record = dataFiltrada.find(v => v.producto === prod && v.mes === mes)
         return record ? Number(record.cantidad_vendida) : 0
       }),
       borderColor: color,
@@ -147,19 +221,26 @@ const drawEvolucionVentasChart = () => {
   })
 }
 
+
+
 // 3. Productos Más Vendidos (barras)
+const topProductos = ref(10)
+
 const drawProductosMasVendidosChart = () => {
   const ctx = document.getElementById('productosMasVendidosChart').getContext('2d')
   if (productosChart) productosChart.destroy()
-  if (!productosMasVendidosData.value.length) return
+
+  let datos = [...productosMasVendidosData.value]
+  datos.sort((a, b) => b.total_vendido - a.total_vendido)
+  datos = datos.slice(0, topProductos.value)
 
   productosChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: productosMasVendidosData.value.map(p => p.producto),
+      labels: datos.map(p => p.producto),
       datasets: [{
         label: 'Total Vendido',
-        data: productosMasVendidosData.value.map(p => Number(p.total_vendido)),
+        data: datos.map(p => Number(p.total_vendido)),
         backgroundColor: 'rgba(255, 159, 64, 0.7)'
       }]
     },
@@ -172,19 +253,28 @@ const drawProductosMasVendidosChart = () => {
   })
 }
 
+
 // 4. Ventas Totales por Categoría (barras)
+const ordenCategoria = ref('desc')
+
 const drawVentasPorCategoriaChart = () => {
   const ctx = document.getElementById('ventasPorCategoriaChart').getContext('2d')
   if (categoriasChart) categoriasChart.destroy()
-  if (!ventasPorCategoriaData.value.length) return
+
+  let datos = [...ventasPorCategoriaData.value]
+  datos.sort((a, b) => {
+    return ordenCategoria.value === 'desc'
+      ? b.total_ventas - a.total_ventas
+      : a.total_ventas - b.total_ventas
+  })
 
   categoriasChart = new Chart(ctx, {
     type: 'bar',
     data: {
-      labels: ventasPorCategoriaData.value.map(c => c.categoria),
+      labels: datos.map(c => c.categoria),
       datasets: [{
         label: 'Ventas Totales',
-        data: ventasPorCategoriaData.value.map(c => Number(c.total_ventas)),
+        data: datos.map(c => Number(c.total_ventas)),
         backgroundColor: 'rgba(54, 162, 235, 0.7)'
       }]
     },
@@ -196,6 +286,7 @@ const drawVentasPorCategoriaChart = () => {
     }
   })
 }
+
 
 onMounted(() => {
   fetchDashboardData()
