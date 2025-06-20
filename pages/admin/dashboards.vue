@@ -4,8 +4,7 @@
 
     <!-- FILA 1 -->
     <el-row :gutter="20" class="dashboard-row">
-      <!-- Costos y uso de ingredientes -->
-      <el-col :span="12">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-form :inline="true" style="margin-bottom: 10px;">
           <el-form-item label="Top Ingredientes por:">
             <el-select v-model="filtroIngredientes" @change="drawCostosIngredientesChart">
@@ -19,15 +18,13 @@
             </el-select>
           </el-form-item>
         </el-form>
-
         <section class="charts">
           <h2>Costos y Uso de Ingredientes</h2>
-          <canvas id="costosIngredientesChart"></canvas>
+          <canvas id="costosIngredientesChart" class="responsive-canvas"></canvas>
         </section>
       </el-col>
 
-      <!-- Evolución mensual de ventas por producto -->
-      <el-col :span="12">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-form :inline="true" class="filtros-form">
           <el-form-item label="Productos">
             <el-select v-model="productosSeleccionados" multiple filterable clearable collapse-tags
@@ -47,15 +44,14 @@
         </el-form>
         <section class="charts">
           <h2>Evolución Mensual Ventas por Producto</h2>
-          <canvas id="evolucionVentasChart"></canvas>
+          <canvas id="evolucionVentasChart" class="responsive-canvas"></canvas>
         </section>
       </el-col>
     </el-row>
 
     <!-- FILA 2 -->
     <el-row :gutter="20" class="dashboard-row">
-      <!-- Productos más vendidos -->
-      <el-col :span="12">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-form :inline="true" class="filtros-form">
           <el-form-item label="Top Productos">
             <el-select v-model="topProductos" @change="drawProductosMasVendidosChart">
@@ -65,12 +61,11 @@
         </el-form>
         <section class="charts">
           <h2>Productos Más Vendidos</h2>
-          <canvas id="productosMasVendidosChart"></canvas>
+          <canvas id="productosMasVendidosChart" class="responsive-canvas"></canvas>
         </section>
       </el-col>
 
-      <!-- Ventas por categoría -->
-      <el-col :span="12">
+      <el-col :xs="24" :sm="24" :md="12">
         <el-form :inline="true" class="filtros-form">
           <el-form-item label="Orden">
             <el-select v-model="ordenCategoria" @change="drawVentasPorCategoriaChart">
@@ -81,14 +76,38 @@
         </el-form>
         <section class="charts">
           <h2>Ventas Totales por Categoría</h2>
-          <canvas id="ventasPorCategoriaChart"></canvas>
+          <canvas id="ventasPorCategoriaChart" class="responsive-canvas"></canvas>
         </section>
+      </el-col>
+    </el-row>
+
+    <!-- FILA 3 -->
+    <el-row :gutter="20" class="dashboard-row">
+      <el-col :xs="24" :sm="24" :md="12">
+        <h2>Análisis K-Means</h2>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image" class="dashboard-img">
+      </el-col>
+
+      <el-col :xs="24" :sm="24" :md="12">
+        <h2>Primer Cluster</h2>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0" class="dashboard-img">
+      </el-col>
+    </el-row>
+
+    <!-- FILA 4 -->
+    <el-row :gutter="20" class="dashboard-row">
+      <el-col :xs="24" :sm="24" :md="12">
+        <h2>Segundo Cluster</h2>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=1" class="dashboard-img">
+      </el-col>
+
+      <el-col :xs="24" :sm="24" :md="12">
+        <h2>Tercer Cluster</h2>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=2" class="dashboard-img">
       </el-col>
     </el-row>
   </div>
 </template>
-
-
 
 <script setup>
 import { ref, onMounted } from 'vue'
@@ -306,7 +325,7 @@ onMounted(() => {
   padding: 20px;
   border-radius: 8px;
   box-shadow: 0 2px 8px rgb(0 0 0 / 0.1);
-  height: 350px;
+  height: 50vh;
   display: flex;
   flex-direction: column;
 }
@@ -316,10 +335,30 @@ onMounted(() => {
   font-weight: 600;
 }
 
-/* canvas que ocupe el espacio disponible */
 .charts canvas {
   flex-grow: 1;
   max-width: 100%;
-  /* para que sea responsivo y ocupe todo el ancho y altura restante */
+}
+.responsive-canvas {
+  width: 100% !important;
+  max-height: 50vh;
+}
+
+@media screen and (max-width: 768px) {
+  .dashboard-img {
+    height: 200px;
+  }
+  .responsive-canvas {
+    max-height: 250px;
+  }
+}
+.dashboard-img {
+  width: 100%;
+  height: 45vh;
+  /* O el alto que prefieras */
+  object-fit:fill;
+  /* o 'cover' si quieres que recorte y llene */
+  border: 1px solid #ddd;
+  border-radius: 8px;
 }
 </style>
