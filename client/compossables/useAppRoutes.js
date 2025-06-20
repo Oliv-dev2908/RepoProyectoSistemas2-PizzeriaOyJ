@@ -6,16 +6,21 @@ export function useAppRoutes() {
 
   const allRoutes = [
     {
-      path: '/admin/asignar',
-      name: 'Asignar Admins',
-      icon: markRaw(ElementPlusIcons.UserFilled),
-      roles: ['admin']
-    },
-    {
       path: '/user',
       name: 'User',
       icon: markRaw(ElementPlusIcons.UserFilled),
-      roles: ['aaa'],
+      roles: ['aaaa'],
+    },
+    {
+      path: 'admin',
+      name: 'Admin Paths',
+      icon: markRaw(ElementPlusIcons.UserFilled),
+      roles: ['admin'],
+      children: [
+        { path: 'cancelarPedido', name: 'Pedidos', roles: ['admin'] },
+        { path: 'asignar', name: 'Asignar Admins', roles: ['admin'] },
+        { path: 'dashboards', name: 'Dashboards', roles: ['admin'] }
+      ]
     },
     {
       path: 'products',
