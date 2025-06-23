@@ -50,6 +50,7 @@
             type="number"
             min="0"
             placeholder="Ej: 150"
+            step="0.01"
             class="shadow-inner rounded-lg"
           />
         </el-form-item>
@@ -128,16 +129,59 @@ const errors = ref({
 
 // Validación del formulario
 const palabrasProhibidas = [
-  'malo', 'feo', 'idiota', 'tonto', 'spam', 'hack', 'malware', 'virus', 'script', 'drop', 'delete',
-  'mierda', 'puta', 'estúpido', 'imbécil', 'pendejo', 'maldito', 'cabron', 'chingada', 'joder', 'pedo',
-  'cabrón', 'coño', 'verga', 'fuck', 'shit', 'bitch', 'asshole', 'retardado', 'sexo', 'pornografía', 
-  'droga', 'terrorismo', 'asesinato'
+  // Inyecciones SQL y comandos peligrosos
+  'select', 'insert', 'update', 'delete', 'drop', 'truncate', 'exec', 'execute',
+  'union', 'sleep', 'benchmark', 'or 1=1', 'and 1=1', 'or true', 'is null',
+  '--', ';--', ';', '/*', '*/', '@@', '@', 'char', 'nchar', 'varchar', 'nvarchar',
+  'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'end', 'fetch',
+  'kill', 'open', 'sys', 'sysobjects', 'syscolumns', 'information_schema',
+
+  // JavaScript malicioso y XSS
+  '<', '>', 'script', '/script', 'alert', 'onerror', 'onload', 'onmouseover',
+  'onfocus', 'onmouseenter', 'onmouseleave', 'onchange', 'onclick', 'confirm',
+  'prompt', 'eval', 'document', 'window', 'parent', 'console.log', 'Function',
+  'setTimeout', 'setInterval', 'iframe', 'href', 'src=', 'javascript:',
+  'data:', 'base64', 'encodeURI', 'decodeURI',
+
+  // HTML/atributos potencialmente peligrosos
+  'formaction', 'srcdoc', 'xmlns', 'xlink:href', 'style=', 'svg', 'math', 'object',
+  'embed', 'applet', 'meta', 'link', 'frame', 'frameset',
+
+  // Palabras ofensivas o burlas comunes (evita el uso en formularios serios)
+  'tonto', 'burro', 'idiota', 'estúpido', 'imbécil', 'pendejo', 'bobo', 'menso',
+  'inútil', 'feo', 'puto', 'puta', 'mierda', 'cabron', 'maldito', 'diablo', 'jaja',
+  'jeje', 'lol', 'xd', 'lmao', 'noob', 'wtf', 'asqueroso', 'perra', 'cerdo',
+
+  // Frases irrelevantes o respuestas troll
+  'asdf', 'qwerty', '123456', 'abcdef', 'a1b2c3', 'lorem', 'ipsum', 'test',
+  'prueba', 'sin sentido', 'whatever', 'lo que sea', 'ñañaña', 'trolazo',
+
+  // Caracteres especiales y patrones sospechosos
+  '"', "'", '`', '\\', '--', '%', '^', '*', '(', ')', '{', '}', '[', ']', '=', '+',
+  '$', '|', '~', '#', '\\u202e', '\\u0000',
+
+  // Palabras clave usadas en hacking o fuzzing
+  'root', 'admin', 'password', 'passwd', 'token', 'apikey', 'api_key', 'jwt',
+  'localhost', '127.0.0.1', 'shell', 'nmap', 'netcat', 'burpsuite', 'fuzzer',
+  'dirbuster', 'sqlmap', 'hydra', 'john', 'hashcat',
+
+  // Intentos de bypass y encoded inputs
+  '%3C', '%3E', '%22', '%27', '%3B', '%28', '%29', '%2F', '%5C', '%00',
+
+  // Otros elementos que podrían usarse para spam, phishing o manipulación
+  'click here', 'ganaste', 'felicitaciones', 'hack', 'gratis', 'regalo', 'oro',
+  'dinero', 'millones', 'crédito', 'tarjeta', 'contraseña', 'ingresa aquí',
+  'haz clic', 'no te lo pierdas',
+
+  // Combinaciones o keywords sospechosas
+  'content-type', 'multipart/form-data', 'application/x-www-form-urlencoded',
+  'admin\'--', '1\' or \'1\'=\'1', '1=1', '1=0', 'null', 'not null'
 ];
 
-const patronesMaliciosos = /(SELECT|INSERT|DELETE|UPDATE|DROP|UNION|--|<script>|<\/script>|document\.cookie|base64|OR\s+1=1)/i;
-
 function validarTexto(rule, value) {
-  if (!value || !value.trim()) return new Error('Este campo es obligatorio');
+  if (!value || !value.trim()) {
+    return new Error('Este campo es obligatorio');
+  }
 
   const lowerText = value.toLowerCase();
 
@@ -147,15 +191,78 @@ function validarTexto(rule, value) {
     }
   }
 
-  if (patronesMaliciosos.test(value)) return new Error('Texto contiene patrones maliciosos o peligrosos');
+  // Expresiones tipo burla, risa o spam exagerado
+  const expresionesProhibidas= [
+  // Risas exageradas o trolls clásicos: xd, xddd, jajaja, jejeje, jiji, jajsjd, etc.
+  /\b[xj]{1,5}[djs]{1,10}\b/i, // xd, xddd, jajsjd
+  /\b(?:ja|je|jo|ju|ji|lol|lmao|uwu|owo|nwn){2,}\b/i,
+
+  // Palabras repetidas sospechosas: "hola hola hola", "así así así"
+  /\b(\w{2,})\b(?:\s+\1\b){2,}/i,
+
+  // Letras repetidas excesivamente: "holaaaa", "nooooo", "queeeeeeee"
+  /([a-záéíóúüñ])\1{3,}/i,
+
+  // Repetición exagerada de palabras con variaciones (e.g. "haaaa haaaa haaaa")
+  /((\w)\2{2,}\s*){3,}/i,
+
+  // Exceso de caracteres especiales: !!!, ???, ###, etc.
+  /([!@#$%^&*()_+={}\[\]:;"'<>,.?\\/|`~°¬\-])\1{2,}/,
+
+  // Mezcla absurda de caracteres (posible spam visual o relleno)
+  /[a-z]{3,}[^a-z\s]{3,}[a-z]{3,}/i, // e.g. "h0l4#k0m0$ta$"
+  /(?:[^\w\s]|_){5,}/,              // muchos símbolos no alfanuméricos
+
+  // Texto con solo espacios o espacios excesivos
+  /^[\s]+$/,    // solo espacios
+  /\s{3,}/,     // más de 2 espacios seguidos
+
+  // Inputs vacíos o solo con caracteres invisibles
+  /^[\u200B-\u200D\uFEFF]*$/, // caracteres invisibles Unicode
+
+  // Emojis (pueden ser molestos si no son relevantes en contexto serio)
+  /[\uD83C-\uDBFF\uDC00-\uDFFF]+/, // rango de emojis UTF-16
+
+  // Texto en sentido inverso (Right-to-left override, usado para trollear o ocultar contenido malicioso)
+  /\u202e/, // RTL override
+
+  // Palabras alargadas sin sentido real (ej: "holaaaaaaaaa" con mezcla)
+  /\b[a-záéíóúüñ]{2,}\d+[a-z]{2,}\b/i,
+
+  // Spam de caracteres aleatorios (fuzzing, testing o trolling)
+  /\b[a-z]{1,3}\d{1,3}[a-z]{1,3}\b/i, // e.g. "asd123asd", "x9k3"
+
+  // Palabras con alternancia excesiva de mayúsculas y minúsculas
+  /(?:[a-z][A-Z]){3,}|(?:[A-Z][a-z]){3,}/,
+
+  // Texto con codificación hexadecimal (suele ser usado para bypass)
+  /%[0-9a-fA-F]{2,}/,
+
+  // Inputs que son solo caracteres no alfabéticos
+  /^[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ]+$/
+];
+
+
+  for (const regex of expresionesProhibidas) {
+    if (regex.test(lowerText)) {
+      return new Error('Evita usar risas exageradas, burlas o emojis inapropiados');
+    }
+  }
+
+  // SQL injection y código
+  const patronesMaliciosos = /(SELECT|INSERT|DELETE|UPDATE|DROP|UNION|--|<script>|<\/script>|document\.cookie|base64|OR\s+1=1)/i;
+  if (patronesMaliciosos.test(value)) {
+    return new Error('Texto contiene patrones maliciosos o peligrosos');
+  }
 
   const maliciosoRegex = /<[^>]*>|[\{\}\[\]\$<>;]/;
-  if (maliciosoRegex.test(value)) return new Error('No se permiten caracteres o código malicioso');
+  if (maliciosoRegex.test(value)) {
+    return new Error('No se permiten caracteres o código malicioso');
+  }
 
-  const repetidosRegex = /(.)\1{3,}/;
-  if (repetidosRegex.test(value)) return new Error('Texto contiene repeticiones ilegales de caracteres');
-
-  if (value.length > 1000) return new Error('El texto no puede exceder los 1000 caracteres');
+  if (value.length > 1000) {
+    return new Error('El texto no puede exceder los 1000 caracteres');
+  }
 
   return true;
 }

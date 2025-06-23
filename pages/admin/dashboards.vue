@@ -1,6 +1,9 @@
 <template>
   <div class="dashboard-container">
-    <h1>Dashboard</h1>
+    <h1 class="text-4xl font-bold mb-6 text-pizza-red font-pizza-title drop-shadow-lg">
+      Dashboard de Gestión
+    </h1>
+
 
     <!-- FILA 1 -->
     <el-row :gutter="20" class="dashboard-row">
@@ -27,29 +30,14 @@
       <el-col :xs="24" :sm="24" :md="12">
         <el-form :inline="true" class="filtros-form">
           <el-form-item label="Productos">
-            <el-select
-              v-model="productosSeleccionados"
-              multiple
-              filterable
-              clearable
-              collapse-tags
-              @change="drawEvolucionVentasChart"
-            >
-              <el-option
-                v-for="prod in productosDisponibles"
-                :key="prod"
-                :label="prod"
-                :value="prod"
-              />
+            <el-select v-model="productosSeleccionados" multiple filterable clearable collapse-tags
+              @change="drawEvolucionVentasChart">
+              <el-option v-for="prod in productosDisponibles" :key="prod" :label="prod" :value="prod" />
             </el-select>
           </el-form-item>
           <el-form-item label="Estado">
-            <el-select
-              v-model="estadoSeleccionado"
-              placeholder="Filtrar por estado"
-              clearable
-              @change="drawEvolucionVentasChart"
-            >
+            <el-select v-model="estadoSeleccionado" placeholder="Filtrar por estado" clearable
+              @change="drawEvolucionVentasChart">
               <el-option label="Aprobado" value="Aprobado" />
               <el-option label="Pendiente" value="Pendiente" />
               <el-option label="Cancelado por el Cliente" value="Cancelado por el Cliente" />
@@ -105,11 +93,8 @@
 
       <el-col :xs="24" :sm="24" :md="12">
         <h2>Primer Cluster</h2>
-        <img
-          src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0"
-          class="dashboard-img"
-          alt="Primer Cluster"
-        />
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0" class="dashboard-img"
+          alt="Primer Cluster" />
       </el-col>
     </el-row>
 
@@ -117,37 +102,23 @@
     <el-row :gutter="20" class="dashboard-row">
       <el-col :xs="24" :sm="24" :md="12">
         <h2>Segundo Cluster</h2>
-        <img
-          src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=1"
-          class="dashboard-img"
-          alt="Segundo Cluster"
-        />
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=1" class="dashboard-img"
+          alt="Segundo Cluster" />
       </el-col>
 
       <el-col :xs="24" :sm="24" :md="12">
         <h2>Tercer Cluster</h2>
-        <img
-          src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=2"
-          class="dashboard-img"
-          alt="Tercer Cluster"
-        />
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=2" class="dashboard-img"
+          alt="Tercer Cluster" />
       </el-col>
     </el-row>
 
     <!-- FILA 5: columna que ocupa dos columnas y dos filas -->
     <el-row :gutter="20" class="dashboard-row">
-      <el-col
-        :xs="24"
-        :sm="24"
-        :md="24"
-        class="doble-alto-col"
-      >
+      <el-col :xs="24" :sm="24" :md="24" class="doble-alto-col">
         <h2>Árboles de Decisión</h2>
-        <img
-          src="https://k-means-hdsk.onrender.com/decision-tree-image"
-          class="dashboard-img"
-          alt="Árboles de Decisión"
-        />
+        <img src="https://k-means-hdsk.onrender.com/decision-tree-image" class="dashboard-img"
+          alt="Árboles de Decisión" />
       </el-col>
     </el-row>
   </div>
@@ -439,4 +410,53 @@ onMounted(() => {
     height: 300px;
   }
 }
+
+
+.charts {
+  background-color: #fefcf6;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  border: 2px solid #fbbf24; /* amarillo suave */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  height: 50vh;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease;
+}
+.charts:hover {
+  transform: scale(1.02);
+}
+
+.charts h2 {
+  color: #d97706;
+  font-size: 1.25rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-family: 'Poppins', sans-serif;
+}
+
+.el-form-item {
+  margin-right: 1rem;
+}
+
+.dashboard-img {
+  border: 2px solid #fbbf24;
+  border-radius: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+/* Selects y elementos de filtro estilo ofertas */
+.el-select, .el-input, .el-input-number {
+  font-weight: 600;
+  border-radius: 0.75rem;
+  box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+  background-color: #fffdf7;
+}
+
+/* Responsive canvas para charts */
+.responsive-canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 </style>

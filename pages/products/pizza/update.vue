@@ -67,19 +67,116 @@ const errors = ref({
 });
 
 // Validaciones
-const palabrasProhibidas = [
-  'puta', 'puto', 'mierda', 'imbécil', 'estúpido', 'perra', 'culero',
-  'pendejo', 'jodido', 'idiota', 'cabron', 'fuck', 'shit', 'bitch',
-  'asshole', 'bastard', 'dumb', 'gay', 'marica'
-];
-
 const caracteresNombreValidos = /^[A-Za-zÁÉÍÓÚÑáéíóúñ\s-]+$/;
 const patronesMaliciosos = /(SELECT|INSERT|DELETE|UPDATE|DROP|UNION|--|<script>|<\/script>|document\.cookie|base64|OR\s+1=1)/i;
-const contenidoBasura = /^(.)\1{5,}$|^(?:[xX\d\s]{4,}|[a-z]{3,}\d{3,})$/i;
+const palabrasProhibidas = [
+  // Inyecciones SQL y comandos peligrosos
+  'select', 'insert', 'update', 'delete', 'drop', 'truncate', 'exec', 'execute',
+  'union', 'sleep', 'benchmark', 'or 1=1', 'and 1=1', 'or true', 'is null',
+  '--', ';--', ';', '/*', '*/', '@@', '@', 'char', 'nchar', 'varchar', 'nvarchar',
+  'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'end', 'fetch',
+  'kill', 'open', 'sys', 'sysobjects', 'syscolumns', 'information_schema',
+
+  // JavaScript malicioso y XSS
+  '<', '>', 'script', '/script', 'alert', 'onerror', 'onload', 'onmouseover',
+  'onfocus', 'onmouseenter', 'onmouseleave', 'onchange', 'onclick', 'confirm',
+  'prompt', 'eval', 'document', 'window', 'parent', 'console.log', 'Function',
+  'setTimeout', 'setInterval', 'iframe', 'href', 'src=', 'javascript:',
+  'data:', 'base64', 'encodeURI', 'decodeURI',
+
+  // HTML/atributos potencialmente peligrosos
+  'formaction', 'srcdoc', 'xmlns', 'xlink:href', 'style=', 'svg', 'math', 'object',
+  'embed', 'applet', 'meta', 'link', 'frame', 'frameset',
+
+  // Palabras ofensivas o burlas comunes (evita el uso en formularios serios)
+  'tonto', 'burro', 'idiota', 'estúpido', 'imbécil', 'pendejo', 'bobo', 'menso',
+  'inútil', 'feo', 'puto', 'puta', 'mierda', 'cabron', 'maldito', 'diablo', 'jaja',
+  'jeje', 'lol', 'xd', 'lmao', 'noob', 'wtf', 'asqueroso', 'perra', 'cerdo',
+
+  // Frases irrelevantes o respuestas troll
+  'asdf', 'qwerty', '123456', 'abcdef', 'a1b2c3', 'lorem', 'ipsum', 'test',
+  'prueba', 'sin sentido', 'whatever', 'lo que sea', 'ñañaña', 'trolazo',
+
+  // Caracteres especiales y patrones sospechosos
+  '"', "'", '`', '\\', '--', '%', '^', '*', '(', ')', '{', '}', '[', ']', '=', '+',
+  '$', '|', '~', '#', '\\u202e', '\\u0000',
+
+  // Palabras clave usadas en hacking o fuzzing
+  'root', 'admin', 'password', 'passwd', 'token', 'apikey', 'api_key', 'jwt',
+  'localhost', '127.0.0.1', 'shell', 'nmap', 'netcat', 'burpsuite', 'fuzzer',
+  'dirbuster', 'sqlmap', 'hydra', 'john', 'hashcat',
+
+  // Intentos de bypass y encoded inputs
+  '%3C', '%3E', '%22', '%27', '%3B', '%28', '%29', '%2F', '%5C', '%00',
+
+  // Otros elementos que podrían usarse para spam, phishing o manipulación
+  'click here', 'ganaste', 'felicitaciones', 'hack', 'gratis', 'regalo', 'oro',
+  'dinero', 'millones', 'crédito', 'tarjeta', 'contraseña', 'ingresa aquí',
+  'haz clic', 'no te lo pierdas',
+
+  // Combinaciones o keywords sospechosas
+  'content-type', 'multipart/form-data', 'application/x-www-form-urlencoded',
+  'admin\'--', '1\' or \'1\'=\'1', '1=1', '1=0', 'null', 'not null'
+];
+
+const patronesRepetitivos= [
+  // Risas exageradas o trolls clásicos: xd, xddd, jajaja, jejeje, jiji, jajsjd, etc.
+  /\b[xj]{1,5}[djs]{1,10}\b/i, // xd, xddd, jajsjd
+  /\b(?:ja|je|jo|ju|ji|lol|lmao|uwu|owo|nwn){2,}\b/i,
+
+  // Palabras repetidas sospechosas: "hola hola hola", "así así así"
+  /\b(\w{2,})\b(?:\s+\1\b){2,}/i,
+
+  // Letras repetidas excesivamente: "holaaaa", "nooooo", "queeeeeeee"
+  /([a-záéíóúüñ])\1{3,}/i,
+
+  // Repetición exagerada de palabras con variaciones (e.g. "haaaa haaaa haaaa")
+  /((\w)\2{2,}\s*){3,}/i,
+
+  // Exceso de caracteres especiales: !!!, ???, ###, etc.
+  /([!@#$%^&*()_+={}\[\]:;"'<>,.?\\/|`~°¬\-])\1{2,}/,
+
+  // Mezcla absurda de caracteres (posible spam visual o relleno)
+  /[a-z]{3,}[^a-z\s]{3,}[a-z]{3,}/i, // e.g. "h0l4#k0m0$ta$"
+  /(?:[^\w\s]|_){5,}/,              // muchos símbolos no alfanuméricos
+
+  // Texto con solo espacios o espacios excesivos
+  /^[\s]+$/,    // solo espacios
+  /\s{3,}/,     // más de 2 espacios seguidos
+
+  // Inputs vacíos o solo con caracteres invisibles
+  /^[\u200B-\u200D\uFEFF]*$/, // caracteres invisibles Unicode
+
+  // Emojis (pueden ser molestos si no son relevantes en contexto serio)
+  /[\uD83C-\uDBFF\uDC00-\uDFFF]+/, // rango de emojis UTF-16
+
+  // Texto en sentido inverso (Right-to-left override, usado para trollear o ocultar contenido malicioso)
+  /\u202e/, // RTL override
+
+  // Palabras alargadas sin sentido real (ej: "holaaaaaaaaa" con mezcla)
+  /\b[a-záéíóúüñ]{2,}\d+[a-z]{2,}\b/i,
+
+  // Spam de caracteres aleatorios (fuzzing, testing o trolling)
+  /\b[a-z]{1,3}\d{1,3}[a-z]{1,3}\b/i, // e.g. "asd123asd", "x9k3"
+
+  // Palabras con alternancia excesiva de mayúsculas y minúsculas
+  /(?:[a-z][A-Z]){3,}|(?:[A-Z][a-z]){3,}/,
+
+  // Texto con codificación hexadecimal (suele ser usado para bypass)
+  /%[0-9a-fA-F]{2,}/,
+
+  // Inputs que son solo caracteres no alfabéticos
+  /^[^a-zA-Z0-9áéíóúÁÉÍÓÚüÜñÑ]+$/
+];
+
 
 const contienePalabraProhibida = (texto) => {
-  const lowerText = texto.toLowerCase();
-  return palabrasProhibidas.some(palabra => lowerText.includes(palabra));
+  const lower = texto.toLowerCase();
+  return palabrasProhibidas.some(p => lower.includes(p));
+};
+
+const tienePatronesRepetitivos = (texto) => {
+  return patronesRepetitivos.some(p => p.test(texto));
 };
 
 const validateForm = () => {
@@ -90,7 +187,7 @@ const validateForm = () => {
   const nombreTrim = pizza.value.nombre.trim();
   const descripcionTrim = pizza.value.descripcion.trim();
 
-  // Validación nombre
+  // Validar nombre
   if (!nombreTrim) {
     errors.value.nombre = 'El nombre es obligatorio.';
     valid = false;
@@ -100,32 +197,32 @@ const validateForm = () => {
   } else if (!caracteresNombreValidos.test(nombreTrim)) {
     errors.value.nombre = 'El nombre solo puede contener letras, espacios y guiones.';
     valid = false;
-  } else if (contenidoBasura.test(nombreTrim)) {
-    errors.value.nombre = 'El nombre contiene texto inválido o repetitivo.';
-    valid = false;
-  } else if (contienePalabraProhibida(nombreTrim)) {
-    errors.value.nombre = 'El nombre contiene palabras inapropiadas.';
+  } else if (tienePatronesRepetitivos(nombreTrim)) {
+    errors.value.nombre = 'El nombre contiene texto repetitivo o inválido.';
     valid = false;
   } else if (patronesMaliciosos.test(nombreTrim)) {
     errors.value.nombre = 'El nombre contiene posibles patrones maliciosos.';
     valid = false;
+  } else if (contienePalabraProhibida(nombreTrim)) {
+    errors.value.nombre = 'El nombre contiene palabras inapropiadas.';
+    valid = false;
   }
 
-  // Validación descripción
+  // Validar descripción
   if (!descripcionTrim) {
     errors.value.descripcion = 'La descripción es obligatoria.';
     valid = false;
   } else if (descripcionTrim.length > 1000) {
     errors.value.descripcion = 'La descripción no puede exceder los 1000 caracteres.';
     valid = false;
-  } else if (contenidoBasura.test(descripcionTrim)) {
+  } else if (tienePatronesRepetitivos(descripcionTrim)) {
     errors.value.descripcion = 'La descripción contiene texto repetitivo o inválido.';
-    valid = false;
-  } else if (contienePalabraProhibida(descripcionTrim)) {
-    errors.value.descripcion = 'La descripción contiene palabras inapropiadas.';
     valid = false;
   } else if (patronesMaliciosos.test(descripcionTrim)) {
     errors.value.descripcion = 'La descripción contiene posibles patrones maliciosos.';
+    valid = false;
+  } else if (contienePalabraProhibida(descripcionTrim)) {
+    errors.value.descripcion = 'La descripción contiene palabras inapropiadas.';
     valid = false;
   }
 

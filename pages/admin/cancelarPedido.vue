@@ -1,80 +1,74 @@
 <template>
-    <el-card class="p-6 w-full max-w-screen-xl mx-auto">
+    <div class="container mx-auto p-6 bg-pizza-bg rounded-lg shadow-lg">
         <!-- Título -->
-        <h1 class="text-2xl font-bold mb-6">Gestión de Pedidos</h1>
+        <h1 class="text-4xl font-bold mb-6 text-pizza-red font-pizza-title drop-shadow-lg">
+            Gestión de Pedidos
+        </h1>
 
         <!-- Filtros -->
-        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-            <!-- Estado -->
-            <el-select v-model="filtroEstado" placeholder="Estado" clearable>
-                <el-option label="Aprobado" value="Aprobado" />
-                <el-option label="Pendiente" value="Pendiente" />
-                <el-option label="Cancelado por el Cliente" value="Cancelado por el Cliente" />
-                <el-option label="Cancelado por el Administrador" value="Cancelado por el Administrador" />
-            </el-select>
-
-            <!-- Nombre del cliente -->
-            <el-input v-model="filtroNombre" placeholder="Nombre del cliente" clearable />
-
-            <!-- Precio mínimo -->
-            <el-input-number v-model="precioMin" :min="0" placeholder="Precio mínimo" class="w-full" />
-
-            <!-- Precio máximo -->
-            <el-input-number v-model="precioMax" :min="0" placeholder="Precio máximo" class="w-full" />
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+            <el-select v-model="filtroEstado" placeholder="Estado" clearable
+                class="shadow-inner rounded-lg font-semibold text-pizza-brown" />
+            <el-input v-model="filtroNombre" placeholder="Nombre del cliente" clearable
+                class="shadow-inner rounded-lg font-semibold text-pizza-brown" />
+            <el-input-number v-model="precioMin" :min="0" placeholder="Precio mínimo" class="w-full rounded-lg" />
+            <el-input-number v-model="precioMax" :min="0" placeholder="Precio máximo" class="w-full rounded-lg" />
         </div>
 
         <!-- Buscador general -->
         <el-input v-model="busquedaGeneral" placeholder="Buscar por ID, cliente, comentario..." clearable
-            class="mb-6" />
+            class="mb-6 shadow-inner rounded-lg font-semibold text-pizza-brown" />
 
         <!-- Listado de pedidos -->
-        <div v-if="pedidosFiltrados.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            <el-card v-for="pedido in pedidosPaginados" :key="pedido.id_pedido"
-                class="rounded-lg p-4 shadow-sm flex flex-col gap-2 bg-gray-50 dark:bg-gray-800 text-black dark:text-white border dark:border-gray-700">
-                <div class="flex justify-between">
-                    <div>
-                        <p><strong>ID Pedido:</strong> {{ pedido.id_pedido }}</p>
-                        <p><strong>Cliente:</strong> {{ pedido.nombre || 'Desconocido' }}</p>
-                        <p><strong>Fecha:</strong> {{ formatearFecha(pedido.fecha) }}</p>
-                        <p><strong>Estado:</strong> {{ pedido.estado }}</p>
-                        <p><strong>Total:</strong> ${{ pedido.total }}</p>
-                        <p v-if="pedido.comentario"><strong>Comentario:</strong> {{ pedido.comentario }}</p>
-                    </div>
-
-                    <div class="flex flex-col gap-2">
-                        <button v-if="pedido.estado === 'Pendiente'"
-                            class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded shadow"
-                            @click="abrirModalConfirmacion(pedido, 'aprobar')">
-                            Aprobar
-                        </button>
-
-                        <button
-                            v-if="pedido.estado !== 'Cancelado por el Cliente' && pedido.estado !== 'Cancelado por el Administrador' && pedido.estado !== 'Aprobado'"
-                            class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow"
-                            @click="abrirModalConfirmacion(pedido, 'cancelar')">
-                            Cancelar
-                        </button>
-
-                        <button class="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded shadow"
-                            @click="verDetallesPedido(pedido.id_pedido)">
-                            Ver Detalles
-                        </button>
-                    </div>
+        <div v-if="pedidosFiltrados.length > 0" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <el-card v-for="pedido in pedidosPaginados" :key="pedido.id_pedido" shadow="hover"
+                class="pizza-card flex flex-col justify-between rounded-xl border-2 border-pizza-red bg-pizza-card p-5 hover:scale-[1.03] transition-transform duration-300">
+                <div>
+                    <p class="text-pizza-cream font-semibold">ID Pedido: <span class="text-pizza-orange">{{
+                        pedido.id_pedido }}</span></p>
+                    <p class="text-pizza-cream font-semibold">Cliente: <span class="text-pizza-orange">{{ pedido.nombre
+                        || 'Desconocido' }}</span></p>
+                    <p class="text-pizza-cream font-semibold">Fecha: <span class="text-pizza-orange">{{
+                        formatearFecha(pedido.fecha) }}</span></p>
+                    <p class="text-pizza-cream font-semibold">Estado: <span class="text-pizza-orange">{{ pedido.estado
+                            }}</span></p>
+                    <p class="text-pizza-cream font-semibold">Total: <span class="text-pizza-orange">${{ pedido.total
+                            }}</span></p>
+                    <p v-if="pedido.comentario" class="text-pizza-cream font-semibold">Comentario: <span
+                            class="text-pizza-orange">{{ pedido.comentario }}</span></p>
                 </div>
+
+                <div class="flex flex-wrap justify-end items-center gap-2 mt-4 pt-4 border-t border-pizza-red">
+                    <el-button v-if="pedido.estado === 'Pendiente'" type="success" size="small"
+                        @click="abrirModalConfirmacion(pedido, 'aprobar')">
+                        Aprobar
+                    </el-button>
+
+                    <el-button
+                        v-if="pedido.estado !== 'Cancelado por el Cliente' && pedido.estado !== 'Cancelado por el Administrador' && pedido.estado !== 'Aprobado'"
+                        type="danger" size="small" @click="abrirModalConfirmacion(pedido, 'cancelar')">
+                        Cancelar
+                    </el-button>
+
+                    <el-button type="primary" size="small" @click="verDetallesPedido(pedido.id_pedido)">Ver Detalles
+                    </el-button>
+                </div>
+
             </el-card>
         </div>
 
-        <!-- Paginación -->
-        <div v-if="totalPaginas > 1" class="mt-6 flex justify-center">
-            <el-pagination background layout="prev, pager, next" :current-page="paginaActual"
-                :page-size="pedidosPorPagina" :total="pedidosFiltrados.length"
-                @current-change="paginaActual = $event" />
+        <!-- Sin resultados -->
+        <div v-else class="col-span-full text-center text-pizza-red font-semibold text-lg mt-10">
+            No hay pedidos que coincidan con el filtro 🔎
         </div>
 
-        <div v-else class="text-gray-500">
-            No hay pedidos que coincidan con el filtro.
+        <!-- Paginación -->
+        <div v-if="totalPaginas > 1" class="mt-8 flex justify-center">
+            <el-pagination background layout="prev, pager, next" :current-page="paginaActual"
+                :page-size="pedidosPorPagina" :total="pedidosFiltrados.length" @current-change="paginaActual = $event"
+                class="pizza-pagination" />
         </div>
-    </el-card>
+    </div>
 
     <!-- Modal de ver detalles-->
     <el-dialog title="Detalles del Pedido" v-model="isDetallesVisible" width="600px">
@@ -283,3 +277,96 @@ onMounted(() => {
     cargarPedidos()
 })
 </script>
+
+<style scoped>
+:root {
+    --pizza-red: #e63946;
+    --pizza-orange: #f4a261;
+    --pizza-cream: #f1faee;
+    --pizza-brown: #6d4c41;
+    --pizza-bg: #fff8f0;
+    --pizza-card: #fff1e6;
+}
+
+.container {
+    max-width: 1200px;
+    background-color: var(--pizza-bg);
+    border-radius: 1rem;
+    box-shadow: 0 10px 30px rgb(230 57 70 / 0.3);
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    color: var(--pizza-brown);
+}
+
+.font-pizza-title {
+    font-family: 'Pacifico', cursive, 'Comic Sans MS', cursive;
+    color: var(--pizza-red);
+}
+
+.text-pizza-red {
+    color: var(--pizza-red);
+}
+
+.text-pizza-orange {
+    color: var(--pizza-orange);
+}
+
+.text-pizza-cream {
+    color: var(--pizza-cream);
+}
+
+.text-pizza-brown {
+    color: var(--pizza-brown);
+}
+
+.bg-pizza-bg {
+    background-color: var(--pizza-bg);
+}
+
+.bg-pizza-card {
+    background-color: var(--pizza-card);
+}
+
+.pizza-card {
+    background-color: var(--pizza-card);
+    border-color: var(--pizza-red);
+    font-weight: 600;
+    box-shadow: 0 5px 15px rgb(230 57 70 / 0.15);
+}
+
+.pizza-pagination {
+    font-family: 'Comic Sans MS', cursive, sans-serif;
+    user-select: none;
+}
+
+.pizza-pagination .el-pager li {
+    width: 36px;
+    height: 36px;
+    line-height: 36px;
+    margin: 0 6px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: var(--pizza-brown);
+    background: var(--pizza-cream);
+    box-shadow: 0 3px 6px rgba(109, 76, 65, 0.2);
+    transition: all 0.3s ease;
+    cursor: pointer;
+    border: 2px solid transparent;
+}
+
+.pizza-pagination .el-pager li:hover:not(.active) {
+    background-color: var(--pizza-orange);
+    color: white;
+    box-shadow: 0 4px 12px rgba(244, 162, 97, 0.7);
+    border-color: var(--pizza-orange);
+}
+
+.pizza-pagination .el-pager li.active {
+    background-color: var(--pizza-red);
+    color: white;
+    box-shadow: 0 6px 20px rgba(230, 57, 70, 0.8);
+    border-color: var(--pizza-red);
+    transform: scale(1.1);
+    cursor: default;
+}
+</style>

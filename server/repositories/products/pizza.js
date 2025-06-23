@@ -39,12 +39,11 @@ export const modifyPizza = async (pizza) => {
 };
 
 // Eliminación lógica de pizza
-export const deletePizza = async (pizza) => {
-  const { activo, id_pizza } = pizza;
+export const deletePizza = async ({ id_pizza }) => {
   const sql = usePostres();
   const result = await sql`
     UPDATE "Pizza"
-    SET activo = ${activo}
+    SET activo = 0
     WHERE id_pizza = ${id_pizza}
   `;
   return result;
