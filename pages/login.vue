@@ -6,7 +6,7 @@
         <img
           src="https://www.creativefabrica.com/wp-content/uploads/2022/04/17/Pizza-Logo-Design-Graphics-29132095-1.jpg"
           alt="Logo Pizzería" class="mx-auto mb-4 w-16 h-16 object-contain rounded-full border-2 border-white" />
-        <h2 class="text-3xl font-bold text-white">Bienvenido a Bella Napoli</h2>
+        <h2 class="text-3xl font-bold text-white">Bienvenido a Victorino's</h2>
       </div>
 
       <!-- Botones de login social con toques pizzería -->
