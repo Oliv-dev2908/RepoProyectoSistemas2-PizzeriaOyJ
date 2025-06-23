@@ -32,7 +32,6 @@
           </div>
 
           <div class="flex space-x-2">
-            <button @click="editarItem(item)" class="text-blue-600 hover:underline">Editar</button>
             <button @click="eliminarDelCarrito(index)" class="text-red-600 hover:underline">Eliminar</button>
           </div>
         </li>
