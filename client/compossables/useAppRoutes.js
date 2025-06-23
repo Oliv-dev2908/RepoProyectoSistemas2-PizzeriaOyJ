@@ -17,6 +17,7 @@ export function useAppRoutes() {
       icon: markRaw(ElementPlusIcons.UserFilled),
       roles: ['admin'],
       children: [
+        { path: 'oferta', name: 'Oferta', roles: ['admin'] },
         { path: 'cancelarPedido', name: 'Pedidos', roles: ['admin'] },
         { path: 'asignar', name: 'Asignar Admins', roles: ['admin'] },
         { path: 'dashboards', name: 'Dashboards', roles: ['admin'] }

@@ -86,7 +86,10 @@
         <select v-model="selectedPizza" class="w-full p-2 border rounded">
           <option disabled value="">-- Selecciona una pizza --</option>
           <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
-            {{ pizza.nombre }}
+            {{ pizza.nombre }} 
+            <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-gray-500 ml-2">
+              ({{ obtenerTextoOfertaParaPizza(pizza.id_pizza) }})
+            </span>
           </option>
         </select>
 
@@ -131,8 +134,6 @@
       </template>
     </el-dialog>
 
-
-
     <!-- Spinner de carga -->
     <div v-if="loading" class="flex justify-center items-center mt-4">
       <el-loading :loading="loading" text="Procesando tu pedido..." spinner-size="50"></el-loading>
@@ -147,12 +148,13 @@ import { useSupabaseUser } from '#imports'
 import { ElDialog, ElButton, ElLoading } from 'element-plus';
 
 const user = useSupabaseUser();
-const dialogVisible = ref(false); // controla si se muestra la ventana
+const dialogVisible = ref(false);
 
 const pizzas = ref([]);
 const tamanos = ref([]);
 const productos = ref([]);
 const carrito = ref([]);
+const ofertas = ref([]);
 
 const selectedPizza = ref('');
 const selectedTamano = ref('');
@@ -166,14 +168,13 @@ const modalProducto = ref(false);
 const mensajeError = ref('');
 
 const abrirModal = (tipo) => {
-  mensajeError.value = ''; // limpiar cualquier error anterior
+  mensajeError.value = '';
   if (tipo === 'pizza') {
     modalPizza.value = true;
   } else if (tipo === 'producto') {
     modalProducto.value = true;
   }
 };
-
 
 const agregarPizza = () => {
   const exito = agregarAlCarrito();
@@ -189,8 +190,6 @@ const agregarProducto = () => {
   }
 };
 
-
-// Cargar datos
 const cargarPizzas = async () => {
   const res = await fetch('/api/products/pizza');
   pizzas.value = await res.json();
@@ -207,9 +206,41 @@ const cargarProductos = async () => {
   productos.value = Array.isArray(data) ? data : (data.data ?? []);
 };
 
-// Agregar al carrito
+const cargarOfertas = async () => {
+  try {
+    const res = await fetch('/api/ofertas');
+    if (!res.ok) throw new Error('No se pudieron cargar las ofertas');
+    const data = await res.json();
+    ofertas.value = data;
+  } catch {
+    ofertas.value = [];
+  }
+};
+
+const obtenerTextoOfertaParaPizza = (id_pizza) => {
+  const ahora = new Date();
+  const ofertasParaPizza = ofertas.value.filter(oferta => {
+    if (!oferta.activo) return false;
+    const inicio = new Date(oferta.fecha_inicio);
+    const fin = new Date(oferta.fecha_fin);
+    if (ahora < inicio || ahora > fin) return false;
+    return oferta.pizzas.includes(id_pizza);
+  });
+  if (ofertasParaPizza.length === 0) return '';
+
+  const oferta = ofertasParaPizza[0];
+
+  if (oferta.tipo === 'descuento') {
+    const porcentaje = (oferta.descuento ?? 0) * 100;
+    return `${porcentaje}% OFF`;
+  } else if (oferta.tipo === 'n_x_m') {
+    return `${oferta.n_cantidad}x${oferta.m_paga}`;
+  }
+  return '';
+};
+
 const agregarAlCarrito = () => {
-  mensajeError.value = ''; // Limpiar errores previos
+  mensajeError.value = '';
 
   if (!selectedPizza.value && !selectedProducto.value) {
     mensajeError.value = "Por favor selecciona al menos una pizza o un producto.";
@@ -234,7 +265,6 @@ const agregarAlCarrito = () => {
     return false;
   }
 
-  // Lógica de agregar pizza
   if (selectedPizza.value && selectedTamano.value) {
     const pizza = pizzas.value.find(p => p.id_pizza === selectedPizza.value);
     const tamano = tamanos.value.find(t => t.id_tamano === selectedTamano.value);
@@ -270,7 +300,6 @@ const agregarAlCarrito = () => {
     }
   }
 
-  // Lógica de agregar producto
   if (selectedProducto.value) {
     const producto = productos.value.find(p => p.id_producto === selectedProducto.value);
 
@@ -305,8 +334,6 @@ const agregarAlCarrito = () => {
   return true;
 };
 
-
-
 const obtenerTotalUnidades = () => {
   return carrito.value.reduce((total, item) => {
     if (item.tipo === 'pizza') {
@@ -329,22 +356,18 @@ const limpiarCampos = () => {
   mensajeError.value = '';
 };
 
-
-
-// Finalizar pedido (enviar todo el carrito)
 const finalizarPedido = () => {
   if (carrito.value.length === 0) {
     alert("Tu carrito está vacío.");
     return;
   }
-  loading.value = true;  // Activar carga
-  dialogVisible.value = true; // abre la ventana de confirmación
+  loading.value = true;
+  dialogVisible.value = true;
 };
-
 
 const confirmarPedido = async () => {
   const id_cliente = user.value?.identities?.[0]?.user_id;
-  const total = calcularTotal(); // Calculas el total aquí
+  const total = calcularTotal();
 
   try {
     const res = await fetch('/api/usuario/pedirPizza', {
@@ -354,7 +377,7 @@ const confirmarPedido = async () => {
         id_cliente,
         pedido: carrito.value,
         fecha: new Date().toISOString(),
-        total // <-- Aquí estás enviando el total también
+        total
       }),
     });
 
@@ -362,7 +385,7 @@ const confirmarPedido = async () => {
 
     if (res.ok) {
       mensaje.value = 'Pedido realizado con éxito.';
-      carrito.value = []; // Limpiar carrito
+      carrito.value = [];
     } else {
       mensaje.value = resultado.message || 'Hubo un error al realizar el pedido.';
     }
@@ -370,24 +393,62 @@ const confirmarPedido = async () => {
     console.error(error);
     mensaje.value = 'Hubo un error al realizar el pedido.';
   } finally {
-    loading.value = false;  // Desactivar carga
-    dialogVisible.value = false; // cerrar el modal
+    loading.value = false;
+    dialogVisible.value = false;
   }
 };
 
-// Calcular total
 const calcularTotal = () => {
-  return carrito.value.reduce((total, item) => {
-    return total + (item.precioUnitario * (item.tipo === 'pizza' ? item.cantidad : item.cantidadProducto));
-  }, 0);
+  let total = 0;
+
+  const pizzasEnCarrito = carrito.value.filter(item => item.tipo === 'pizza');
+
+  pizzasEnCarrito.forEach(item => {
+    const precioUnitario = item.precioUnitario;
+    const cantidad = item.cantidad;
+
+    const ofertasParaPizza = ofertas.value.filter(oferta => {
+      if (!oferta.activo) return false;
+      const ahora = new Date();
+      const inicio = new Date(oferta.fecha_inicio);
+      const fin = new Date(oferta.fecha_fin);
+      if (ahora < inicio || ahora > fin) return false;
+      return oferta.pizzas.includes(item.id_pizza);
+    });
+
+    if (ofertasParaPizza.length === 0) {
+      total += precioUnitario * cantidad;
+    } else {
+      const oferta = ofertasParaPizza[0];
+
+      if (oferta.tipo === 'descuento') {
+        const descuento = oferta.descuento ?? 0;
+        total += precioUnitario * cantidad * (1 - descuento);
+      } else if (oferta.tipo === 'n_x_m') {
+        const N = oferta.n_cantidad;
+        const M = oferta.m_paga;
+        const grupos = Math.floor(cantidad / N);
+        const sobrante = cantidad % N;
+        const pizzasAPagar = grupos * M + sobrante;
+        total += precioUnitario * pizzasAPagar;
+      } else {
+        total += precioUnitario * cantidad;
+      }
+    }
+  });
+
+  const productosEnCarrito = carrito.value.filter(item => item.tipo === 'producto');
+  productosEnCarrito.forEach(item => {
+    total += item.precioUnitario * item.cantidadProducto;
+  });
+
+  return total;
 };
 
-//Eliminar del carrito
 const eliminarDelCarrito = (index) => {
   carrito.value.splice(index, 1);
 };
 
-//Editar articulo del carrito
 const editarItem = (item) => {
   if (item.tipo === 'pizza') {
     selectedPizza.value = item.id_pizza;
@@ -399,11 +460,11 @@ const editarItem = (item) => {
   }
 };
 
-
 onMounted(async () => {
   await cargarPizzas();
   await cargarTamanos();
   await cargarProductos();
+  await cargarOfertas();
   loading.value = false;
 });
 </script>
