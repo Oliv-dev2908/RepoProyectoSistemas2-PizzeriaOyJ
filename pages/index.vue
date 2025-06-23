@@ -1,5 +1,6 @@
 <script setup>
 import Forms from './../components/forms/index.vue';
+import Ofertas from './../components/OfertasActivas.vue';
 import { useUserRole } from './../client/compossables/useUserRole'
 const user = useSupabaseUser()
 const openForm = ref(false);
@@ -28,4 +29,5 @@ onMounted(loadForm);
 <template>
   <Forms v-if="openForm">
   </Forms>
+  <Ofertas/>
 </template>
