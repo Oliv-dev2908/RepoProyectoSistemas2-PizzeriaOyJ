@@ -11,10 +11,10 @@
     <!-- Pizza seleccionada -->
     <el-form label-position="top" class="space-y-4">
       <el-form-item label="Pizza Seleccionada">
-        <el-select v-model="pizzaActual[0].id_pizza" disabled class="w-full">
-          <el-option :label="pizzaActual[0].nombre" :value="pizzaActual[0].id_pizza" />
-        </el-select>
+        <el-input v-model="pizzaActual.nombre" disabled />
+
       </el-form-item>
+
 
       <!-- Ingredientes actuales -->
       <div v-if="ingredientes.length === 0" class="text-center text-gray-600">
@@ -72,30 +72,36 @@ import { useRoute } from 'vue-router';
 import { ElMessage } from 'element-plus';
 
 const route = useRoute();
-const router = useRouter(); 
+const router = useRouter();
 const pizzaId = route.query.id;
 
 const loading = ref(true);
-const pizzaActual = ref(null); // Nueva variable
+const pizzaActual = ref({});
 const ingredientes = ref([]);
 const allIngredientes = ref([]);
 const selectedIngrediente = ref(null);
 const cantidad = ref(0);
 
 // Obtener información de la pizza seleccionada
-const loadPizzaInfo = async (id) => {
+const loadPizzaInfo = async () => {
   try {
-    const response = await fetch(`/api/products/pizza?id=${id}`);
-    if (!response.ok) {
-      throw new Error('Error al obtener los detalles de la pizza');
-    }
-    pizzaActual.value = await response.json();
+    const response = await fetch(`/api/products/pizza?id=${pizzaId}`);
+    if (!response.ok) throw new Error('Error al obtener los detalles de la pizza');
+
+    const data = await response.json(); // Esto es un array
+    const encontrada = data.find(p => String(p.id_pizza) === String(pizzaId)); // ¡Compara como string para evitar bugs!
+    
+    if (!encontrada) throw new Error('Pizza no encontrada');
+
+    pizzaActual.value = encontrada;
   } catch (error) {
     console.error(error.message);
+    ElMessage.error(error.message);
   } finally {
     loading.value = false;
   }
 };
+
 
 // Cargar ingredientes actuales de la pizza
 const loadIngredientes = async () => {
@@ -138,7 +144,7 @@ const addIngrediente = async () => {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        id_pizza: pizzaActual.value[0].id_pizza,
+        id_pizza: pizzaActual.value.id_pizza,
         id_ingrediente: selectedIngrediente.value,
         cantidad: cantidadNum,
       }),
@@ -181,6 +187,7 @@ onMounted(async () => {
   await loadIngredientes();
   await loadAllIngredientes();
   loading.value = false;
+  console.log('Pizza cargada:', pizzaActual.value);
 });
 
 

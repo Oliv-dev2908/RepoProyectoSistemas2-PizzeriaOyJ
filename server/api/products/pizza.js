@@ -53,14 +53,23 @@ export default defineEventHandler(async (event) => {
 
     case 'DELETE': {
       try {
-        const { id_pizza } = await readBody(event);
-        const result = await deletePizza({ id_pizza, activo: 0 }); // Eliminar pizza
+        const query = getQuery(event);
+        const id_pizza = parseInt(query.id);
+
+        if (!id_pizza || isNaN(id_pizza)) {
+          event.res.statusCode = 400;
+          return { error: 'ID de pizza inválido' };
+        }
+
+        const result = await deletePizza({ id_pizza });
         return { success: true, message: 'Pizza eliminada correctamente', result };
       } catch (error) {
+        console.error("Error en DELETE:", error);
         event.res.statusCode = 500;
         return { error: 'Error al eliminar pizza', details: error.message };
       }
     }
+
 
     default:
       event.res.statusCode = 405;

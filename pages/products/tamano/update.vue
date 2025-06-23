@@ -74,11 +74,55 @@ const errors = ref({
 
 //VALIDAR
 const palabrasProhibidas = [
-  'malo', 'feo', 'idiota', 'tonto', 'spam', 'hack', 'malware', 'virus', 'script', 'drop', 'delete',
-  'mierda', 'puta', 'estúpido', 'imbécil', 'pendejo', 'maldito', 'cabron', 'chingada', 'joder',
-  'pedo', 'cabrón', 'coño', 'verga', 'fuck', 'shit', 'bitch', 'asshole',
-  'retardado', 'sexo', 'pornografía', 'droga', 'terrorismo', 'asesinato'
+  // Inyecciones SQL y comandos peligrosos
+  'select', 'insert', 'update', 'delete', 'drop', 'truncate', 'exec', 'execute',
+  'union', 'sleep', 'benchmark', 'or 1=1', 'and 1=1', 'or true', 'is null',
+  '--', ';--', ';', '/*', '*/', '@@', '@', 'char', 'nchar', 'varchar', 'nvarchar',
+  'alter', 'begin', 'cast', 'create', 'cursor', 'declare', 'end', 'fetch',
+  'kill', 'open', 'sys', 'sysobjects', 'syscolumns', 'information_schema',
+
+  // JavaScript malicioso y XSS
+  '<', '>', 'script', '/script', 'alert', 'onerror', 'onload', 'onmouseover',
+  'onfocus', 'onmouseenter', 'onmouseleave', 'onchange', 'onclick', 'confirm',
+  'prompt', 'eval', 'document', 'window', 'parent', 'console.log', 'Function',
+  'setTimeout', 'setInterval', 'iframe', 'href', 'src=', 'javascript:',
+  'data:', 'base64', 'encodeURI', 'decodeURI',
+
+  // HTML/atributos potencialmente peligrosos
+  'formaction', 'srcdoc', 'xmlns', 'xlink:href', 'style=', 'svg', 'math', 'object',
+  'embed', 'applet', 'meta', 'link', 'frame', 'frameset',
+
+  // Palabras ofensivas o burlas comunes (evita el uso en formularios serios)
+  'tonto', 'burro', 'idiota', 'estúpido', 'imbécil', 'pendejo', 'bobo', 'menso',
+  'inútil', 'feo', 'puto', 'puta', 'mierda', 'cabron', 'maldito', 'diablo', 'jaja',
+  'jeje', 'lol', 'xd', 'lmao', 'noob', 'wtf', 'asqueroso', 'perra', 'cerdo',
+
+  // Frases irrelevantes o respuestas troll
+  'asdf', 'qwerty', '123456', 'abcdef', 'a1b2c3', 'lorem', 'ipsum', 'test',
+  'prueba', 'sin sentido', 'whatever', 'lo que sea', 'ñañaña', 'trolazo',
+
+  // Caracteres especiales y patrones sospechosos
+  '"', "'", '`', '\\', '--', '%', '^', '*', '(', ')', '{', '}', '[', ']', '=', '+',
+  '$', '|', '~', '#', '\\u202e', '\\u0000',
+
+  // Palabras clave usadas en hacking o fuzzing
+  'root', 'admin', 'password', 'passwd', 'token', 'apikey', 'api_key', 'jwt',
+  'localhost', '127.0.0.1', 'shell', 'nmap', 'netcat', 'burpsuite', 'fuzzer',
+  'dirbuster', 'sqlmap', 'hydra', 'john', 'hashcat',
+
+  // Intentos de bypass y encoded inputs
+  '%3C', '%3E', '%22', '%27', '%3B', '%28', '%29', '%2F', '%5C', '%00',
+
+  // Otros elementos que podrían usarse para spam, phishing o manipulación
+  'click here', 'ganaste', 'felicitaciones', 'hack', 'gratis', 'regalo', 'oro',
+  'dinero', 'millones', 'crédito', 'tarjeta', 'contraseña', 'ingresa aquí',
+  'haz clic', 'no te lo pierdas',
+
+  // Combinaciones o keywords sospechosas
+  'content-type', 'multipart/form-data', 'application/x-www-form-urlencoded',
+  'admin\'--', '1\' or \'1\'=\'1', '1=1', '1=0', 'null', 'not null'
 ];
+
 
 const contienePatronesMaliciosos = (texto) => {
   const patrones = [/script/i, /insert\s+into/i, /drop\s+table/i, /delete\s+from/i];
@@ -86,7 +130,7 @@ const contienePatronesMaliciosos = (texto) => {
 };
 
 const contieneRepeticiones = (texto) => {
-  return /(.)\1{4,}/.test(texto); // 5 o más repeticiones consecutivas
+  return /(.)\1{2,}/.test(texto); // 5 o más repeticiones consecutivas
 };
 
 const contienePalabrasProhibidas = (texto) => {
