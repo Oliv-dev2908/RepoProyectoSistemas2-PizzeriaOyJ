@@ -61,9 +61,6 @@
                   <el-dropdown-item @click="redirectToUpdate(oferta.id_oferta)">
                     ✏️ Actualizar
                   </el-dropdown-item>
-                  <el-dropdown-item divided @click="() => confirmDelete(oferta.id_oferta)">
-                    🗑️ Eliminar
-                  </el-dropdown-item>
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
