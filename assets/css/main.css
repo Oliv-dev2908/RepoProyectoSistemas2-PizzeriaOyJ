@@ -40,6 +40,14 @@
   --pizza-brown: var(--ctp-maroon);
   --pizza-bg: var(--ctp-base);
   --pizza-card: var(--ctp-mantle);
+
+  /* Semantic Theme Colors */
+  --theme-text: var(--ctp-text);
+  --theme-text-secondary: var(--ctp-subtext0);
+  --theme-bg: var(--ctp-base);
+  --theme-surface: var(--ctp-surface0);
+  --theme-card: var(--ctp-mantle);
+  --theme-border: var(--ctp-surface1);
 }
 
 .dark {
@@ -78,12 +86,80 @@
   --pizza-brown: var(--ctp-text);
   --pizza-bg: var(--ctp-base);
   --pizza-card: var(--ctp-surface1);
+
+  /* Semantic Theme Colors (Dark) */
+  --theme-text: var(--ctp-text);
+  --theme-text-secondary: var(--ctp-subtext0);
+  --theme-bg: var(--ctp-base);
+  --theme-surface: var(--ctp-surface0);
+  --theme-card: var(--ctp-surface1);
+  --theme-border: var(--ctp-surface0);
 }
 
 /* Global Styles */
 body {
-  background-color: var(--ctp-base);
-  color: var(--ctp-text);
+  background-color: var(--theme-bg);
+  color: var(--theme-text);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Helper Classes */
+.bg-theme-bg { background-color: var(--theme-bg); }
+.bg-theme-card { background-color: var(--theme-card); }
+.bg-theme-surface { background-color: var(--theme-surface); }
+.text-theme-text { color: var(--theme-text); }
+.text-theme-secondary { color: var(--theme-text-secondary); }
+.border-theme { border-color: var(--theme-border); }
+
+/* Catppuccin Specific Utility replacements for hardcoded tailwind */
+.bg-ctp-mauve { background-color: var(--ctp-mauve); }
+.bg-ctp-blue { background-color: var(--ctp-blue); }
+.bg-ctp-green { background-color: var(--ctp-green); }
+.bg-ctp-yellow { background-color: var(--ctp-yellow); }
+.bg-ctp-red { background-color: var(--ctp-red); }
+.bg-ctp-peach { background-color: var(--ctp-peach); }
+.bg-ctp-surface0 { background-color: var(--ctp-surface0); }
+
+.text-ctp-mauve { color: var(--ctp-mauve); }
+.text-ctp-blue { color: var(--ctp-blue); }
+.text-ctp-green { color: var(--ctp-green); }
+.text-ctp-yellow { color: var(--ctp-yellow); }
+.text-ctp-red { color: var(--ctp-red); }
+.text-ctp-peach { color: var(--ctp-peach); }
+
+/* Buttons */
+.btn-ctp {
+  padding: 0.5rem 1rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  cursor: pointer;
+  border: none;
+}
+
+.btn-ctp-primary { background-color: var(--ctp-mauve); color: var(--ctp-base); }
+.btn-ctp-primary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ctp-secondary { background-color: var(--ctp-blue); color: var(--ctp-base); }
+.btn-ctp-secondary:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ctp-success { background-color: var(--ctp-green); color: var(--ctp-base); }
+.btn-ctp-success:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ctp-warning { background-color: var(--ctp-yellow); color: var(--ctp-base); }
+.btn-ctp-warning:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ctp-danger { background-color: var(--ctp-red); color: var(--ctp-base); }
+.btn-ctp-danger:hover { opacity: 0.9; transform: translateY(-1px); }
+
+.btn-ctp-ghost { background-color: transparent; color: var(--theme-text); border: 1px solid var(--theme-border); }
+.btn-ctp-ghost:hover { background-color: var(--theme-surface); }
+
+/* Element Plus Cards */
+.el-card {
+  background-color: var(--theme-card) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
 }
 
 /* Common Layout & Sidebar (Unified) */
@@ -391,6 +467,27 @@ img[alt="Logo Pizzería"]:hover {
 }
 
 /* Element Plus Overrides */
+.el-card {
+  background-color: var(--theme-card) !important;
+  color: var(--theme-text) !important;
+  border-color: var(--theme-border) !important;
+  border-radius: 1rem !important;
+}
+
+.el-button--primary { background-color: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; color: var(--ctp-base) !important; }
+.el-button--success { background-color: var(--ctp-green) !important; border-color: var(--ctp-green) !important; color: var(--ctp-base) !important; }
+.el-button--warning { background-color: var(--ctp-yellow) !important; border-color: var(--ctp-yellow) !important; color: var(--ctp-base) !important; }
+.el-button--danger { background-color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; color: var(--ctp-base) !important; }
+.el-button--info { background-color: var(--ctp-sapphire) !important; border-color: var(--ctp-sapphire) !important; color: var(--ctp-base) !important; }
+
+.el-button--primary.is-plain { background-color: transparent !important; color: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
+.el-button--success.is-plain { background-color: transparent !important; color: var(--ctp-green) !important; border-color: var(--ctp-green) !important; }
+.el-button--warning.is-plain { background-color: transparent !important; color: var(--ctp-yellow) !important; border-color: var(--ctp-yellow) !important; }
+.el-button--danger.is-plain { background-color: transparent !important; color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; }
+.el-button--info.is-plain { background-color: transparent !important; color: var(--ctp-sapphire) !important; border-color: var(--ctp-sapphire) !important; }
+
+.el-divider { border-top-color: var(--theme-border) !important; }
+
 .el-input input,
 .el-textarea__inner,
 .el-select .el-input__wrapper,
@@ -399,6 +496,7 @@ img[alt="Logo Pizzería"]:hover {
   font-weight: 600;
   color: var(--ctp-text) !important;
   background-color: var(--ctp-base) !important;
+  border-color: var(--theme-border) !important;
 }
 
 .dark .el-input input,
@@ -407,6 +505,26 @@ img[alt="Logo Pizzería"]:hover {
 .dark .el-input-number .el-input__wrapper {
   background-color: var(--ctp-surface0) !important;
   border-color: var(--ctp-surface1) !important;
+}
+
+.el-radio__input.is-checked .el-radio__inner { background: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
+.el-radio__input.is-checked + .el-radio__label { color: var(--ctp-mauve) !important; }
+.el-radio__label { color: var(--theme-text) !important; }
+
+.el-rate__item .el-rate__icon { color: var(--ctp-overlay0) !important; }
+.el-rate__item .is-active { color: var(--ctp-yellow) !important; }
+
+/* Modal / Dialog */
+.el-dialog {
+  background-color: var(--theme-bg) !important;
+  border-radius: 1rem !important;
+}
+.el-dialog__title { color: var(--theme-text) !important; }
+.el-dialog__body { color: var(--theme-text) !important; }
+
+.el-dropdown-menu {
+  background-color: var(--theme-card) !important;
+  border-color: var(--theme-border) !important;
 }
 
 .el-dropdown-menu__item {

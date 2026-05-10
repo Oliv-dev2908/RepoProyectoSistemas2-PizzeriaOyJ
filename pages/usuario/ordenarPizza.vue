@@ -1,17 +1,17 @@
 <template>
-  <div class="container mx-auto p-4">
-    <h1 class="text-2xl font-bold mb-6">¿Qué quieres agregar?</h1>
+  <div class="container mx-auto p-4 text-theme-text">
+    <h1 class="text-2xl font-bold mb-6 font-pizza-title">¿Qué quieres agregar?</h1>
 
     <!-- Cartas para elegir -->
     <div class="grid grid-cols-2 gap-8">
       <div @click="abrirModal('pizza')"
-        class="cursor-pointer bg-yellow-200 p-6 rounded-lg shadow hover:scale-105 transition">
-        <h2 class="text-xl font-semibold text-center">🍕 Pizza</h2>
+        class="cursor-pointer bg-theme-card border-2 border-ctp-yellow p-6 rounded-lg shadow-lg hover:scale-105 transition group">
+        <h2 class="text-xl font-semibold text-center text-ctp-yellow group-hover:drop-shadow-sm">🍕 Pizza</h2>
       </div>
 
       <div @click="abrirModal('producto')"
-        class="cursor-pointer bg-green-200 p-6 rounded-lg shadow hover:scale-105 transition">
-        <h2 class="text-xl font-semibold text-center">🛒 Producto</h2>
+        class="cursor-pointer bg-theme-card border-2 border-ctp-green p-6 rounded-lg shadow-lg hover:scale-105 transition group">
+        <h2 class="text-xl font-semibold text-center text-ctp-green group-hover:drop-shadow-sm">🛒 Producto</h2>
       </div>
     </div>
 
@@ -19,51 +19,51 @@
     <div v-if="carrito.length > 0" class="mt-8">
       <h2 class="text-xl font-bold mb-2">Carrito</h2>
       <ul class="space-y-2">
-        <li v-for="(item, index) in carrito" :key="index" class="border p-2 rounded flex justify-between items-center">
+        <li v-for="(item, index) in carrito" :key="index" class="border border-theme p-2 rounded flex justify-between items-center bg-theme-card">
           <div>
             <div v-if="item.tipo === 'pizza'">
-              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+              🍕 <span class="font-bold">{{ item.pizzaNombre }}</span> ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
+              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidad).toFixed(2) }}</span>
             </div>
             <div v-else-if="item.tipo === 'producto'">
-              🛒 Producto: {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+              🛒 Producto: <span class="font-bold">{{ item.productoNombre }}</span> x{{ item.cantidadProducto }} -
+              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}</span>
             </div>
           </div>
 
           <div class="flex space-x-2">
-            <button @click="eliminarDelCarrito(index)" class="text-red-600 hover:underline">Eliminar</button>
+            <button @click="eliminarDelCarrito(index)" class="text-ctp-red hover:underline font-semibold">Eliminar</button>
           </div>
         </li>
       </ul>
 
-      <div class="mt-4 font-bold text-right">
-        Total: ${{ calcularTotal().toFixed(2) }}
+      <div class="mt-4 font-bold text-right text-xl">
+        Total: <span class="text-ctp-peach">${{ calcularTotal().toFixed(2) }}</span>
       </div>
     </div>
     <div v-if="carrito.length > 0" class="mt-4 text-right">
-      <el-button type="primary" @click="finalizarPedido">Finalizar Pedido</el-button>
+      <el-button type="primary" size="large" @click="finalizarPedido" class="pulse-button">Finalizar Pedido</el-button>
     </div>
 
     <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="600px"
       :before-close="() => dialogVisible = false">
-      <div>
+      <div class="text-theme-text">
         <h3 class="font-semibold mb-4">Resumen de tu pedido:</h3>
         <ul class="space-y-2">
           <li v-for="(item, index) in carrito" :key="index">
             <div v-if="item.tipo === 'pizza'">
               🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-              ${{ (item.precioUnitario * item.cantidad).toFixed(2) }}
+              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidad).toFixed(2) }}</span>
             </div>
             <div v-else-if="item.tipo === 'producto'">
               🛒 {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-              ${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}
+              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}</span>
             </div>
           </li>
         </ul>
 
-        <div class="mt-4 font-bold text-right">
-          Total: ${{ calcularTotal().toFixed(2) }}
+        <div class="mt-4 font-bold text-right text-lg">
+          Total: <span class="text-ctp-peach">${{ calcularTotal().toFixed(2) }}</span>
         </div>
       </div>
 
@@ -75,33 +75,33 @@
 
 
     <!-- Mensaje de confirmación -->
-    <div v-if="mensaje" class="mt-4 p-3 bg-blue-100 border border-blue-300 rounded">
+    <div v-if="mensaje" class="mt-4 p-3 bg-ctp-surface0 border border-ctp-blue text-ctp-blue rounded font-semibold">
       {{ mensaje }}
     </div>
 
     <!-- Modal de Pizza -->
     <el-dialog v-model="modalPizza" title="Agregar Pizza" width="500px">
       <div class="space-y-4">
-        <select v-model="selectedPizza" class="w-full p-2 border rounded">
+        <select v-model="selectedPizza" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
           <option disabled value="">-- Selecciona una pizza --</option>
           <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
             {{ pizza.nombre }} 
-            <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-gray-500 ml-2">
+            <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-ctp-peach ml-2">
               ({{ obtenerTextoOfertaParaPizza(pizza.id_pizza) }})
             </span>
           </option>
         </select>
 
-        <select v-model="selectedTamano" class="w-full p-2 border rounded">
+        <select v-model="selectedTamano" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
           <option disabled value="">-- Selecciona un tamaño --</option>
           <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
             {{ tam.nombre }}
           </option>
         </select>
 
-        <input type="number" v-model.number="cantidad" min="1" class="w-full p-2 border rounded"
+        <input type="number" v-model.number="cantidad" min="1" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve"
           placeholder="Cantidad" />
-        <div v-if="mensajeError" class="text-red-600 text-sm">{{ mensajeError }}</div>
+        <div v-if="mensajeError" class="text-ctp-red text-sm font-semibold">{{ mensajeError }}</div>
       </div>
 
       <template #footer>
@@ -113,16 +113,16 @@
     <!-- Modal de Producto -->
     <el-dialog v-model="modalProducto" title="Agregar Producto" width="500px">
       <div class="space-y-4">
-        <select v-model="selectedProducto" class="w-full p-2 border rounded">
+        <select v-model="selectedProducto" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
           <option disabled value="">-- Selecciona un producto --</option>
           <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
             {{ producto.nombre }}
           </option>
         </select>
 
-        <input type="number" v-model.number="cantidadProducto" min="1" class="w-full p-2 border rounded"
+        <input type="number" v-model.number="cantidadProducto" min="1" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve"
           placeholder="Cantidad" />
-        <div v-if="mensajeError" class="text-red-600 text-sm">
+        <div v-if="mensajeError" class="text-ctp-red text-sm font-semibold">
           {{ mensajeError }}
         </div>
       </div>

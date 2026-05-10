@@ -9,14 +9,13 @@
         <el-avatar
           :src="fotoPerfil"
           size="large"
-          class="!w-24 !h-24 !rounded-full shadow-lg object-cover border-4"
-          style="border-color: var(--el-color-danger-light-3);"
+          class="!w-24 !h-24 !rounded-full shadow-lg object-cover border-4 border-ctp-red"
         />
         <div class="flex flex-col justify-center">
-          <h1 class="text-2xl font-bold text-[var(--el-color-danger)]">
+          <h1 class="text-2xl font-bold text-ctp-red">
             {{ nombreCompleto }}
           </h1>
-          <p class="text-[var(--el-text-color-secondary)] italic">
+          <p class="text-theme-secondary italic">
             {{ user?.email }}
           </p>
         </div>

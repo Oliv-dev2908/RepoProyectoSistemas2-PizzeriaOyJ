@@ -7,11 +7,11 @@
           :src="fotoPerfil"
           alt="Foto de perfil"
           style="max-width: 10vh; max-height: 10vh; width: 10vh; height: 10vh;"
-          class="rounded-full border-4 border-indigo-200 shadow-md object-cover"
+          class="rounded-full border-4 border-theme shadow-md object-cover"
         />
-        <div>
-          <h1 class="text-xl font-semibold text-gray-800">{{ nombreCompleto }}</h1>
-          <p class="text-gray-500">{{ user?.email }}</p>
+        <div class="text-left">
+          <h1 class="text-xl font-semibold text-theme-text">{{ nombreCompleto }}</h1>
+          <p class="text-theme-secondary">{{ user?.email }}</p>
         </div>
       </div>
 
@@ -28,16 +28,18 @@
       <!-- Contenido dinámico -->
       <div>
         <template v-if="cargando">
-          <p class="text-gray-500 text-center">Cargando...</p>
+          <p class="text-theme-secondary text-center">Cargando...</p>
         </template>
 
         <template v-else>
           <!-- Sección: Información -->
           <template v-if="seccionActiva === 'info'">
-            <p class="mt-2 text-sm text-white inline-block bg-indigo-500 px-3 py-1 rounded-full shadow">
-              Rol: {{ rol }}
-            </p>
-            <div class="mt-6 text-left space-y-2 text-gray-700">
+            <div class="text-left">
+              <p class="mt-2 text-sm text-theme-bg inline-block bg-ctp-mauve px-3 py-1 rounded-full shadow font-bold">
+                Rol: {{ rol }}
+              </p>
+            </div>
+            <div class="mt-6 text-left space-y-2 text-theme-text">
               <p><strong>Nickname:</strong> {{ nickname }}</p>
               <p><strong>Slug:</strong> {{ slug }}</p>
               <p><strong>Proveedor:</strong> {{ proveedor }}</p>
@@ -47,14 +49,14 @@
 
           <!-- Sección: Actualizar -->
           <template v-else-if="seccionActiva === 'editar'">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Actualizar Perfil</h2>
-            <p class="text-gray-600">Funcionalidad próximamente disponible.</p>
+            <h2 class="text-lg font-semibold text-theme-text mb-4 text-left">Actualizar Perfil</h2>
+            <p class="text-theme-secondary text-left">Funcionalidad próximamente disponible.</p>
           </template>
 
           <!-- Sección: Cuentas -->
           <template v-else-if="seccionActiva === 'cuentas'">
-            <h2 class="text-lg font-semibold text-gray-800 mb-4">Cuentas Vinculadas</h2>
-            <div class="text-left space-y-2 text-gray-700">
+            <h2 class="text-lg font-semibold text-theme-text mb-4 text-left">Cuentas Vinculadas</h2>
+            <div class="text-left space-y-2 text-theme-text">
               <p>
                 <strong>Google:</strong>
                 <span class="ml-2" :class="estadoProveedor('google')">{{ estadoTexto('google') }}</span>
@@ -111,7 +113,7 @@ function isProviderLinked(provider: string) {
 }
 
 function estadoProveedor(provider: string) {
-  return isProviderLinked(provider) ? 'text-green-600' : 'text-gray-500'
+  return isProviderLinked(provider) ? 'text-ctp-green font-bold' : 'text-ctp-overlay0'
 }
 
 function estadoTexto(provider: string) {
@@ -121,10 +123,10 @@ function estadoTexto(provider: string) {
 // Clases para los botones activos
 function botonClase(tipo: string) {
   return [
-    'px-4 py-2 rounded-lg shadow transition',
+    'btn-ctp transition',
     seccionActiva.value === tipo
-      ? 'bg-indigo-500 text-white'
-      : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-700'
+      ? 'btn-ctp-primary shadow-lg'
+      : 'btn-ctp-ghost'
   ].join(' ')
 }
 </script>
