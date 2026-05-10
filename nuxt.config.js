@@ -12,7 +12,7 @@ export default defineNuxtConfig({
   },
 
   css: [
-    '@/assets/css/tailwind.css',
+    '@/assets/css/main.css',
     'element-plus/theme-chalk/index.css',
     'element-plus/theme-chalk/dark/css-vars.css'
   ],

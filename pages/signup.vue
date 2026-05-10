@@ -116,11 +116,4 @@ function irALogin() {
 }
 </script>
 
-<style scoped>
-img[alt="Logo Pizzería"] {
-  transition: transform 0.3s;
-}
-img[alt="Logo Pizzería"]:hover {
-  transform: rotate(360deg);
-}
-</style>
+

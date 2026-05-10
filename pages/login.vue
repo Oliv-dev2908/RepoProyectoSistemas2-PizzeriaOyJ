@@ -150,13 +150,4 @@ const signInWithFacebookAuth = async () => {
 
 </script>
 
-<style scoped>
-/* Animación en el logo */
-img[alt="Logo Pizzería"] {
-  transition: transform 0.3s;
-}
 
-img[alt="Logo Pizzería"]:hover {
-  transform: rotate(360deg);
-}
-</style>

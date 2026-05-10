@@ -174,35 +174,4 @@ export default {
 };
 </script>
 
-<style scoped>
-.survey-container {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: 30px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
 
-h1 {
-    text-align: center;
-    margin-bottom: 30px;
-    color: #409EFF;
-}
-
-h2 {
-    margin-bottom: 20px;
-}
-
-.survey-section {
-    margin-bottom: 30px;
-    padding: 20px;
-}
-
-.question {
-    margin-bottom: 20px;
-}
-
-.submit-button {
-    text-align: center;
-    margin-top: 40px;
-}
-</style>

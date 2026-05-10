@@ -111,7 +111,3 @@ const ofertasFiltradas = computed(() => {
   })
 })
 </script>
-
-<style scoped>
-/* Puedes agregar estilos extra si quieres */
-</style>

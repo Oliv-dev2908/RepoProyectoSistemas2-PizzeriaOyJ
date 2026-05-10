@@ -100,45 +100,4 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize);
 });
 </script>
-<style scoped>
-.common-layout {
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
 
-.el-container {
-  flex: 1;
-  display: flex;
-}
-
-.el-aside {
-  background-color: var(--el-bg-color);
-  transition: width 0.3s ease;
-  overflow: hidden;
-  height: 100%;
-}
-
-.el-aside.collapsed {
-  width: 64px !important;
-  height: 100%;
-}
-
-.el-menu-vertical-demo:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 100vh;
-}
-
-.el-menu-vertical-demo.el-menu--collapse {
-  min-height: 100vh;
-}
-
-.el-scrollbar-menu:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 100vh;
-}
-
-.el-scrollbar-menu.el-menu--collapse {
-  min-height: 100vh;
-}
-</style>
