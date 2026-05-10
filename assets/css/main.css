@@ -33,21 +33,25 @@
   --ctp-mantle: #e6e9ef;
   --ctp-crust: #dce0e8;
 
-  /* Pizza Variables Mapped to Catppuccin Latte */
+  /* Pizza Variables Mapped to Catppuccin Latte - Refined for Warmth */
   --pizza-red: var(--ctp-red);
   --pizza-orange: var(--ctp-peach);
-  --pizza-cream: var(--ctp-surface0);
+  --pizza-cream: var(--ctp-rosewater); /* Warmer than surface0 */
   --pizza-brown: var(--ctp-maroon);
   --pizza-bg: var(--ctp-base);
-  --pizza-card: var(--ctp-mantle);
+  --pizza-card: #ffffff; /* Brighter cards in light mode */
 
   /* Semantic Theme Colors */
   --theme-text: var(--ctp-text);
   --theme-text-secondary: var(--ctp-subtext0);
   --theme-bg: var(--ctp-base);
   --theme-surface: var(--ctp-surface0);
-  --theme-card: var(--ctp-mantle);
+  --theme-card: #ffffff;
   --theme-border: var(--ctp-surface1);
+
+  /* Refined Shadows */
+  --shadow-color: color-mix(in srgb, var(--ctp-maroon), transparent 90%);
+  --shadow-lg: 0 10px 30px var(--shadow-color);
 }
 
 .dark {
@@ -94,13 +98,21 @@
   --theme-surface: var(--ctp-surface0);
   --theme-card: var(--ctp-surface1);
   --theme-border: var(--ctp-surface0);
+
+  /* Refined Shadows (Dark) */
+  --shadow-color: rgba(0, 0, 0, 0.4);
 }
 
 /* Global Styles */
 body {
   background-color: var(--theme-bg);
+  background-image: radial-gradient(circle at top right, color-mix(in srgb, var(--ctp-rosewater), transparent 95%), transparent);
   color: var(--theme-text);
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dark body {
+  background-image: radial-gradient(circle at top right, color-mix(in srgb, var(--ctp-mauve), transparent 98%), transparent);
 }
 
 /* Helper Classes */
@@ -112,20 +124,51 @@ body {
 .border-theme { border-color: var(--theme-border); }
 
 /* Catppuccin Specific Utility replacements for hardcoded tailwind */
+.bg-ctp-rosewater { background-color: var(--ctp-rosewater); }
+.bg-ctp-flamingo { background-color: var(--ctp-flamingo); }
+.bg-ctp-pink { background-color: var(--ctp-pink); }
 .bg-ctp-mauve { background-color: var(--ctp-mauve); }
-.bg-ctp-blue { background-color: var(--ctp-blue); }
-.bg-ctp-green { background-color: var(--ctp-green); }
-.bg-ctp-yellow { background-color: var(--ctp-yellow); }
 .bg-ctp-red { background-color: var(--ctp-red); }
+.bg-ctp-maroon { background-color: var(--ctp-maroon); }
 .bg-ctp-peach { background-color: var(--ctp-peach); }
+.bg-ctp-yellow { background-color: var(--ctp-yellow); }
+.bg-ctp-green { background-color: var(--ctp-green); }
+.bg-ctp-teal { background-color: var(--ctp-teal); }
+.bg-ctp-sky { background-color: var(--ctp-sky); }
+.bg-ctp-sapphire { background-color: var(--ctp-sapphire); }
+.bg-ctp-blue { background-color: var(--ctp-blue); }
+.bg-ctp-lavender { background-color: var(--ctp-lavender); }
 .bg-ctp-surface0 { background-color: var(--ctp-surface0); }
 
+.text-ctp-rosewater { color: var(--ctp-rosewater); }
+.text-ctp-flamingo { color: var(--ctp-flamingo); }
+.text-ctp-pink { color: var(--ctp-pink); }
 .text-ctp-mauve { color: var(--ctp-mauve); }
-.text-ctp-blue { color: var(--ctp-blue); }
-.text-ctp-green { color: var(--ctp-green); }
-.text-ctp-yellow { color: var(--ctp-yellow); }
 .text-ctp-red { color: var(--ctp-red); }
+.text-ctp-maroon { color: var(--ctp-maroon); }
 .text-ctp-peach { color: var(--ctp-peach); }
+.text-ctp-yellow { color: var(--ctp-yellow); }
+.text-ctp-green { color: var(--ctp-green); }
+.text-ctp-teal { color: var(--ctp-teal); }
+.text-ctp-sky { color: var(--ctp-sky); }
+.text-ctp-sapphire { color: var(--ctp-sapphire); }
+.text-ctp-blue { color: var(--ctp-blue); }
+.text-ctp-lavender { color: var(--ctp-lavender); }
+
+.border-ctp-rosewater { border-color: var(--ctp-rosewater); }
+.border-ctp-flamingo { border-color: var(--ctp-flamingo); }
+.border-ctp-pink { border-color: var(--ctp-pink); }
+.border-ctp-mauve { border-color: var(--ctp-mauve); }
+.border-ctp-red { border-color: var(--ctp-red); }
+.border-ctp-maroon { border-color: var(--ctp-maroon); }
+.border-ctp-peach { border-color: var(--ctp-peach); }
+.border-ctp-yellow { border-color: var(--ctp-yellow); }
+.border-ctp-green { border-color: var(--ctp-green); }
+.border-ctp-teal { border-color: var(--ctp-teal); }
+.border-ctp-sky { border-color: var(--ctp-sky); }
+.border-ctp-sapphire { border-color: var(--ctp-sapphire); }
+.border-ctp-blue { border-color: var(--ctp-blue); }
+.border-ctp-lavender { border-color: var(--ctp-lavender); }
 
 /* Buttons */
 .btn-ctp {
