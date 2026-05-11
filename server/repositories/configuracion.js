@@ -46,7 +46,7 @@ export const updateConfiguracion = async (config) => {
             nombre_pizzeria = ${nombre_pizzeria},
             logo_url = ${logo_url},
             theme_flavor = ${theme_flavor},
-            custom_colors = ${JSON.stringify(custom_colors || {})}
+            custom_colors = ${custom_colors || {}}
         WHERE id = (SELECT id FROM "Configuracion" LIMIT 1)
         RETURNING *
     `;

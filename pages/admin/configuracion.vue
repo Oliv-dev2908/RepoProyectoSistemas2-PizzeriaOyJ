@@ -92,7 +92,7 @@
 </template>
 
 <script setup>
-import { reactive, onMounted } from 'vue';
+import { reactive, onMounted, watch } from 'vue';
 import { useConfiguracion } from '@/client/compossables/useConfiguracion';
 import * as ElementPlusIcons from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
@@ -110,31 +110,45 @@ const form = reactive({
   custom_colors: {}
 });
 
-onMounted(() => {
+const loadInitialData = () => {
   form.nombre_pizzeria = configuracion.value.nombre_pizzeria;
   form.logo_url = configuracion.value.logo_url;
   form.theme_flavor = configuracion.value.theme_flavor;
   form.custom_colors = { ...configuracion.value.custom_colors };
   
-  // Inicializar colores vacíos
   configurableColors.forEach(c => {
     if (!form.custom_colors[c]) form.custom_colors[c] = '';
   });
-});
+};
+
+onMounted(loadInitialData);
+
+// Asegurar que si la configuración global cambia, el formulario se actualice (si no está cargando)
+watch(() => configuracion.value, (newVal) => {
+  if (!loading.value) {
+    loadInitialData();
+  }
+}, { deep: true });
 
 const handleSave = async () => {
   try {
     const cleanColors = {};
     Object.entries(form.custom_colors).forEach(([k, v]) => { if(v) cleanColors[k] = v; });
 
-    await updateConfig({ 
-      ...form,
+    const payload = { 
+      nombre_pizzeria: form.nombre_pizzeria,
+      logo_url: form.logo_url,
+      theme_flavor: form.theme_flavor,
       custom_colors: cleanColors
-    });
-    ElMessage.success('¡Configuración guardada correctamente!');
+    };
+
+    const result = await updateConfig(payload);
+    if (result.success) {
+      ElMessage.success('¡Configuración guardada correctamente!');
+    }
   } catch (error) {
-    ElMessage.error('Error al guardar');
-    console.error(error);
+    ElMessage.error('Error al guardar: ' + (error.message || 'Error desconocido'));
+    console.error('Error saving config:', error);
   }
 };
 </script>
