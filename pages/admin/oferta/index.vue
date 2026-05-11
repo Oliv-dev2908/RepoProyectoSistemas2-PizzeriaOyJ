@@ -14,8 +14,7 @@
         <el-input v-model="searchTerm" placeholder="Buscar oferta..." clearable
           class="max-w-xs shadow-inner rounded-lg" @clear="currentPage = 1" @input="currentPage = 1"
           prefix-icon="el-icon-search" />
-        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;">
+        <el-button class="pulse-button" :icon="Plus" @click="redirectToInsert">
            Agregar Oferta
         </el-button>
       </div>
@@ -29,7 +28,7 @@
             </h2>
             <p class="text-pizza-cream font-semibold">Tipo: <span class="text-pizza-orange">{{ oferta.tipo }}</span></p>
             <p class="text-pizza-cream font-semibold">
-              Activa: <span :class="oferta.activo ? 'text-green-600' : 'text-red-500'">
+              Activa: <span :class="oferta.activo ? 'text-ctp-green' : 'text-ctp-red'">
                 {{ oferta.activo ? 'Sí' : 'No' }}
               </span>
             </p>

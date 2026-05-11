@@ -59,8 +59,8 @@
 
           <div class="flex-grow"></div>
 
-          <!-- Cerrar Sesión -->
-          <el-menu-item @click="handleLogout" index="/logout" class="!text-ctp-red !mt-10 border-t border-theme">
+          <!-- Cerrar Sesión (Special Styling for contrast) -->
+          <el-menu-item @click="handleLogout" index="/logout" class="logout-item !mt-10 border-t border-theme">
             <el-icon><ElementPlusIcons.SwitchButton /></el-icon>
             <template #title>Cerrar Sesión</template>
           </el-menu-item>
@@ -157,3 +157,13 @@ onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize);
 });
 </script>
+
+<style scoped>
+.logout-item {
+  color: var(--ctp-red) !important;
+}
+.logout-item:hover {
+  background-color: var(--ctp-red) !important;
+  color: var(--theme-bg) !important;
+}
+</style>

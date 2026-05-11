@@ -26,24 +26,23 @@
           <el-option label="Otro" value="Otro" />
         </el-select>
 
-        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;">
+        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert">
           Agregar Ingrediente
         </el-button>
       </div>
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <el-card v-for="ing in pagedIngredientes" :key="ing.id_ingrediente" shadow="hover"
-          class="pizza-card flex flex-col justify-between rounded-2xl border-4 border-pizza-red bg-pizza-card p-5 hover:scale-[1.03] transition-transform duration-300 shadow-xl">
+          class="pizza-card flex flex-col justify-between rounded-2xl border-4 border-ctp-red bg-theme-card p-5 hover:scale-[1.03] transition-transform duration-300 shadow-xl">
           <div>
             <h2 class="text-2xl font-pizza-title mb-2 text-pizza-red drop-shadow-md">
               {{ ing.nombre }}
             </h2>
-            <p class="text-pizza-cream font-semibold">
+            <p class="text-theme-secondary font-semibold">
               Costo Unitario:
-              <span class="text-pizza-orange">${{ ing.costo_unitario }}</span>
+              <span class="text-ctp-peach">${{ ing.costo_unitario }}</span>
             </p>
-            <p class="text-pizza-cream font-semibold mb-1">
+            <p class="text-theme-secondary font-semibold mb-1">
               Tipo:
               <el-tag type="warning" effect="dark" class="ml-1">{{ ing.tipo }}</el-tag>
             </p>
@@ -68,7 +67,7 @@
           </div>
 
           <div v-if="!loading && filteredIngredientes.length === 0"
-            class="col-span-full text-center text-pizza-red font-bold text-xl mt-10 border-2 border-pizza-red rounded-xl p-4 bg-white">
+            class="col-span-full text-center text-pizza-red font-bold text-xl mt-10 border-2 border-pizza-red rounded-xl p-4 bg-theme-surface">
             No se encontró el ingrediente 🧑‍🍳
           </div>
         </el-card>

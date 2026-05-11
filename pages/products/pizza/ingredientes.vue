@@ -17,15 +17,15 @@
 
 
       <!-- Ingredientes actuales -->
-      <div v-if="ingredientes.length === 0" class="text-center text-gray-600">
+      <div v-if="ingredientes.length === 0" class="text-center text-theme-secondary">
         <p>Aún no se agregaron ingredientes a esta pizza.</p>
       </div>
       <div v-else>
-        <h3 class="text-lg font-semibold mb-2">Ingredientes Actuales:</h3>
+        <h3 class="text-lg font-semibold mb-2 text-theme-text">Ingredientes Actuales:</h3>
         <ul class="space-y-2">
           <li v-for="ingrediente in ingredientes" :key="ingrediente.id_ingrediente"
-            class="flex justify-between items-center border p-2 rounded shadow-inner bg-white">
-            <span class="font-medium text-pizza-brown">
+            class="flex justify-between items-center border border-theme p-2 rounded shadow-inner bg-theme-surface">
+            <span class="font-medium text-theme-text">
               {{ ingrediente.nombre }} - Cantidad: {{ ingrediente.cantidad }}
             </span>
             <el-button type="danger" size="small" @click="removeIngrediente(ingrediente.id_ingrediente)">
@@ -37,7 +37,7 @@
 
       <!-- Agregar ingrediente -->
       <div class="mt-4">
-        <h3 class="text-lg font-semibold mb-2">Agregar Ingredientes:</h3>
+        <h3 class="text-lg font-semibold mb-2 text-theme-text">Agregar Ingredientes:</h3>
         <el-form-item label="Ingrediente">
           <el-select v-model="selectedIngrediente" placeholder="Seleccionar ingrediente" class="w-full">
             <el-option v-for="ingrediente in allIngredientes" :key="ingrediente.id_ingrediente"
@@ -49,13 +49,12 @@
           <div class="flex items-center gap-2 w-full">
             <el-input-number v-model="cantidad" :min="5" :max="1300" class="flex-grow" placeholder="Cantidad"
               :controls="false" />
-            <span class="text-gray-600 font-semibold">gramos</span>
+            <span class="text-theme-secondary font-semibold">gramos</span>
           </div>
         </el-form-item>
 
 
         <el-button type="success" class="w-full pulse-button"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
           @click="addIngrediente">
           Agregar Ingrediente
         </el-button>
@@ -63,7 +62,7 @@
     </el-form>
   </el-card>
 
-  <div v-else class="text-center text-gray-600">Cargando...</div>
+  <div v-else class="text-center text-theme-secondary">Cargando...</div>
 </template>
 
 <script setup>

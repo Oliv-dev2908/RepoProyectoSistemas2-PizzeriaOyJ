@@ -10,7 +10,7 @@
     </el-button>
 
     <h1
-      class="text-4xl font-pizza-title mb-8 text-pizza-red text-center drop-shadow-lg"
+      class="text-4xl font-pizza-title mb-8 text-ctp-red text-center drop-shadow-lg"
     >
       {{ isUpdate ? 'Actualizar Producto' : 'Agregar Producto' }}
     </h1>
@@ -68,7 +68,6 @@
             type="success"
             native-type="submit"
             class="w-full pulse-button"
-            style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
           >
             {{ isUpdate ? 'Actualizar Producto' : 'Agregar Producto' }}
           </el-button>
@@ -79,16 +78,15 @@
     <transition name="fade">
       <div
         v-if="success"
-        class="text-center p-8 bg-green-100 rounded-lg max-w-lg mx-auto"
+        class="text-center p-8 bg-theme-surface rounded-lg max-w-lg mx-auto"
       >
-        <h2 class="text-2xl font-bold text-green-700 mb-4">
+        <h2 class="text-2xl font-bold text-ctp-green mb-4">
           ¡Producto {{ isUpdate ? 'actualizado' : 'agregado' }} exitosamente!
         </h2>
         <el-button
           type="primary"
           @click="goBack"
           class="pulse-button"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
         >
           Volver a Productos
         </el-button>

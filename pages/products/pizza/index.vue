@@ -10,8 +10,7 @@
         <!-- Para Buscar-->
         <el-input v-model="searchTerm" placeholder="Buscar Pizza..." clearable class="max-w-xs shadow-inner rounded-lg"
           @clear="currentPage = 1" @input="currentPage = 1" prefix-icon="el-icon-search" />
-        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;">
+        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert">
           Agregar Pizza
         </el-button>
       </div>
@@ -19,16 +18,16 @@
 
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <el-card v-for="pizza in pagedCategorias" :key="pizza.id_pizza" shadow="hover"
-          class="pizza-card flex flex-col justify-between rounded-xl border-2 border-pizza-red bg-pizza-card p-5 hover:scale-[1.03] transition-transform duration-300">
+          class="pizza-card flex flex-col justify-between rounded-xl border-2 border-ctp-red bg-theme-card p-5 hover:scale-[1.03] transition-transform duration-300">
           <div>
             <h2 class="text-2xl font-pizza-title mb-2 text-pizza-red drop-shadow-md">
               {{ pizza.nombre }}
             </h2>
-            <p class="text-pizza-cream font-semibold">
-              Descripción: <span class="text-pizza-orange">{{ pizza.descripcion }}</span>
+            <p class="text-theme-secondary font-semibold">
+              Descripción: <span class="text-ctp-peach">{{ pizza.descripcion }}</span>
             </p>
-            <p class="text-pizza-cream font-semibold">
-              Precio Base: <span class="text-pizza-orange">${{ pizza.precio_base }}</span>
+            <p class="text-theme-secondary font-semibold">
+              Precio Base: <span class="text-ctp-peach">${{ pizza.precio_base }}</span>
             </p>
           </div>
 

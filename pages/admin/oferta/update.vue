@@ -86,7 +86,7 @@
         </el-form-item>
 
         <el-form-item>
-          <el-button type="success" native-type="submit" class="w-full pulse-button">
+          <el-button type="primary" native-type="submit" class="w-full pulse-button">
             Actualizar Oferta
           </el-button>
         </el-form-item>
@@ -95,8 +95,8 @@
     </el-card>
 
     <transition name="fade">
-      <div v-if="success" class="text-center p-8 bg-green-100 rounded-lg max-w-lg mx-auto">
-        <h2 class="text-2xl font-bold text-green-700 mb-4">¡Oferta actualizada exitosamente!</h2>
+      <div v-if="success" class="text-center p-8 bg-theme-surface rounded-lg border-2 border-ctp-green max-w-lg mx-auto">
+        <h2 class="text-2xl font-bold text-ctp-green mb-4">¡Oferta actualizada exitosamente!</h2>
         <el-button type="primary" @click="goBack" class="pulse-button">
           Volver a Ofertas
         </el-button>

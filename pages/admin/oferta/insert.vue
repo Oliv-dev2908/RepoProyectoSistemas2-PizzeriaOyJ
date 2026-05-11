@@ -119,10 +119,9 @@
 
         <el-form-item>
           <el-button
-            type="success"
+            type="primary"
             native-type="submit"
             class="w-full pulse-button"
-            style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
           >
             Agregar Oferta
           </el-button>
@@ -133,13 +132,12 @@
 
     <!-- Mensaje éxito -->
     <transition name="fade">
-      <div v-if="success" class="text-center p-8 bg-green-100 rounded-lg">
-        <h2 class="text-2xl font-bold text-green-700 mb-4">¡Oferta agregada exitosamente!</h2>
+      <div v-if="success" class="text-center p-8 bg-theme-surface rounded-lg border-2 border-ctp-green">
+        <h2 class="text-2xl font-bold text-ctp-green mb-4">¡Oferta agregada exitosamente!</h2>
         <el-button
           type="primary"
           @click="goBack"
           class="pulse-button"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;"
         >
           Volver a Ofertas
         </el-button>

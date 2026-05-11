@@ -1,6 +1,6 @@
 <template>
-  <div class="container mx-auto p-6 bg-pizza-bg rounded-lg shadow-lg">
-    <h1 class="text-4xl font-bold mb-6 text-pizza-red font-pizza-title drop-shadow-lg">
+  <div class="container mx-auto p-6 bg-theme-bg rounded-lg shadow-lg">
+    <h1 class="text-4xl font-bold mb-6 text-ctp-red font-pizza-title drop-shadow-lg">
       Productos
     </h1>
 
@@ -15,8 +15,7 @@
         <el-input v-model="searchTerm" placeholder="Buscar producto..." clearable
           class="max-w-xs shadow-inner rounded-lg" @clear="currentPage = 1" @input="currentPage = 1"
           :prefix-icon="Search" />
-        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert"
-          style="background: linear-gradient(45deg, #e63946, #f1faee); color: #7f1d1d; font-weight: 700;">
+        <el-button class="pulse-button" type="danger" :icon="Plus" @click="redirectToInsert">
           Agregar Producto
         </el-button>
       </div>
@@ -24,20 +23,20 @@
       <!-- Tarjetas -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <el-card v-for="prod in pagedProductos" :key="prod.id_producto" shadow="hover"
-          class="pizza-card flex flex-col justify-between rounded-xl border-2 border-pizza-red bg-pizza-card p-5 hover:scale-[1.03] transition-transform duration-300">
+          class="pizza-card flex flex-col justify-between rounded-xl border-2 border-ctp-red bg-theme-card p-5 hover:scale-[1.03] transition-transform duration-300">
           <div>
-            <h2 class="text-2xl font-pizza-title mb-2 text-pizza-red drop-shadow-md">
+            <h2 class="text-2xl font-pizza-title mb-2 text-ctp-red drop-shadow-md">
               {{ prod.nombre }}
             </h2>
-            <p class="text-pizza-cream font-semibold">
-              Descripción: <span class="text-pizza-orange">{{ prod.descripcion }}</span>
+            <p class="text-theme-secondary font-semibold">
+              Descripción: <span class="text-ctp-peach">{{ prod.descripcion }}</span>
             </p>
-            <p class="text-pizza-cream font-semibold">
+            <p class="text-theme-secondary font-semibold">
               Categoría:
               <el-tag class="category-tag" type="warning" effect="light">{{ prod.categoria_nombre || 'Sin categoría'
                 }}</el-tag>
             </p>
-            <p class="text-pizza-cream font-semibold">
+            <p class="text-theme-secondary font-semibold">
               Precio:
               <el-tag class="price-tag" type="success" effect="light">${{ prod.precio }}</el-tag>
             </p>
@@ -45,7 +44,7 @@
 
           <div class="flex justify-end mt-4">
             <el-dropdown trigger="click">
-              <el-button type="text" :icon="MoreFilled" class="text-pizza-red" />
+              <el-button type="text" :icon="MoreFilled" class="text-ctp-red" />
               <template #dropdown>
                 <el-dropdown-menu class="pizza-dropdown-menu">
                   <el-dropdown-item @click="redirectToUpdate(prod.id_producto)">
@@ -62,7 +61,7 @@
 
         <!-- Sin productos -->
         <div v-if="!loading && filteredProductos.length === 0"
-          class="col-span-full text-center text-pizza-red font-semibold text-lg mt-10">
+          class="col-span-full text-center text-ctp-red font-semibold text-lg mt-10">
           No se encontró el producto 🍕
         </div>
       </div>
