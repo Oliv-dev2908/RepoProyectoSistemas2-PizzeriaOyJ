@@ -600,5 +600,3 @@ img[alt="Logo Pizzería"]:hover {
 .bg-green-100 { background-color: var(--ctp-green); opacity: 0.2; }
 .text-green-700 { color: var(--ctp-green); }
 .dark .text-green-700 { color: var(--ctp-green); }
-; }
-.dark .text-green-700 { color: var(--ctp-green); }
