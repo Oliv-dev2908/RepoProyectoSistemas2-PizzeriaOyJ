@@ -152,7 +152,7 @@ body {
 .el-dropdown-menu__item { color: var(--theme-text) !important; }
 .el-dropdown-menu__item:hover { background-color: var(--theme-surface) !important; color: var(--ctp-mauve) !important; }
 
-/* INPUTS & SELECTS FIX (The "White" Issue) */
+/* INPUTS & SELECTS FIX */
 .el-input__wrapper, 
 .el-textarea__inner, 
 .el-select__wrapper,
@@ -173,17 +173,69 @@ body {
   background-color: var(--theme-surface) !important;
   color: var(--theme-text) !important;
 }
-.el-input-number__decrease:hover, .el-input-number__increase:hover {
-  color: var(--ctp-mauve) !important;
-}
+.el-input-number__decrease:hover, .el-input-number__increase:hover { color: var(--ctp-mauve) !important; }
 
-/* Fix background of the actual selection items */
+/* Selection dropdowns background */
 .el-select-dropdown__item { color: var(--theme-text) !important; }
 .el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background-color: var(--theme-surface) !important; }
 .el-select-dropdown__item.selected { color: var(--ctp-mauve) !important; font-weight: bold; }
 .el-select-dropdown { background-color: var(--theme-card) !important; border: 1px solid var(--theme-border) !important; }
 
-/* Pulse Button (Add Buttons) */
+/* Dialog / Modal / Survey Fix */
+.el-dialog {
+  background-color: var(--theme-card) !important;
+  border: 1px solid var(--theme-border) !important;
+  border-radius: 1.5rem !important;
+  overflow: hidden !important;
+}
+.el-dialog__header, .el-dialog__body, .el-dialog__footer {
+  background-color: var(--theme-card) !important;
+  color: var(--theme-text) !important;
+}
+.el-dialog__title {
+  color: var(--theme-text) !important;
+  font-weight: 800 !important;
+}
+
+/* Pagination Fixes (Numeric Buttons) */
+.el-pagination {
+  --el-pagination-bg-color: transparent !important;
+  --el-pagination-hover-color: var(--ctp-mauve) !important;
+  display: flex !important;
+  justify-content: center !important;
+  margin-top: 2rem !important;
+  padding: 1rem !important;
+}
+
+.el-pager li {
+  background-color: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-radius: 8px !important;
+  margin: 0 4px !important;
+  font-weight: 700 !important;
+  border: 1px solid var(--theme-border) !important;
+  transition: all 0.2s ease !important;
+}
+
+.el-pager li.is-active {
+  background-color: var(--ctp-mauve) !important;
+  color: var(--theme-bg) !important;
+  border-color: var(--ctp-mauve) !important;
+}
+
+.el-pager li:hover:not(.is-active) {
+  color: var(--ctp-mauve) !important;
+  border-color: var(--ctp-mauve) !important;
+}
+
+.el-pagination button {
+  background-color: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+  border-radius: 8px !important;
+  border: 1px solid var(--theme-border) !important;
+}
+
+/* Pulse Button */
 .pulse-button { 
   animation: pulse 2s infinite; 
   background-color: var(--ctp-mauve) !important; 
