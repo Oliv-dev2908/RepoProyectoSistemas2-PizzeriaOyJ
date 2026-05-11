@@ -3,6 +3,12 @@
     <el-aside :class="{ 'collapsed': isCollapse }" :style="{ width: isCollapse ? '64px' : '200px' }">
       <el-scrollbar class="el-scrollbar-menu">
         <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse":collapse-transition="false" v-if="sidebarOpened">
+          <!-- Branding y Toggle Dark Mode -->
+          <div class="p-4 flex flex-col items-center border-b border-theme mb-2" v-if="!isCollapse">
+            <img :src="configuracion.logo_url" alt="Logo" class="w-16 h-16 object-contain rounded-full shadow-md border-2 border-ctp-red mb-2" />
+            <span class="text-sm font-bold text-ctp-red text-center font-pizza-title">{{ configuracion.nombre_pizzeria }}</span>
+          </div>
+
           <el-menu-item @click="toggleDark()" center="true" index="#">
             <el-icon v-if="isDark">
               <ElementPlusIcons.Moon />
@@ -12,6 +18,8 @@
             </el-icon>
             <span class="ml-2">{{ isDark ? 'Dark' : 'Light' }}</span>
           </el-menu-item>
+
+          <!-- Rutas Dinámicas -->
           <el-menu-item v-if="filteredRoutes.length > 0" v-for="route in filteredRoutes" :key="route.path"
             :index="route.path"
             @click="navigateWithLoading(route.path)">
@@ -19,6 +27,12 @@
               <component :is="route.icon" />
             </el-icon>
             <template #title>{{ route.name }}</template>
+          </el-menu-item>
+
+          <!-- Configuración de Marca (Admin Only) -->
+          <el-menu-item v-if="userRole === 'admin'" @click="navigateWithLoading('/admin/configuracion')" index="/admin/configuracion">
+            <el-icon><ElementPlusIcons.Setting /></el-icon>
+            <template #title>Configuración de Marca</template>
           </el-menu-item>
 
           <el-sub-menu v-for="route in filteredRoutesChildren" v-if="filteredRoutesChildren.length > 0"
@@ -59,7 +73,12 @@ import * as ElementPlusIcons from '@element-plus/icons-vue';
 import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs';
 import { useRouter } from 'vue-router';
 import { useAppRoutes } from './../client/compossables/useAppRoutes'
+import { useUserRole } from './../client/compossables/useUserRole'
+import { useConfiguracion } from './../client/compossables/useConfiguracion'
+
 const { filteredRoutes, filteredRoutesChildren } = useAppRoutes()
+const { userRole } = useUserRole()
+const { configuracion } = useConfiguracion()
 //Pantalla de carga
 const router = useRouter();
 const navigateWithLoading = async (path) => {

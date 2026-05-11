@@ -1,87 +1,74 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-black">
-    <div class="bg-[#121212] p-8 rounded-lg shadow-lg w-full max-w-sm">
+  <div class="min-h-screen flex items-center justify-center bg-theme-bg transition-colors duration-300">
+    <div class="bg-theme-card p-8 rounded-2xl shadow-2xl w-full max-w-sm border border-theme">
       <!-- Sección de encabezado con logo y título pizzería -->
       <div class="text-center mb-6">
         <img
-          src="https://www.creativefabrica.com/wp-content/uploads/2022/04/17/Pizza-Logo-Design-Graphics-29132095-1.jpg"
-          alt="Logo Pizzería" class="mx-auto mb-4 w-16 h-16 object-contain rounded-full border-2 border-white" />
-        <h2 class="text-3xl font-bold text-white">Bienvenido a Victorino's</h2>
+          :src="configuracion.logo_url"
+          alt="Logo Pizzería" class="mx-auto mb-4 w-20 h-20 object-contain rounded-full border-4 border-ctp-red shadow-lg" />
+        <h2 class="text-3xl font-bold text-theme-text font-pizza-title">{{ configuracion.nombre_pizzeria }}</h2>
+        <p class="text-theme-secondary mt-1">¡Bienvenido de nuevo!</p>
       </div>
 
       <!-- Botones de login social con toques pizzería -->
-      <div class="space-y-4 mb-6">
+      <div class="space-y-3 mb-6">
         <button
-          class="w-full flex items-center justify-center py-2 rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-red-500 bg-gradient-to-r from-red-500 to-yellow-500 text-black"
+          class="w-full btn-ctp bg-white text-gray-800 flex items-center justify-center border border-gray-200 hover:bg-gray-50 shadow-sm"
           @click="signInWithOAuth">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
-            alt="Google" class="w-5 h-5 mr-2" />
-          Iniciar sesión con Google
+            alt="Google" class="w-5 h-5 mr-3" />
+          Google
         </button>
 
         <button
-          class="w-full flex items-center justify-center py-2 rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-green-500 bg-gradient-to-r from-green-500 to-red-500 text-black"
+          class="w-full btn-ctp bg-[#1877F2] text-white flex items-center justify-center hover:opacity-90 shadow-sm"
           @click="signInWithFacebookAuth">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/2048px-2023_Facebook_icon.svg.png"
-            alt="Facebook" class="w-5 h-5 mr-2" />
-          Iniciar sesión con Facebook
-        </button>
-
-        <button
-          class="w-full flex items-center justify-center py-2 rounded-full transition duration-300 focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-gradient-to-r from-yellow-500 to-green-500 text-black"
-          @click="signInWithTwitterAuth">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Logo_of_Twitter.svg/2491px-Logo_of_Twitter.svg.png"
-            alt="Twitter" class="w-5 h-5 mr-2" />
-          Iniciar sesión con Twitter
+            alt="Facebook" class="w-5 h-5 mr-3" />
+          Facebook
         </button>
       </div>
 
       <!-- Separador -->
-      <div class="flex items-center my-4">
-        <hr class="flex-grow border-t border-gray-700" />
-        <span class="px-2 text-gray-400">o</span>
-        <hr class="flex-grow border-t border-gray-700" />
+      <div class="flex items-center my-6">
+        <hr class="flex-grow border-t border-theme" />
+        <span class="px-3 text-theme-secondary text-xs uppercase font-bold tracking-wider">o continuar con</span>
+        <hr class="flex-grow border-t border-theme" />
       </div>
 
       <!-- Formulario de login -->
-      <form @submit.prevent="signIn">
-        <div class="mb-4">
-          <label for="email" class="block text-sm font-medium text-gray-300">
+      <form @submit.prevent="signIn" class="space-y-4">
+        <div>
+          <label for="email" class="block text-sm font-semibold text-theme-text mb-1">
             Correo electrónico
           </label>
-          <input type="email" id="email" v-model="email"
-            class="mt-1 p-2 w-full border border-gray-700 rounded-md bg-black text-white focus:border-green-500 focus:ring-green-500 transition duration-300"
-            placeholder="example@correo.com" required />
+          <el-input v-model="email" id="email" type="email" placeholder="tu@correo.com" required />
         </div>
 
-        <div class="mb-4">
-          <label for="password" class="block text-sm font-medium text-gray-300">
+        <div>
+          <label for="password" class="block text-sm font-semibold text-theme-text mb-1">
             Contraseña
           </label>
-          <input type="password" id="password" v-model="password"
-            class="mt-1 p-2 w-full border border-gray-700 rounded-md bg-black text-white focus:border-green-500 focus:ring-green-500 transition duration-300"
-            placeholder="******" required />
+          <el-input v-model="password" id="password" type="password" placeholder="••••••••" show-password required />
         </div>
 
-        <div v-if="errorMsg" class="text-red-500 text-sm mb-4">
+        <div v-if="errorMsg" class="text-ctp-red text-xs font-bold text-center">
           {{ errorMsg }}
         </div>
 
-        <button type="submit"
-          class="w-full bg-green-500 text-black py-2 rounded-md hover:bg-green-400 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+        <el-button type="primary" native-type="submit" class="w-full h-10 text-lg font-bold" :loading="loading">
           Iniciar Sesión
-        </button>
+        </el-button>
       </form>
 
       <!-- Sección para redirigir al registro -->
-      <div class="mt-6 text-center">
-        <p class="text-sm text-gray-400">
+      <div class="mt-8 text-center border-t border-theme pt-4">
+        <p class="text-sm text-theme-secondary">
           ¿No tienes una cuenta?
           <button @click="irASignup"
-            class="ml-2 text-green-500 hover:text-green-400 transition duration-200 focus:outline-none focus:ring-2 focus:ring-green-500">
+            class="ml-1 text-ctp-blue hover:underline font-bold transition duration-200">
             Regístrate aquí
           </button>
         </p>
@@ -92,15 +79,24 @@
 
 <script setup>
 import { useRouter } from 'nuxt/app';
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { useConfiguracion } from '@/client/compossables/useConfiguracion';
 
+const { configuracion, fetchConfig } = useConfiguracion();
 const client = useSupabaseClient();
 const router = useRouter();
 const email = ref("");
 const password = ref(null);
 const errorMsg = ref(null);
+const loading = ref(false);
+
+onMounted(async () => {
+  await fetchConfig();
+});
 
 async function signIn() {
+  loading.value = true;
+  errorMsg.value = null;
   try {
     const { error } = await client.auth.signInWithPassword({
       email: email.value,
@@ -113,6 +109,8 @@ async function signIn() {
     router.push("/about"); // Redirige a la página "about" después del login exitoso
   } catch (error) {
     errorMsg.value = error.message; // Muestra el mensaje de error si la autenticación falla
+  } finally {
+    loading.value = false;
   }
 }
 
