@@ -11,23 +11,14 @@
       </div>
 
       <!-- Botones de login social -->
-      <div class="space-y-3 mb-6">
+      <div class="mb-6">
         <button
-          class="w-full btn-ctp !bg-theme-text !text-theme-bg flex items-center justify-center border border-theme hover:opacity-90 shadow-sm"
+          class="w-full btn-ctp btn-ctp-primary flex items-center justify-center shadow-md hover:scale-[1.02] active:scale-95 transition-all"
           @click="signInWithOAuth">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
-            alt="Google" class="w-5 h-5 mr-3" />
+            alt="Google" class="w-5 h-5 mr-3 bg-white rounded-full p-0.5" />
           Continuar con Google
-        </button>
-
-        <button
-          class="w-full btn-ctp bg-[#1877F2] !text-white flex items-center justify-center hover:opacity-90 shadow-sm"
-          @click="signInWithFacebookAuth">
-          <img
-            src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/2048px-2023_Facebook_icon.svg.png"
-            alt="Facebook" class="w-5 h-5 mr-3" />
-          Facebook
         </button>
       </div>
 
@@ -127,14 +118,4 @@ const signInWithOAuth = async () => {
 function irASignup() {
   router.push('/signup');
 }
-
-const signInWithFacebookAuth = async () => {
-  const { error } = await client.auth.signInWithOAuth({
-    provider: 'facebook',
-    options: {
-      redirectTo: `${window.location.origin}/confirm`,
-    },
-  });
-  if (error) console.log(error);
-};
 </script>
