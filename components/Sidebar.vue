@@ -35,6 +35,12 @@
             <template #title>Configuración de Marca</template>
           </el-menu-item>
 
+          <!-- Cerrar Sesión -->
+          <el-menu-item @click="handleLogout" index="/logout" class="!text-ctp-red">
+            <el-icon><ElementPlusIcons.SwitchButton /></el-icon>
+            <template #title>Cerrar Sesión</template>
+          </el-menu-item>
+
           <el-sub-menu v-for="route in filteredRoutesChildren" v-if="filteredRoutesChildren.length > 0"
             :key="route.path":index="route.path">
             <template #title>
@@ -114,6 +120,13 @@ const checkScreenSize = () => {
 onMounted(() => {
   checkScreenSize();
   window.addEventListener('resize', checkScreenSize);
+});
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreenSize);
+});
+</script>
+
+addEventListener('resize', checkScreenSize);
 });
 onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize);
