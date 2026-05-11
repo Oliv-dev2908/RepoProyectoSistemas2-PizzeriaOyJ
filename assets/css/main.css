@@ -287,7 +287,12 @@ img[alt="Logo Pizzería"]:hover {
 
 /* Pizza Theme Components (Unified) */
 .container {
+  width: 100%;
   max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;
+  padding-right: 1rem;
   background-color: var(--pizza-bg);
   border-radius: 1rem;
   box-shadow: 0 10px 30px color-mix(in srgb, var(--ctp-red), transparent 70%);
@@ -594,4 +599,6 @@ img[alt="Logo Pizzería"]:hover {
 /* Utility Classes */
 .bg-green-100 { background-color: var(--ctp-green); opacity: 0.2; }
 .text-green-700 { color: var(--ctp-green); }
+.dark .text-green-700 { color: var(--ctp-green); }
+; }
 .dark .text-green-700 { color: var(--ctp-green); }

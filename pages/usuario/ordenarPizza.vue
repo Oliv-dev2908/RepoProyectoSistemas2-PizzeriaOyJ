@@ -1,75 +1,100 @@
 <template>
-  <div class="container mx-auto p-4 text-theme-text">
-    <h1 class="text-2xl font-bold mb-6 font-pizza-title">¿Qué quieres agregar?</h1>
+  <div class="container mx-auto p-4 sm:p-6 text-theme-text min-h-screen">
+    <h1 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 font-pizza-title text-center sm:text-left">¿Qué quieres agregar?</h1>
 
     <!-- Cartas para elegir -->
-    <div class="grid grid-cols-2 gap-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
       <div @click="abrirModal('pizza')"
-        class="cursor-pointer bg-theme-card border-2 border-ctp-yellow p-6 rounded-lg shadow-lg hover:scale-105 transition group">
-        <h2 class="text-xl font-semibold text-center text-ctp-yellow group-hover:drop-shadow-sm">🍕 Pizza</h2>
+        class="cursor-pointer bg-theme-card border-2 border-ctp-yellow p-6 sm:p-8 rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all group">
+        <h2 class="text-xl sm:text-2xl font-bold text-center text-ctp-yellow group-hover:drop-shadow-sm">🍕 Pizza</h2>
+        <p class="text-center text-theme-secondary text-sm mt-2">Arma tu pizza ideal</p>
       </div>
 
       <div @click="abrirModal('producto')"
-        class="cursor-pointer bg-theme-card border-2 border-ctp-green p-6 rounded-lg shadow-lg hover:scale-105 transition group">
-        <h2 class="text-xl font-semibold text-center text-ctp-green group-hover:drop-shadow-sm">🛒 Producto</h2>
+        class="cursor-pointer bg-theme-card border-2 border-ctp-green p-6 sm:p-8 rounded-2xl shadow-lg hover:scale-[1.02] active:scale-95 transition-all group">
+        <h2 class="text-xl sm:text-2xl font-bold text-center text-ctp-green group-hover:drop-shadow-sm">🛒 Complementos</h2>
+        <p class="text-center text-theme-secondary text-sm mt-2">Bebidas y snacks</p>
       </div>
     </div>
 
     <!-- Carrito -->
-    <div v-if="carrito.length > 0" class="mt-8">
-      <h2 class="text-xl font-bold mb-2">Carrito</h2>
-      <ul class="space-y-2">
-        <li v-for="(item, index) in carrito" :key="index" class="border border-theme p-2 rounded flex justify-between items-center bg-theme-card">
-          <div>
-            <div v-if="item.tipo === 'pizza'">
-              🍕 <span class="font-bold">{{ item.pizzaNombre }}</span> ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidad).toFixed(2) }}</span>
+    <div v-if="carrito.length > 0" class="mt-10 sm:mt-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-xl sm:text-2xl font-bold border-l-4 border-ctp-mauve pl-3">Tu Pedido</h2>
+        <span class="text-xs font-bold bg-ctp-mauve/10 text-ctp-mauve px-2 py-1 rounded">{{ carrito.length }} items</span>
+      </div>
+      
+      <ul class="space-y-3">
+        <li v-for="(item, index) in carrito" :key="index" 
+          class="border border-theme p-3 sm:p-4 rounded-xl flex justify-between items-center bg-theme-card shadow-sm">
+          <div class="flex-1">
+            <div v-if="item.tipo === 'pizza'" class="text-sm sm:text-base">
+              <span class="text-lg mr-1">🍕</span> 
+              <span class="font-bold">{{ item.pizzaNombre }}</span> 
+              <span class="text-xs sm:text-sm text-theme-secondary ml-1">({{ item.tamanoNombre }})</span>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="text-xs bg-theme-surface px-2 py-0.5 rounded border border-theme">x{{ item.cantidad }}</span>
+                <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidad).toFixed(2) }}</span>
+              </div>
             </div>
-            <div v-else-if="item.tipo === 'producto'">
-              🛒 Producto: <span class="font-bold">{{ item.productoNombre }}</span> x{{ item.cantidadProducto }} -
-              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}</span>
+            <div v-else-if="item.tipo === 'producto'" class="text-sm sm:text-base">
+              <span class="text-lg mr-1">🛒</span> 
+              <span class="font-bold">{{ item.productoNombre }}</span>
+              <div class="mt-1 flex items-center gap-2">
+                <span class="text-xs bg-theme-surface px-2 py-0.5 rounded border border-theme">x{{ item.cantidadProducto }}</span>
+                <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}</span>
+              </div>
             </div>
           </div>
 
-          <div class="flex space-x-2">
-            <button @click="eliminarDelCarrito(index)" class="text-ctp-red hover:underline font-semibold">Eliminar</button>
-          </div>
+          <button @click="eliminarDelCarrito(index)" 
+            class="ml-2 p-2 text-ctp-red hover:bg-ctp-red/10 rounded-full transition-colors"
+            title="Eliminar">
+            <el-icon class="text-xl"><ElementPlusIcons.Delete /></el-icon>
+          </button>
         </li>
       </ul>
 
-      <div class="mt-4 font-bold text-right text-xl">
-        Total: <span class="text-ctp-peach">${{ calcularTotal().toFixed(2) }}</span>
+      <div class="mt-6 p-4 bg-theme-surface rounded-xl border border-theme flex justify-between items-center">
+        <span class="font-bold text-theme-secondary">Total Estimado</span>
+        <span class="text-2xl font-bold text-ctp-peach">${{ calcularTotal().toFixed(2) }}</span>
+      </div>
+
+      <div class="mt-6">
+        <el-button type="primary" size="large" @click="finalizarPedido" class="pulse-button w-full h-12 text-lg">
+          Confirmar y Finalizar
+        </el-button>
       </div>
     </div>
-    <div v-if="carrito.length > 0" class="mt-4 text-right">
-      <el-button type="primary" size="large" @click="finalizarPedido" class="pulse-button">Finalizar Pedido</el-button>
-    </div>
 
-    <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="600px"
+    <!-- Modales Responsivos -->
+    <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="90%" class="max-w-[600px]"
       :before-close="() => dialogVisible = false">
-      <div class="text-theme-text">
-        <h3 class="font-semibold mb-4">Resumen de tu pedido:</h3>
-        <ul class="space-y-2">
-          <li v-for="(item, index) in carrito" :key="index">
-            <div v-if="item.tipo === 'pizza'">
-              🍕 {{ item.pizzaNombre }} ({{ item.tamanoNombre }}) x{{ item.cantidad }} -
-              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidad).toFixed(2) }}</span>
-            </div>
-            <div v-else-if="item.tipo === 'producto'">
-              🛒 {{ item.productoNombre }} x{{ item.cantidadProducto }} -
-              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * item.cantidadProducto).toFixed(2) }}</span>
+      <div class="text-theme-text max-h-[60vh] overflow-y-auto pr-2">
+        <h3 class="font-bold mb-4 text-theme-secondary uppercase text-xs tracking-widest">Resumen de tu pedido</h3>
+        <ul class="divide-y divide-theme">
+          <li v-for="(item, index) in carrito" :key="index" class="py-3">
+            <div class="flex justify-between items-center">
+              <span class="text-sm font-semibold">
+                {{ item.tipo === 'pizza' ? `🍕 ${item.pizzaNombre}` : `🛒 ${item.productoNombre}` }}
+                <span class="text-xs opacity-70 block sm:inline"> (x{{ item.tipo === 'pizza' ? item.cantidad : item.cantidadProducto }})</span>
+              </span>
+              <span class="text-ctp-peach font-bold">${{ (item.precioUnitario * (item.tipo === 'pizza' ? item.cantidad : item.cantidadProducto)).toFixed(2) }}</span>
             </div>
           </li>
         </ul>
 
-        <div class="mt-4 font-bold text-right text-lg">
-          Total: <span class="text-ctp-peach">${{ calcularTotal().toFixed(2) }}</span>
+        <div class="mt-6 pt-4 border-t-2 border-theme text-right">
+          <p class="text-sm text-theme-secondary">Total a Pagar</p>
+          <p class="text-2xl font-bold text-ctp-peach">${{ calcularTotal().toFixed(2) }}</p>
         </div>
       </div>
 
       <template #footer>
-        <el-button @click="dialogVisible = false">Cancelar</el-button>
-        <el-button type="primary" @click="confirmarPedido">Confirmar</el-button>
+        <div class="flex gap-3 justify-end">
+          <el-button @click="dialogVisible = false" class="flex-1 sm:flex-none">Volver</el-button>
+          <el-button type="primary" @click="confirmarPedido" class="flex-1 sm:flex-none">Confirmar</el-button>
+        </div>
       </template>
     </el-dialog>
 
