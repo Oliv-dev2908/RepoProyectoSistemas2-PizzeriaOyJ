@@ -12,7 +12,7 @@
           <h1 class="text-2xl font-bold text-theme-text">{{ nombreCompleto }}</h1>
           <p class="text-theme-secondary text-sm">{{ user?.email }}</p>
           <div class="mt-2">
-            <span class="text-xs text-theme-bg bg-ctp-mauve px-3 py-1 rounded-full shadow font-bold">
+            <span class="text-xs !text-theme-bg bg-ctp-mauve px-3 py-1 rounded-full shadow font-bold">
               {{ rol }}
             </span>
           </div>
@@ -32,7 +32,7 @@
         <template v-if="cargando">
           <div class="flex flex-col items-center justify-center py-10 gap-3">
              <el-icon class="is-loading text-3xl text-ctp-mauve"><ElementPlusIcons.Loading /></el-icon>
-             <p class="text-theme-secondary animate-pulse">Actualizando...</p>
+             <p class="text-theme-secondary animate-pulse">Cargando...</p>
           </div>
         </template>
 
@@ -82,7 +82,7 @@
 
             <!-- Sección: Cuentas -->
             <div v-else-if="seccionActiva === 'cuentas'" class="space-y-4 animate-in fade-in slide-in-from-bottom-2 duration-300">
-              <h2 class="text-lg font-bold text-theme-text mb-4">Cuentas Conectadas</h2>
+              <h2 class="text-lg font-bold text-theme-text mb-4">Seguridad</h2>
               <div class="space-y-3">
                 <div v-for="p in ['google', 'facebook', 'twitter', 'email']" :key="p" 
                   class="flex items-center justify-between p-3 bg-theme-surface rounded-lg border border-theme">
@@ -101,7 +101,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, computed } from 'vue'
 import { useSupabaseUser, useSupabaseClient } from '#imports'
 import { ElMessage } from 'element-plus'
 import * as ElementPlusIcons from '@element-plus/icons-vue'
@@ -115,7 +115,6 @@ const tabs = [
   { id: 'cuentas', label: 'Seguridad' }
 ]
 
-// Datos del usuario
 const nombreCompleto = computed(() => user.value?.user_metadata?.full_name || user.value?.user_metadata?.name || 'Usuario')
 const fotoPerfil = computed(() => user.value?.user_metadata?.avatar_url || user.value?.user_metadata?.picture || 'https://via.placeholder.com/96')
 const rol = computed(() => user.value?.user_metadata?.role || user.value?.role || 'Cliente')
@@ -161,10 +160,10 @@ async function handleUpdateProfile() {
     
     if (error) throw error
     
-    ElMessage.success('¡Perfil actualizado correctamente!')
+    ElMessage.success('¡Perfil actualizado!')
     seccionActiva.value = 'info'
   } catch (error: any) {
-    ElMessage.error('Error al actualizar: ' + error.message)
+    ElMessage.error('Error: ' + error.message)
   } finally {
     actualizando.value = false
   }
@@ -175,19 +174,19 @@ function isProviderLinked(provider: string) {
 }
 
 function estadoProveedor(provider: string) {
-  return isProviderLinked(provider) ? 'text-ctp-green font-bold' : 'text-ctp-overlay0'
+  return isProviderLinked(provider) ? 'text-ctp-green font-bold' : 'text-theme-text opacity-50'
 }
 
 function estadoTexto(provider: string) {
-  return isProviderLinked(provider) ? '● Conectado' : 'Desconectado'
+  return isProviderLinked(provider) ? 'Conectado' : 'No conectado'
 }
 
 function botonClase(tipo: string) {
   return [
-    'btn-ctp text-sm transition-all duration-300',
+    'btn-ctp !text-theme-text transition-all duration-300',
     seccionActiva.value === tipo
-      ? 'btn-ctp-primary shadow-lg scale-105'
-      : 'btn-ctp-ghost opacity-70 hover:opacity-100'
+      ? 'bg-theme-surface !font-bold border-b-2 !border-ctp-mauve rounded-none'
+      : 'btn-ctp-ghost'
   ].join(' ')
 }
 </script>

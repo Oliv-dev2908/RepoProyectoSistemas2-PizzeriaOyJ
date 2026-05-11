@@ -10,19 +10,19 @@
         <p class="text-theme-secondary mt-1">¡Bienvenido de nuevo!</p>
       </div>
 
-      <!-- Botones de login social con toques pizzería -->
+      <!-- Botones de login social -->
       <div class="space-y-3 mb-6">
         <button
-          class="w-full btn-ctp bg-white text-gray-800 flex items-center justify-center border border-gray-200 hover:bg-gray-50 shadow-sm"
+          class="w-full btn-ctp !bg-theme-text !text-theme-bg flex items-center justify-center border border-theme hover:opacity-90 shadow-sm"
           @click="signInWithOAuth">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c1/Google_%22G%22_logo.svg/768px-Google_%22G%22_logo.svg.png"
             alt="Google" class="w-5 h-5 mr-3" />
-          Google
+          Continuar con Google
         </button>
 
         <button
-          class="w-full btn-ctp bg-[#1877F2] text-white flex items-center justify-center hover:opacity-90 shadow-sm"
+          class="w-full btn-ctp bg-[#1877F2] !text-white flex items-center justify-center hover:opacity-90 shadow-sm"
           @click="signInWithFacebookAuth">
           <img
             src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b9/2023_Facebook_icon.svg/2048px-2023_Facebook_icon.svg.png"
@@ -34,7 +34,7 @@
       <!-- Separador -->
       <div class="flex items-center my-6">
         <hr class="flex-grow border-t border-theme" />
-        <span class="px-3 text-theme-secondary text-xs uppercase font-bold tracking-wider">o continuar con</span>
+        <span class="px-3 text-theme-secondary text-xs uppercase font-bold tracking-wider">o</span>
         <hr class="flex-grow border-t border-theme" />
       </div>
 
@@ -58,7 +58,7 @@
           {{ errorMsg }}
         </div>
 
-        <el-button type="primary" native-type="submit" class="w-full h-10 text-lg font-bold" :loading="loading">
+        <el-button type="primary" native-type="submit" class="w-full h-12 text-lg font-bold" :loading="loading">
           Iniciar Sesión
         </el-button>
       </form>
@@ -106,9 +106,9 @@ async function signIn() {
     const user = useSupabaseUser();
     const newUser = user.value;
     await fetch(`/api/user/loginsignup?uuid=${newUser.id}&name=${newUser.user_metadata.display_name}`);
-    router.push("/about"); // Redirige a la página "about" después del login exitoso
+    router.push("/about"); 
   } catch (error) {
-    errorMsg.value = error.message; // Muestra el mensaje de error si la autenticación falla
+    errorMsg.value = error.message;
   } finally {
     loading.value = false;
   }
@@ -125,17 +125,9 @@ const signInWithOAuth = async () => {
 }
 
 function irASignup() {
-  router.push('/signup'); // Ajusta la ruta a tu página de registro
+  router.push('/signup');
 }
-const signInWithTwitterAuth = async () => {
-  const { error } = await client.auth.signInWithOAuth({
-    provider: 'twitter',
-    options: {
-      redirectTo: `${window.location.origin}/confirm`,
-    },
-  })
-  if (error) console.log(error)
-}
+
 const signInWithFacebookAuth = async () => {
   const { error } = await client.auth.signInWithOAuth({
     provider: 'facebook',
@@ -145,7 +137,4 @@ const signInWithFacebookAuth = async () => {
   });
   if (error) console.log(error);
 };
-
 </script>
-
-

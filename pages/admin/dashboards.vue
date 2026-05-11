@@ -96,18 +96,18 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
       <el-card class="shadow-md border-theme">
         <h3 class="font-bold mb-4 text-ctp-blue">Segmentación K-Means</h3>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image" class="w-full h-auto rounded-lg border border-theme" alt="K-Means" />
+        <img src="https://k-means-api-98w2.onrender.com/kmeans-image" class="w-full h-auto rounded-lg border border-theme" alt="K-Means" />
       </el-card>
 
       <el-card class="shadow-md border-theme">
         <h3 class="font-bold mb-4 text-ctp-green">Cluster Principal</h3>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0" class="w-full h-auto rounded-lg border border-theme" alt="Cluster 0" />
+        <img src="https://k-means-api-98w2.onrender.com/kmeans-image/cluster?num=0" class="w-full h-auto rounded-lg border border-theme" alt="Cluster 0" />
       </el-card>
     </div>
 
     <el-card class="shadow-lg border-theme mb-8">
       <h3 class="font-bold mb-4 text-ctp-mauve">Árboles de Decisión (Predicción)</h3>
-      <img src="https://k-means-hdsk.onrender.com/decision-tree-image" class="w-full h-auto rounded-xl border-2 border-theme" alt="Decision Tree" />
+      <img src="https://k-means-api-98w2.onrender.com/decision-tree-image" class="w-full h-auto rounded-xl border-2 border-theme" alt="Decision Tree" />
     </el-card>
   </div>
 </template>

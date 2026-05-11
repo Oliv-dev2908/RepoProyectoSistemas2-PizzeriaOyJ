@@ -56,7 +56,7 @@
         <el-button
           type="primary"
           native-type="submit"
-          class="w-full h-11 text-lg font-bold pulse-button"
+          class="w-full h-12 text-lg font-bold pulse-button"
           :loading="loading"
         >
           Crear Cuenta
