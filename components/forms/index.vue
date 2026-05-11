@@ -1,6 +1,7 @@
 <template>
-    <el-dialog v-model="dialogVisible" fullscreen top="40vh" width="70%" draggable>
-        <div class="survey-container text-theme-text">
+    <el-dialog v-model="dialogVisible" fullscreen class="survey-dialog" draggable>
+        <el-scrollbar height="100vh">
+            <div class="survey-container text-theme-text p-4 sm:p-8 md:p-12">
             <h1 class="text-ctp-mauve font-bold">Encuesta De Satisfacción</h1>
 
             <!-- Sección 1: Satisfacción General -->
