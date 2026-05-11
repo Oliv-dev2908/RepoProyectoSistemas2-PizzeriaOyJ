@@ -2,7 +2,7 @@
   <el-container class="layout-container-demo" style="height: 100vh">
     <el-aside :class="{ 'collapsed': isCollapse }" :style="{ width: isCollapse ? '64px' : '200px' }">
       <el-scrollbar class="el-scrollbar-menu">
-        <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse":collapse-transition="false" v-if="sidebarOpened">
+        <el-menu default-active="2" class="el-menu-vertical-demo" :collapse="isCollapse" :collapse-transition="false" v-if="sidebarOpened">
           <!-- Branding y Toggle Dark Mode -->
           <div class="p-4 flex flex-col items-center border-b border-theme mb-2" v-if="!isCollapse">
             <img :src="configuracion.logo_url" alt="Logo" class="w-16 h-16 object-contain rounded-full shadow-md border-2 border-ctp-red mb-2" />
@@ -42,7 +42,7 @@
           </el-menu-item>
 
           <el-sub-menu v-for="route in filteredRoutesChildren" v-if="filteredRoutesChildren.length > 0"
-            :key="route.path":index="route.path">
+            :key="route.path" :index="route.path">
             <template #title>
               <el-icon>
                 <component :is="route.icon" />
@@ -51,7 +51,7 @@
             </template>
             <el-menu-item-group>
               <template #title><span>{{ route.name }}</span></template>
-              <el-menu-item v-for="child in route.children":index="`/${route.path}/${child.path}`" @click="navigateWithLoading(`/${route.path}/${child.path}`)">
+              <el-menu-item v-for="child in route.children" :index="`/${route.path}/${child.path}`" @click="navigateWithLoading(`/${route.path}/${child.path}`)">
                 {{ child.name }}
               </el-menu-item>
             </el-menu-item-group>
@@ -63,7 +63,6 @@
     <el-container>
       <el-main>
         <el-scrollbar>
-          
           <slot></slot>
         </el-scrollbar>
       </el-main>
@@ -74,23 +73,25 @@
 <script setup>
 import { useDark } from '@vueuse/core';
 import { useCookie } from '#app';
-import { ref, computed, onMounted, onUnmounted, markRaw } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
 import * as ElementPlusIcons from '@element-plus/icons-vue';
-import component from 'element-plus/es/components/tree-select/src/tree-select-option.mjs';
 import { useRouter } from 'vue-router';
 import { useAppRoutes } from './../client/compossables/useAppRoutes'
 import { useUserRole } from './../client/compossables/useUserRole'
 import { useConfiguracion } from './../client/compossables/useConfiguracion'
+import { ElLoading } from 'element-plus';
 
 const { filteredRoutes, filteredRoutesChildren } = useAppRoutes()
 const { userRole } = useUserRole()
 const { configuracion } = useConfiguracion()
-//Pantalla de carga
+const supabase = useSupabaseClient()
 const router = useRouter();
+
+//Pantalla de carga
 const navigateWithLoading = async (path) => {
   const loadingInstance = ElLoading.service({
     lock: true,
-    text: 'Loading...',
+    text: 'Cargando...',
     background: 'rgba(0, 0, 0, 0.7)',
   });
 
@@ -100,6 +101,23 @@ const navigateWithLoading = async (path) => {
     loadingInstance.close();
   }
 };
+
+const handleLogout = async () => {
+  const loadingInstance = ElLoading.service({
+    lock: true,
+    text: 'Cerrando sesión...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  });
+  try {
+    await supabase.auth.signOut()
+    router.push('/login')
+  } catch (error) {
+    console.error('Error al cerrar sesión:', error)
+  } finally {
+    loadingInstance.close()
+  }
+}
+
 //Modo Oscuro
 const themeCookie = useCookie('theme');
 const isDark = useDark({
@@ -110,26 +128,22 @@ const toggleDark = () => {
   themeCookie.value = isDark.value ? 'dark' : 'light';
   localStorage.setItem('dark-mode', isDark.value);
 };
-//Variable de router
+
+//Variables de visualización
 const sidebarOpened = ref(true);
 const isCollapse = ref(false);
-//Pantalla
+
+//Responsividad
 const checkScreenSize = () => {
   isCollapse.value = window.innerWidth < 768;
 };
+
 onMounted(() => {
   checkScreenSize();
   window.addEventListener('resize', checkScreenSize);
 });
+
 onUnmounted(() => {
   window.removeEventListener('resize', checkScreenSize);
 });
 </script>
-
-addEventListener('resize', checkScreenSize);
-});
-onUnmounted(() => {
-  window.removeEventListener('resize', checkScreenSize);
-});
-</script>
-
