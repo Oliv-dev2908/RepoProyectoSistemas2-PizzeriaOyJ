@@ -205,39 +205,62 @@ body {
   border-color: var(--theme-border) !important;
 }
 
-/* Common Layout & Sidebar (Unified) */
-.common-layout {
+/* Sidebar & Layout Responsiveness */
+.layout-container-demo {
   height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-.el-container {
-  flex: 1;
   display: flex;
 }
 
 .el-aside {
   background-color: var(--ctp-mantle);
-  transition: width 0.3s ease;
-  overflow: hidden;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1000;
+}
+
+/* Hide sidebar by default on mobile */
+@media (max-width: 767px) {
+  .el-aside {
+    position: fixed;
+    left: -200px;
+    height: 100vh;
+  }
+  
+  .el-aside.mobile-visible {
+    left: 0;
+    box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+  }
+
+  .sidebar-toggle-btn {
+    display: flex !important;
+  }
+}
+
+.sidebar-toggle-btn {
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 1100;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: var(--ctp-mauve);
+  color: var(--ctp-base);
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--shadow-lg);
+  cursor: pointer;
+  border: none;
+}
+
+.el-main {
+  padding: 0 !important;
+  background-color: var(--theme-bg);
+}
+
+.el-scrollbar-menu {
   height: 100%;
-}
-
-.el-aside.collapsed {
-  width: 64px !important;
-  height: 100%;
-}
-
-.el-menu-vertical-demo:not(.el-menu--collapse),
-.el-scrollbar-menu:not(.el-menu--collapse) {
-  width: 200px;
-  min-height: 100vh;
-}
-
-.el-menu-vertical-demo.el-menu--collapse,
-.el-scrollbar-menu.el-menu--collapse {
-  min-height: 100vh;
 }
 
 /* Forms & Survey (Unified) */

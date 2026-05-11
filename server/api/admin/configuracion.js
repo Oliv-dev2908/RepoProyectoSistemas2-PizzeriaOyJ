@@ -9,14 +9,20 @@ export default defineEventHandler(async (event) => {
 
   try {
     const body = await readBody(event);
-    const { nombre_pizzeria, logo_url, theme_flavor } = body;
+    const { nombre_pizzeria, logo_url, theme_flavor, custom_colors_light, custom_colors_dark } = body;
 
     if (!nombre_pizzeria || !logo_url || !theme_flavor) {
       event.res.statusCode = 400;
-      return { error: 'Faltan datos para actualizar la configuración' };
+      return { error: 'Faltan datos obligatorios para actualizar la configuración' };
     }
 
-    const result = await modifyConfiguracion({ nombre_pizzeria, logo_url, theme_flavor });
+    const result = await modifyConfiguracion({ 
+      nombre_pizzeria, 
+      logo_url, 
+      theme_flavor,
+      custom_colors_light: custom_colors_light || {},
+      custom_colors_dark: custom_colors_dark || {}
+    });
 
     return {
       success: true,

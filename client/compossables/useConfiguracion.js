@@ -3,7 +3,9 @@ import { ref, computed } from 'vue';
 const configuracion = ref({
   nombre_pizzeria: 'Pizzería OyJ',
   logo_url: 'https://via.placeholder.com/96',
-  theme_flavor: 'mocha'
+  theme_flavor: 'mocha',
+  custom_colors_light: {},
+  custom_colors_dark: {}
 });
 
 export const useConfiguracion = () => {
@@ -15,7 +17,11 @@ export const useConfiguracion = () => {
     try {
       const data = await $fetch('/api/configuracion');
       if (data) {
-        configuracion.value = data;
+        configuracion.value = {
+          ...data,
+          custom_colors_light: data.custom_colors_light || {},
+          custom_colors_dark: data.custom_colors_dark || {}
+        };
       }
     } catch (err) {
       error.value = err;
@@ -33,7 +39,11 @@ export const useConfiguracion = () => {
         body: newConfig
       });
       if (data.success) {
-        configuracion.value = data.result;
+        configuracion.value = {
+          ...data.result,
+          custom_colors_light: data.result.custom_colors_light || {},
+          custom_colors_dark: data.result.custom_colors_dark || {}
+        };
       }
       return data;
     } catch (err) {
@@ -85,6 +95,7 @@ export const useConfiguracion = () => {
     error,
     fetchConfig,
     updateConfig,
-    currentThemePalette
+    currentThemePalette,
+    themePalettes
   };
 };

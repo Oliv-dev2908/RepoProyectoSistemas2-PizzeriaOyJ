@@ -105,56 +105,81 @@
     </div>
 
     <!-- Modal de Pizza -->
-    <el-dialog v-model="modalPizza" title="Agregar Pizza" width="500px">
-      <div class="space-y-4">
-        <select v-model="selectedPizza" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
-          <option disabled value="">-- Selecciona una pizza --</option>
-          <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
-            {{ pizza.nombre }} 
-            <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-ctp-peach ml-2">
-              ({{ obtenerTextoOfertaParaPizza(pizza.id_pizza) }})
-            </span>
-          </option>
-        </select>
+    <el-dialog v-model="modalPizza" title="🍕 Agregar Pizza" width="90%" class="max-w-[500px]">
+      <div class="space-y-5 px-1">
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Selecciona Variedad</label>
+          <select v-model="selectedPizza" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
+            <option disabled value="">-- Elige una pizza --</option>
+            <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
+              {{ pizza.nombre }} 
+              <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-ctp-peach">
+                ({{ obtenerTextoOfertaParaPizza(pizza.id_pizza) }})
+              </span>
+            </option>
+          </select>
+        </div>
 
-        <select v-model="selectedTamano" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
-          <option disabled value="">-- Selecciona un tamaño --</option>
-          <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
-            {{ tam.nombre }}
-          </option>
-        </select>
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Tamaño</label>
+          <select v-model="selectedTamano" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
+            <option disabled value="">-- Elige el tamaño --</option>
+            <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
+              {{ tam.nombre }}
+            </option>
+          </select>
+        </div>
 
-        <input type="number" v-model.number="cantidad" min="1" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve"
-          placeholder="Cantidad" />
-        <div v-if="mensajeError" class="text-ctp-red text-sm font-semibold">{{ mensajeError }}</div>
-      </div>
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
+          <input type="number" v-model.number="cantidad" min="1" max="100"
+            class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all"
+            placeholder="¿Cuántas?" />
+        </div>
 
-      <template #footer>
-        <el-button @click="modalPizza = false">Cancelar</el-button>
-        <el-button type="primary" @click="agregarPizza">Agregar</el-button>
-      </template>
-    </el-dialog>
-
-    <!-- Modal de Producto -->
-    <el-dialog v-model="modalProducto" title="Agregar Producto" width="500px">
-      <div class="space-y-4">
-        <select v-model="selectedProducto" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve">
-          <option disabled value="">-- Selecciona un producto --</option>
-          <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
-            {{ producto.nombre }}
-          </option>
-        </select>
-
-        <input type="number" v-model.number="cantidadProducto" min="1" class="w-full p-2 border border-theme rounded bg-theme-bg text-theme-text focus:outline-none focus:border-ctp-mauve"
-          placeholder="Cantidad" />
-        <div v-if="mensajeError" class="text-ctp-red text-sm font-semibold">
-          {{ mensajeError }}
+        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
+          ⚠️ {{ mensajeError }}
         </div>
       </div>
 
       <template #footer>
-        <el-button @click="modalProducto = false">Cancelar</el-button>
-        <el-button type="primary" @click="agregarProducto">Agregar</el-button>
+        <div class="flex gap-3">
+          <el-button @click="modalPizza = false" class="flex-1">Cancelar</el-button>
+          <el-button type="primary" @click="agregarPizza" class="flex-1">Agregar</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- Modal de Producto -->
+    <el-dialog v-model="modalProducto" title="🛒 Agregar Complemento" width="90%" class="max-w-[500px]">
+      <div class="space-y-5 px-1">
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Producto</label>
+          <select v-model="selectedProducto" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
+            <option disabled value="">-- Selecciona un producto --</option>
+            <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
+              {{ producto.nombre }} - ${{ parseFloat(producto.precio).toFixed(2) }}
+            </option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
+          <input type="number" v-model.number="cantidadProducto" min="1" max="100"
+            class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all"
+            placeholder="¿Cuántas?" />
+        </div>
+
+        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
+          ⚠️ {{ mensajeError }}
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex gap-3">
+          <el-button @click="modalProducto = false" class="flex-1">Cancelar</el-button>
+          <el-button type="primary" @click="agregarProducto" class="flex-1">Agregar</el-button>
+        </div>
       </template>
     </el-dialog>
 
