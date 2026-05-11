@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /* 
-  SISTEMA DE PALETA ÚNICA GLOBAL (Fixed & Robust)
+  SISTEMA DE PALETA ÚNICA GLOBAL (Absolute Robustness)
   Todos los colores se rigen por variables inyectadas dinámicamente desde app.vue.
 */
 
@@ -79,7 +79,7 @@ body {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--theme-bg) !important; /* Texto del botón siempre color fondo para contraste */
+  color: var(--theme-bg) !important;
 }
 .btn-ctp-primary { background-color: var(--ctp-mauve) !important; }
 .btn-ctp-ghost { background-color: transparent !important; color: var(--theme-text) !important; border: 1px solid var(--theme-border) !important; }
@@ -95,28 +95,13 @@ body {
   border-right: 1px solid var(--theme-border) !important;
 }
 
-.el-menu {
-  background-color: transparent !important;
-  border-right: none !important;
-}
-
-.el-menu-item, .el-sub-menu__title {
-  color: var(--theme-text) !important;
-}
-
-.el-menu-item:hover, .el-sub-menu__title:hover {
-  background-color: var(--theme-surface) !important;
-}
-
-.el-menu-item.is-active {
-  background-color: var(--theme-surface) !important;
-  color: var(--ctp-mauve) !important;
-}
+.el-menu { background-color: transparent !important; border-right: none !important; }
+.el-menu-item, .el-sub-menu__title { color: var(--theme-text) !important; }
+.el-menu-item:hover, .el-sub-menu__title:hover { background-color: var(--theme-surface) !important; }
+.el-menu-item.is-active { background-color: var(--theme-surface) !important; color: var(--ctp-mauve) !important; }
 
 /* Sidebar Arrows Fix */
-.el-sub-menu__icon-arrow {
-  color: var(--theme-text) !important;
-}
+.el-sub-menu__icon-arrow { color: var(--theme-text) !important; }
 
 /* Mobile Sidebar behavior */
 @media (max-width: 767px) {
@@ -129,7 +114,7 @@ body {
   display: none; position: fixed; top: 0.75rem; left: 0.75rem; z-index: 1100;
   width: 44px; height: 44px; border-radius: 12px;
   background-color: var(--ctp-mauve) !important; 
-  color: var(--theme-bg) !important; /* Icono en color de fondo para contraste */
+  color: var(--theme-bg) !important; 
   align-items: center; justify-content: center; border: none;
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
 }
@@ -145,74 +130,74 @@ body {
 }
 .font-pizza-title { font-family: 'Pacifico', cursive; color: var(--pizza-red) !important; }
 
-/* Element Plus Global Theme Overrides (THE IMPORTANT PART) */
+/* ELEMENT PLUS DEEP THEME OVERRIDES */
 .el-card {
   background-color: var(--theme-card) !important;
   color: var(--theme-text) !important;
   border-color: var(--theme-border) !important;
 }
 
-.el-button {
-  border-radius: 0.75rem !important;
-  font-weight: 700 !important;
-}
+.el-button { border-radius: 0.75rem !important; font-weight: 700 !important; }
 
-/* Text color for buttons to ensure contrast */
-.el-button--primary, .el-button--success, .el-button--warning, .el-button--danger {
-  color: var(--theme-bg) !important;
-}
-
+/* Dynamic Button Colors */
+.el-button--primary, .el-button--success, .el-button--warning, .el-button--danger { color: var(--theme-bg) !important; }
 .el-button--primary { background-color: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
 .el-button--success { background-color: var(--ctp-green) !important; border-color: var(--ctp-green) !important; }
 .el-button--warning { background-color: var(--ctp-yellow) !important; border-color: var(--ctp-yellow) !important; }
 .el-button--danger { background-color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; }
 
-.el-button.is-plain {
-  background-color: transparent !important;
-}
-.el-button--primary.is-plain { color: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
-.el-button--danger.is-plain { color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; }
+/* Fix Card Dropdown/Options Button */
+.el-dropdown-link, .el-dropdown { color: inherit !important; }
+.el-dropdown-menu { background-color: var(--theme-card) !important; border: 1px solid var(--theme-border) !important; }
+.el-dropdown-menu__item { color: var(--theme-text) !important; }
+.el-dropdown-menu__item:hover { background-color: var(--theme-surface) !important; color: var(--ctp-mauve) !important; }
 
-/* INPUTS FIX - Ensure they use theme colors and NOT white */
-.el-input__wrapper, .el-textarea__inner, .el-select .el-input__wrapper {
+/* INPUTS & SELECTS FIX (The "White" Issue) */
+.el-input__wrapper, 
+.el-textarea__inner, 
+.el-select__wrapper,
+.el-input-number__decrease,
+.el-input-number__increase {
   background-color: var(--theme-surface) !important;
   box-shadow: 0 0 0 1px var(--theme-border) inset !important;
-  border-radius: 10px !important;
-}
-
-.el-input__inner, .el-textarea__inner {
-  color: var(--theme-text) !important;
-  font-weight: 600 !important;
-}
-
-.el-input__inner::placeholder {
-  color: var(--theme-text) !important;
-  opacity: 0.5;
-}
-
-/* Element Plus Arrows & Icons */
-.el-icon {
-  color: inherit !important;
-}
-
-/* Custom Modal/Dialog Fixes */
-.el-dialog {
-  background-color: var(--theme-card) !important;
-  border: 1px solid var(--theme-border) !important;
-}
-.el-dialog__title, .el-dialog__body {
   color: var(--theme-text) !important;
 }
+
+.el-select__placeholder, .el-input__inner, .el-textarea__inner {
+  color: var(--theme-text) !important;
+}
+
+/* Numeric Input Buttons (+ / -) */
+.el-input-number__decrease, .el-input-number__increase {
+  border-color: var(--theme-border) !important;
+  background-color: var(--theme-surface) !important;
+  color: var(--theme-text) !important;
+}
+.el-input-number__decrease:hover, .el-input-number__increase:hover {
+  color: var(--ctp-mauve) !important;
+}
+
+/* Fix background of the actual selection items */
+.el-select-dropdown__item { color: var(--theme-text) !important; }
+.el-select-dropdown__item.hover, .el-select-dropdown__item:hover { background-color: var(--theme-surface) !important; }
+.el-select-dropdown__item.selected { color: var(--ctp-mauve) !important; font-weight: bold; }
+.el-select-dropdown { background-color: var(--theme-card) !important; border: 1px solid var(--theme-border) !important; }
+
+/* Pulse Button (Add Buttons) */
+.pulse-button { 
+  animation: pulse 2s infinite; 
+  background-color: var(--ctp-mauve) !important; 
+  border-color: var(--ctp-mauve) !important;
+  color: var(--theme-bg) !important;
+}
+@keyframes pulse { 0% { transform: scale(1); } 70% { transform: scale(1.05); } 100% { transform: scale(1); } }
 
 /* AI Dashboard API Links Fix */
 .dashboard-img {
-  width: 100%;
-  height: auto;
-  border-radius: 1rem;
-  border: 2px solid var(--theme-border);
-  background-color: var(--theme-surface);
+  width: 100%; height: auto; border-radius: 1rem;
+  border: 2px solid var(--theme-border); background-color: var(--theme-surface);
 }
 
-/* Animations */
-.pulse-button { animation: pulse 2s infinite; }
-@keyframes pulse { 0% { transform: scale(1); } 70% { transform: scale(1.05); } 100% { transform: scale(1); } }
+/* Global Transitions */
+* { transition: background-color 0.2s ease, border-color 0.2s ease; }
+.el-icon { color: inherit !important; }
