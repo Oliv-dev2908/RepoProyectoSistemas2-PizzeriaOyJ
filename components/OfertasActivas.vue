@@ -1,80 +1,75 @@
 <template>
   <div
     v-if="userRole === 'comun'"
-    :class="[
-      'p-6 rounded-lg shadow-md',
-      isDark ? 'bg-gray-800 text-white' : 'bg-white text-gray-900'
-    ]"
+    class="p-4 sm:p-6 rounded-2xl shadow-xl border border-theme bg-theme-card text-theme-text transition-all duration-300"
   >
-    <h2 class="text-2xl font-bold mb-4">🎁 Ofertas Activas</h2>
+    <h2 class="text-2xl font-bold mb-6 font-pizza-title flex items-center gap-2">
+      <span class="text-3xl">🎁</span> Ofertas Activas
+    </h2>
 
-    <div v-if="ofertasFiltradas.length > 0" class="space-y-4">
+    <div v-if="ofertasFiltradas.length > 0" class="grid grid-cols-1 md:grid-cols-2 gap-4">
       <div
         v-for="oferta in ofertasFiltradas"
         :key="oferta.id_oferta"
-        :class="[
-          'p-4 rounded-md border',
-          isDark
-            ? 'border-gray-700 bg-gray-700 text-white'
-            : 'border-gray-200 bg-gray-50 text-gray-800'
-        ]"
+        class="p-5 rounded-xl border border-theme bg-theme-surface hover:shadow-md transition-shadow group"
       >
-        <h3 class="text-lg font-semibold">
-          {{ obtenerTitulo(oferta) }}
-        </h3>
-        <p class="text-sm">
-          Vigencia: {{ formatearFecha(oferta.fecha_inicio) }} al {{ formatearFecha(oferta.fecha_fin) }}
+        <div class="flex justify-between items-start mb-2">
+          <h3 class="text-lg font-bold text-ctp-mauve group-hover:text-ctp-pink transition-colors">
+            {{ obtenerTitulo(oferta) }}
+          </h3>
+          <el-tag size="small" type="success" effect="dark" round>Activo</el-tag>
+        </div>
+        
+        <p class="text-xs font-bold text-theme-secondary uppercase tracking-wider mb-4">
+          📅 {{ formatearFecha(oferta.fecha_inicio) }} al {{ formatearFecha(oferta.fecha_fin) }}
         </p>
 
-        <div class="mt-2">
-          <span class="text-sm font-medium">Aplica a:</span>
-          <ul class="list-disc list-inside">
-            <li v-for="id in oferta.pizzas" :key="id">
-              {{ obtenerNombrePizza(id) }}
+        <div class="space-y-2">
+          <span class="text-xs font-bold text-theme-secondary uppercase">Aplica a:</span>
+          <ul class="space-y-1">
+            <li v-for="id in oferta.pizzas" :key="id" class="flex items-center gap-2 text-sm">
+              <span class="text-ctp-peach">🍕</span> {{ obtenerNombrePizza(id) }}
             </li>
           </ul>
         </div>
       </div>
     </div>
 
-    <div v-else :class="isDark ? 'text-gray-400' : 'text-gray-500'">
-      No hay ofertas activas en este momento.
+    <div v-else class="text-center py-10">
+      <el-empty description="No hay ofertas activas en este momento" />
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useUserRole } from './../client/compossables/useUserRole'
 
 const { userRole } = useUserRole()
 const ofertas = ref([])
 const pizzas = ref([])
 
-const isDark = ref(false)
-
-const checkDarkMode = () => {
-  isDark.value = document.documentElement.classList.contains('dark')
-}
-
-let observer = null
 onMounted(async () => {
   await fetchPizzas()
   await fetchOfertas()
-
-  checkDarkMode()
-  observer = new MutationObserver(() => checkDarkMode())
-  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
 })
 
 const fetchOfertas = async () => {
-  const res = await fetch('/api/ofertas')
-  ofertas.value = await res.json()
+  try {
+    const res = await fetch('/api/ofertas')
+    ofertas.value = await res.json()
+  } catch (e) {
+    console.error('Error fetching offers:', e)
+  }
 }
 
 const fetchPizzas = async () => {
-  const res = await fetch('/api/products/pizza')
-  pizzas.value = await res.json()
+  try {
+    const res = await fetch('/api/products/pizza')
+    pizzas.value = await res.json()
+  } catch (e) {
+    console.error('Error fetching pizzas:', e)
+  }
 }
 
 const obtenerNombrePizza = (id) => {
@@ -86,21 +81,20 @@ const formatearFecha = (fechaStr) => {
   const fecha = new Date(fechaStr)
   return fecha.toLocaleDateString('es-BO', {
     year: 'numeric',
-    month: 'long',
+    month: 'short',
     day: 'numeric',
   })
 }
 
 const obtenerTitulo = (oferta) => {
   if (oferta.tipo === 'descuento') {
-    return `${oferta.descuento * 100}% de descuento`
+    return `${(oferta.descuento * 100).toFixed(0)}% de Descuento`
   } else if (oferta.tipo === 'n_x_m') {
-    return `${oferta.n_cantidad}x${oferta.m_paga} en pizzas`
+    return `${oferta.n_cantidad}x${oferta.m_paga} en Pizzas`
   }
   return 'Oferta Especial'
 }
 
-import { computed } from 'vue'
 const ofertasFiltradas = computed(() => {
   const hoy = new Date()
   return ofertas.value.filter((oferta) => {

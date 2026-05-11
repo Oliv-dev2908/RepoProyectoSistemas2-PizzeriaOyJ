@@ -47,10 +47,10 @@ watchEffect(() => {
         // Actualizar variables semánticas de la pizzería
         root.style.setProperty('--pizza-red', palette.red);
         root.style.setProperty('--pizza-orange', palette.peach);
-        root.style.setProperty('--pizza-cream', !isDark.value ? palette.rosewater : palette.surface0);
-        root.style.setProperty('--pizza-brown', !isDark.value ? palette.maroon : palette.text);
+        root.style.setProperty('--pizza-cream', !isDark.value ? palette.base : palette.surface0);
+        root.style.setProperty('--pizza-brown', !isDark.value ? palette.text : palette.text);
         root.style.setProperty('--pizza-bg', palette.base);
-        root.style.setProperty('--pizza-card', !isDark.value ? '#ffffff' : palette.surface1);
+        root.style.setProperty('--pizza-card', !isDark.value ? palette.mantle : palette.surface1);
     }
 });
 </script>

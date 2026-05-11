@@ -36,10 +36,10 @@
   /* Pizza Variables Mapped to Catppuccin Latte - Refined for Warmth */
   --pizza-red: var(--ctp-red);
   --pizza-orange: var(--ctp-peach);
-  --pizza-cream: var(--ctp-rosewater); /* Warmer than surface0 */
+  --pizza-cream: var(--ctp-rosewater);
   --pizza-brown: var(--ctp-maroon);
   --pizza-bg: var(--ctp-base);
-  --pizza-card: #ffffff; /* Brighter cards in light mode */
+  --pizza-card: #ffffff;
 
   /* Semantic Theme Colors */
   --theme-text: var(--ctp-text);
@@ -106,13 +106,10 @@
 /* Global Styles */
 body {
   background-color: var(--theme-bg);
-  background-image: radial-gradient(circle at top right, color-mix(in srgb, var(--ctp-rosewater), transparent 95%), transparent);
   color: var(--theme-text);
   transition: background-color 0.3s ease, color 0.3s ease;
-}
-
-.dark body {
-  background-image: radial-gradient(circle at top right, color-mix(in srgb, var(--ctp-mauve), transparent 98%), transparent);
+  margin: 0;
+  min-height: 100vh;
 }
 
 /* Helper Classes */
@@ -123,52 +120,24 @@ body {
 .text-theme-secondary { color: var(--theme-text-secondary); }
 .border-theme { border-color: var(--theme-border); }
 
-/* Catppuccin Specific Utility replacements for hardcoded tailwind */
+/* Catppuccin Specific Utility replacements */
 .bg-ctp-rosewater { background-color: var(--ctp-rosewater); }
-.bg-ctp-flamingo { background-color: var(--ctp-flamingo); }
-.bg-ctp-pink { background-color: var(--ctp-pink); }
 .bg-ctp-mauve { background-color: var(--ctp-mauve); }
 .bg-ctp-red { background-color: var(--ctp-red); }
-.bg-ctp-maroon { background-color: var(--ctp-maroon); }
 .bg-ctp-peach { background-color: var(--ctp-peach); }
 .bg-ctp-yellow { background-color: var(--ctp-yellow); }
 .bg-ctp-green { background-color: var(--ctp-green); }
-.bg-ctp-teal { background-color: var(--ctp-teal); }
-.bg-ctp-sky { background-color: var(--ctp-sky); }
-.bg-ctp-sapphire { background-color: var(--ctp-sapphire); }
 .bg-ctp-blue { background-color: var(--ctp-blue); }
-.bg-ctp-lavender { background-color: var(--ctp-lavender); }
 .bg-ctp-surface0 { background-color: var(--ctp-surface0); }
 
-.text-ctp-rosewater { color: var(--ctp-rosewater); }
-.text-ctp-flamingo { color: var(--ctp-flamingo); }
-.text-ctp-pink { color: var(--ctp-pink); }
 .text-ctp-mauve { color: var(--ctp-mauve); }
 .text-ctp-red { color: var(--ctp-red); }
-.text-ctp-maroon { color: var(--ctp-maroon); }
 .text-ctp-peach { color: var(--ctp-peach); }
-.text-ctp-yellow { color: var(--ctp-yellow); }
 .text-ctp-green { color: var(--ctp-green); }
-.text-ctp-teal { color: var(--ctp-teal); }
-.text-ctp-sky { color: var(--ctp-sky); }
-.text-ctp-sapphire { color: var(--ctp-sapphire); }
 .text-ctp-blue { color: var(--ctp-blue); }
-.text-ctp-lavender { color: var(--ctp-lavender); }
 
-.border-ctp-rosewater { border-color: var(--ctp-rosewater); }
-.border-ctp-flamingo { border-color: var(--ctp-flamingo); }
-.border-ctp-pink { border-color: var(--ctp-pink); }
-.border-ctp-mauve { border-color: var(--ctp-mauve); }
 .border-ctp-red { border-color: var(--ctp-red); }
-.border-ctp-maroon { border-color: var(--ctp-maroon); }
-.border-ctp-peach { border-color: var(--ctp-peach); }
-.border-ctp-yellow { border-color: var(--ctp-yellow); }
-.border-ctp-green { border-color: var(--ctp-green); }
-.border-ctp-teal { border-color: var(--ctp-teal); }
-.border-ctp-sky { border-color: var(--ctp-sky); }
-.border-ctp-sapphire { border-color: var(--ctp-sapphire); }
-.border-ctp-blue { border-color: var(--ctp-blue); }
-.border-ctp-lavender { border-color: var(--ctp-lavender); }
+.border-ctp-mauve { border-color: var(--ctp-mauve); }
 
 /* Buttons */
 .btn-ctp {
@@ -178,57 +147,44 @@ body {
   transition: all 0.2s ease;
   cursor: pointer;
   border: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-ctp-primary { background-color: var(--ctp-mauve); color: var(--ctp-base); }
 .btn-ctp-primary:hover { opacity: 0.9; transform: translateY(-1px); }
 
-.btn-ctp-secondary { background-color: var(--ctp-blue); color: var(--ctp-base); }
-.btn-ctp-secondary:hover { opacity: 0.9; transform: translateY(-1px); }
-
-.btn-ctp-success { background-color: var(--ctp-green); color: var(--ctp-base); }
-.btn-ctp-success:hover { opacity: 0.9; transform: translateY(-1px); }
-
-.btn-ctp-warning { background-color: var(--ctp-yellow); color: var(--ctp-base); }
-.btn-ctp-warning:hover { opacity: 0.9; transform: translateY(-1px); }
-
-.btn-ctp-danger { background-color: var(--ctp-red); color: var(--ctp-base); }
-.btn-ctp-danger:hover { opacity: 0.9; transform: translateY(-1px); }
-
 .btn-ctp-ghost { background-color: transparent; color: var(--theme-text); border: 1px solid var(--theme-border); }
 .btn-ctp-ghost:hover { background-color: var(--theme-surface); }
-
-/* Element Plus Cards */
-.el-card {
-  background-color: var(--theme-card) !important;
-  color: var(--theme-text) !important;
-  border-color: var(--theme-border) !important;
-}
 
 /* Sidebar & Layout Responsiveness */
 .layout-container-demo {
   height: 100vh;
-  display: flex;
+  width: 100vw;
+  overflow: hidden;
 }
 
 .el-aside {
   background-color: var(--ctp-mantle);
-  transition: all 0.3s ease;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   z-index: 1000;
+  border-right: 1px solid var(--theme-border);
 }
 
-/* Hide sidebar by default on mobile */
 @media (max-width: 767px) {
   .el-aside {
-    position: fixed;
-    left: -200px;
+    position: fixed !important;
+    top: 0;
+    left: -240px;
     height: 100vh;
+    width: 240px !important;
   }
   
   .el-aside.mobile-visible {
-    left: 0;
-    box-shadow: 10px 0 30px rgba(0,0,0,0.3);
+    left: 0 !important;
+    box-shadow: 20px 0 50px rgba(0,0,0,0.3);
   }
 
   .sidebar-toggle-btn {
@@ -239,17 +195,17 @@ body {
 .sidebar-toggle-btn {
   display: none;
   position: fixed;
-  top: 1rem;
-  left: 1rem;
+  top: 0.75rem;
+  left: 0.75rem;
   z-index: 1100;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
   background-color: var(--ctp-mauve);
   color: var(--ctp-base);
   align-items: center;
   justify-content: center;
-  box-shadow: var(--shadow-lg);
+  box-shadow: 0 4px 12px color-mix(in srgb, var(--ctp-mauve), transparent 60%);
   cursor: pointer;
   border: none;
 }
@@ -263,49 +219,9 @@ body {
   height: 100%;
 }
 
-/* Forms & Survey (Unified) */
-.survey-container {
-  max-width: 900px;
-  margin: 0 auto;
-  padding: 30px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
-h1 {
-  text-align: center;
-  margin-bottom: 30px;
-  color: var(--ctp-blue);
-}
-
-.dark h1 {
-  color: var(--ctp-sky);
-}
-
-h2 {
-  margin-bottom: 20px;
-}
-
-.survey-section {
-  margin-bottom: 30px;
-  padding: 20px;
-}
-
-.question {
-  margin-bottom: 20px;
-}
-
-.submit-button {
-  text-align: center;
-  margin-top: 40px;
-}
-
-/* Logo Animation */
-img[alt="Logo Pizzería"] {
-  transition: transform 0.3s;
-}
-
-img[alt="Logo Pizzería"]:hover {
-  transform: rotate(360deg);
+.el-menu {
+  border-right: none !important;
+  background-color: transparent !important;
 }
 
 /* Pizza Theme Components (Unified) */
@@ -318,223 +234,13 @@ img[alt="Logo Pizzería"]:hover {
   padding-right: 1rem;
   background-color: var(--pizza-bg);
   border-radius: 1rem;
-  box-shadow: 0 10px 30px color-mix(in srgb, var(--ctp-red), transparent 70%);
   font-family: 'Comic Sans MS', cursive, sans-serif;
   color: var(--pizza-brown);
-}
-
-.dark .container {
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
 }
 
 .font-pizza-title {
   font-family: 'Pacifico', cursive, 'Comic Sans MS', cursive;
   color: var(--pizza-red);
-}
-
-.text-pizza-red { color: var(--pizza-red); }
-.text-pizza-orange { color: var(--pizza-orange); }
-.text-pizza-cream { color: var(--pizza-cream); }
-.text-pizza-brown { color: var(--pizza-brown); }
-.bg-pizza-bg { background-color: var(--pizza-bg); }
-.bg-pizza-card { background-color: var(--pizza-card); }
-
-.pizza-card {
-  background-color: var(--pizza-card);
-  border: 1px solid var(--pizza-red);
-  font-weight: 600;
-  box-shadow: 0 5px 15px color-mix(in srgb, var(--ctp-red), transparent 85%);
-  color: var(--pizza-brown);
-  transition: box-shadow 0.3s ease;
-}
-
-.dark .pizza-card {
-  border-color: var(--pizza-orange);
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.4);
-}
-
-.pizza-card:hover {
-  box-shadow: 0 8px 20px color-mix(in srgb, var(--ctp-red), transparent 60%);
-}
-
-.dark .pizza-card:hover {
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6);
-}
-
-.pizza-dropdown-menu {
-  background-color: var(--pizza-bg);
-  border-radius: 8px;
-  box-shadow: 0 6px 18px color-mix(in srgb, var(--ctp-red), transparent 75%);
-  font-weight: 600;
-  color: var(--pizza-brown);
-}
-
-/* Pagination */
-.pizza-pagination,
-.pizza-pagination .el-pager li {
-  font-family: 'Comic Sans MS', cursive, sans-serif;
-  user-select: none;
-}
-
-.pizza-pagination .el-pager li {
-  width: 36px;
-  height: 36px;
-  line-height: 36px;
-  margin: 0 6px;
-  border-radius: 50%;
-  font-weight: 700;
-  font-size: 1.1rem;
-  color: var(--pizza-brown);
-  background: var(--pizza-cream);
-  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
-  transition: all 0.3s ease;
-  cursor: pointer;
-  border: 2px solid transparent;
-}
-
-.pizza-pagination .el-pager li:hover:not(.active) {
-  background-color: var(--pizza-orange);
-  color: white;
-  box-shadow: 0 4px 12px color-mix(in srgb, var(--ctp-peach), transparent 30%);
-  border-color: var(--pizza-orange);
-}
-
-.pizza-pagination .el-pager li.active {
-  background-color: var(--pizza-red);
-  color: white;
-  box-shadow: 0 6px 20px color-mix(in srgb, var(--ctp-red), transparent 20%);
-  border-color: var(--pizza-red);
-  transform: scale(1.1);
-  cursor: default;
-}
-
-.pizza-pagination .el-pager li.disabled {
-  color: var(--ctp-overlay0);
-  cursor: not-allowed;
-  background: var(--pizza-cream);
-  box-shadow: none;
-  border-color: transparent;
-}
-
-.pizza-pagination .el-pager li.prev,
-.pizza-pagination .el-pager li.next {
-  width: 40px;
-  height: 40px;
-  font-weight: 900;
-  font-size: 1.3rem;
-  color: var(--pizza-red);
-  background: var(--pizza-cream);
-  border: 2px solid var(--pizza-red);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 8px;
-  box-shadow: 0 3px 6px color-mix(in srgb, var(--ctp-red), transparent 70%);
-  transition: all 0.3s ease;
-}
-
-.pizza-pagination .el-pager li.prev:hover:not(.disabled),
-.pizza-pagination .el-pager li.next:hover:not(.disabled) {
-  background-color: var(--pizza-red);
-  color: white;
-  box-shadow: 0 6px 15px color-mix(in srgb, var(--ctp-red), transparent 30%);
-  cursor: pointer;
-}
-
-/* Pulse Button */
-@keyframes pulse {
-  0% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--ctp-red), transparent 30%); }
-  70% { transform: scale(1.05); box-shadow: 0 0 0 10px color-mix(in srgb, var(--ctp-red), transparent 100%); }
-  100% { transform: scale(1); box-shadow: 0 0 0 0 color-mix(in srgb, var(--ctp-red), transparent 100%); }
-}
-
-.pulse-button {
-  animation: pulse 2s infinite;
-  transition: all 0.3s ease;
-  font-weight: 700;
-  box-shadow: 0 4px 8px color-mix(in srgb, var(--ctp-red), transparent 40%);
-  border-radius: 8px;
-}
-
-.dark .pulse-button {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
-}
-
-/* Back Button */
-.pizza-button-back {
-  background: linear-gradient(45deg, var(--pizza-red), var(--pizza-cream));
-  color: var(--ctp-crust);
-  font-weight: 700;
-  box-shadow: 0 4px 8px rgba(var(--ctp-red), 0.6);
-  border-radius: 8px;
-  transition: all 0.3s ease;
-}
-
-.dark .pizza-button-back {
-  background: linear-gradient(45deg, var(--ctp-maroon), var(--ctp-surface0));
-  color: var(--ctp-text);
-}
-
-.pizza-button-back:hover {
-  background-color: var(--pizza-red);
-  color: white;
-  box-shadow: 0 6px 15px rgba(var(--ctp-red), 0.7);
-}
-
-/* Dashboard Styles */
-.dashboard-container {
-  padding: 20px;
-}
-
-.dashboard-row {
-  margin-bottom: 20px;
-}
-
-.charts {
-  background-color: var(--ctp-mantle);
-  padding: 1.5rem;
-  border-radius: 1rem;
-  border: 2px solid var(--ctp-yellow);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  height: 50vh;
-  display: flex;
-  flex-direction: column;
-  transition: transform 0.3s ease;
-}
-
-.dark .charts {
-  background-color: var(--ctp-surface0);
-  border-color: var(--ctp-peach);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
-}
-
-.charts:hover {
-  transform: scale(1.02);
-}
-
-.charts h2 {
-  color: var(--ctp-yellow);
-  font-size: 1.25rem;
-  font-weight: bold;
-  margin-bottom: 1rem;
-}
-
-.dark .charts h2 {
-  color: var(--ctp-peach);
-}
-
-.dashboard-img {
-  width: 100%;
-  height: auto;
-  object-fit: contain;
-  border: 2px solid var(--ctp-yellow);
-  border-radius: 1rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-}
-
-.dark .dashboard-img {
-  border-color: var(--ctp-peach);
-  box-shadow: 0 4px 10px rgba(0,0,0,0.5);
 }
 
 /* Element Plus Overrides */
@@ -549,20 +255,10 @@ img[alt="Logo Pizzería"]:hover {
 .el-button--success { background-color: var(--ctp-green) !important; border-color: var(--ctp-green) !important; color: var(--ctp-base) !important; }
 .el-button--warning { background-color: var(--ctp-yellow) !important; border-color: var(--ctp-yellow) !important; color: var(--ctp-base) !important; }
 .el-button--danger { background-color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; color: var(--ctp-base) !important; }
-.el-button--info { background-color: var(--ctp-sapphire) !important; border-color: var(--ctp-sapphire) !important; color: var(--ctp-base) !important; }
-
-.el-button--primary.is-plain { background-color: transparent !important; color: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
-.el-button--success.is-plain { background-color: transparent !important; color: var(--ctp-green) !important; border-color: var(--ctp-green) !important; }
-.el-button--warning.is-plain { background-color: transparent !important; color: var(--ctp-yellow) !important; border-color: var(--ctp-yellow) !important; }
-.el-button--danger.is-plain { background-color: transparent !important; color: var(--ctp-red) !important; border-color: var(--ctp-red) !important; }
-.el-button--info.is-plain { background-color: transparent !important; color: var(--ctp-sapphire) !important; border-color: var(--ctp-sapphire) !important; }
-
-.el-divider { border-top-color: var(--theme-border) !important; }
 
 .el-input input,
 .el-textarea__inner,
-.el-select .el-input__wrapper,
-.el-input-number .el-input__wrapper {
+.el-select .el-input__wrapper {
   border-radius: 10px !important;
   font-weight: 600;
   color: var(--ctp-text) !important;
@@ -572,54 +268,20 @@ img[alt="Logo Pizzería"]:hover {
 
 .dark .el-input input,
 .dark .el-textarea__inner,
-.dark .el-select .el-input__wrapper,
-.dark .el-input-number .el-input__wrapper {
+.dark .el-select .el-input__wrapper {
   background-color: var(--ctp-surface0) !important;
   border-color: var(--ctp-surface1) !important;
 }
 
-.el-radio__input.is-checked .el-radio__inner { background: var(--ctp-mauve) !important; border-color: var(--ctp-mauve) !important; }
-.el-radio__input.is-checked + .el-radio__label { color: var(--ctp-mauve) !important; }
-.el-radio__label { color: var(--theme-text) !important; }
-
-.el-rate__item .el-rate__icon { color: var(--ctp-overlay0) !important; }
-.el-rate__item .is-active { color: var(--ctp-yellow) !important; }
-
-/* Modal / Dialog */
-.el-dialog {
-  background-color: var(--theme-bg) !important;
-  border-radius: 1rem !important;
-}
-.el-dialog__title { color: var(--theme-text) !important; }
-.el-dialog__body { color: var(--theme-text) !important; }
-
-.el-dropdown-menu {
-  background-color: var(--theme-card) !important;
-  border-color: var(--theme-border) !important;
+.pulse-button {
+  animation: pulse 2s infinite;
+  transition: all 0.3s ease;
+  font-weight: 700;
+  border-radius: 8px;
 }
 
-.el-dropdown-menu__item {
-  font-weight: 600;
-  color: var(--ctp-text);
-  font-family: 'Comic Sans MS', cursive;
-  transition: background-color 0.2s ease;
+@keyframes pulse {
+  0% { transform: scale(1); }
+  70% { transform: scale(1.05); }
+  100% { transform: scale(1); }
 }
-
-.el-dropdown-menu__item:hover {
-  background-color: var(--ctp-peach);
-  color: white;
-  border-radius: 6px;
-}
-
-/* Transitions */
-.fade-enter-active, .fade-leave-active {
-  transition: opacity 0.5s;
-}
-.fade-enter-from, .fade-leave-to {
-  opacity: 0;
-}
-
-/* Utility Classes */
-.bg-green-100 { background-color: var(--ctp-green); opacity: 0.2; }
-.text-green-700 { color: var(--ctp-green); }
-.dark .text-green-700 { color: var(--ctp-green); }

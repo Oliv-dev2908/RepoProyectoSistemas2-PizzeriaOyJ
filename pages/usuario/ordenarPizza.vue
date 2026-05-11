@@ -67,9 +67,81 @@
       </div>
     </div>
 
-    <!-- Modales Responsivos -->
-    <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="90%" class="max-w-[600px]"
-      :before-close="() => dialogVisible = false">
+    <!-- Modales Responsivos con el-select -->
+    <el-dialog v-model="modalPizza" title="🍕 Agregar Pizza" width="90%" class="max-w-[500px]">
+      <div class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Selecciona Variedad</label>
+          <el-select v-model="selectedPizza" placeholder="Elige una pizza" class="w-full" size="large">
+            <el-option 
+              v-for="pizza in pizzas" 
+              :key="pizza.id_pizza" 
+              :label="pizza.nombre + (obtenerTextoOfertaParaPizza(pizza.id_pizza) ? ` (${obtenerTextoOfertaParaPizza(pizza.id_pizza)})` : '')"
+              :value="pizza.id_pizza" 
+            />
+          </el-select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Tamaño</label>
+          <el-select v-model="selectedTamano" placeholder="Elige el tamaño" class="w-full" size="large">
+            <el-option v-for="tam in tamanos" :key="tam.id_tamano" :label="tam.nombre" :value="tam.id_tamano" />
+          </el-select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
+          <el-input-number v-model="cantidad" :min="1" :max="100" class="!w-full" size="large" />
+        </div>
+
+        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
+          ⚠️ {{ mensajeError }}
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex gap-3">
+          <el-button @click="modalPizza = false" class="flex-1">Cancelar</el-button>
+          <el-button type="primary" @click="agregarPizza" class="flex-1">Agregar</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- Modal de Producto con el-select -->
+    <el-dialog v-model="modalProducto" title="🛒 Agregar Complemento" width="90%" class="max-w-[500px]">
+      <div class="space-y-5">
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Producto</label>
+          <el-select v-model="selectedProducto" placeholder="Selecciona un producto" class="w-full" size="large">
+            <el-option 
+              v-for="producto in productos" 
+              :key="producto.id_producto" 
+              :label="`${producto.nombre} - $${parseFloat(producto.precio).toFixed(2)}`" 
+              :value="producto.id_producto" 
+            />
+          </el-select>
+        </div>
+
+        <div>
+          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
+          <el-input-number v-model="cantidadProducto" :min="1" :max="100" class="!w-full" size="large" />
+        </div>
+
+        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
+          ⚠️ {{ mensajeError }}
+        </div>
+      </div>
+
+      <template #footer>
+        <div class="flex gap-3">
+          <el-button @click="modalProducto = false" class="flex-1">Cancelar</el-button>
+          <el-button type="primary" @click="agregarProducto" class="flex-1">Agregar</el-button>
+        </div>
+      </template>
+    </el-dialog>
+
+    <!-- Modal de Confirmación Final -->
+    <el-dialog v-model="dialogVisible" title="Confirmar Pedido" width="90%" class="max-w-[600px]">
       <div class="text-theme-text max-h-[60vh] overflow-y-auto pr-2">
         <h3 class="font-bold mb-4 text-theme-secondary uppercase text-xs tracking-widest">Resumen de tu pedido</h3>
         <ul class="divide-y divide-theme">
@@ -98,103 +170,21 @@
       </template>
     </el-dialog>
 
-
-    <!-- Mensaje de confirmación -->
-    <div v-if="mensaje" class="mt-4 p-3 bg-ctp-surface0 border border-ctp-blue text-ctp-blue rounded font-semibold">
+    <div v-if="mensaje" class="mt-4 p-3 bg-ctp-surface0 border border-ctp-blue text-ctp-blue rounded-xl font-bold text-center">
       {{ mensaje }}
     </div>
 
-    <!-- Modal de Pizza -->
-    <el-dialog v-model="modalPizza" title="🍕 Agregar Pizza" width="90%" class="max-w-[500px]">
-      <div class="space-y-5 px-1">
-        <div>
-          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Selecciona Variedad</label>
-          <select v-model="selectedPizza" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
-            <option disabled value="">-- Elige una pizza --</option>
-            <option v-for="pizza in pizzas" :key="pizza.id_pizza" :value="pizza.id_pizza">
-              {{ pizza.nombre }} 
-              <span v-if="obtenerTextoOfertaParaPizza(pizza.id_pizza)" class="text-ctp-peach">
-                ({{ obtenerTextoOfertaParaPizza(pizza.id_pizza) }})
-              </span>
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Tamaño</label>
-          <select v-model="selectedTamano" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
-            <option disabled value="">-- Elige el tamaño --</option>
-            <option v-for="tam in tamanos" :key="tam.id_tamano" :value="tam.id_tamano">
-              {{ tam.nombre }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
-          <input type="number" v-model.number="cantidad" min="1" max="100"
-            class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all"
-            placeholder="¿Cuántas?" />
-        </div>
-
-        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
-          ⚠️ {{ mensajeError }}
-        </div>
-      </div>
-
-      <template #footer>
-        <div class="flex gap-3">
-          <el-button @click="modalPizza = false" class="flex-1">Cancelar</el-button>
-          <el-button type="primary" @click="agregarPizza" class="flex-1">Agregar</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- Modal de Producto -->
-    <el-dialog v-model="modalProducto" title="🛒 Agregar Complemento" width="90%" class="max-w-[500px]">
-      <div class="space-y-5 px-1">
-        <div>
-          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Producto</label>
-          <select v-model="selectedProducto" class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all">
-            <option disabled value="">-- Selecciona un producto --</option>
-            <option v-for="producto in productos" :key="producto.id_producto" :value="producto.id_producto">
-              {{ producto.nombre }} - ${{ parseFloat(producto.precio).toFixed(2) }}
-            </option>
-          </select>
-        </div>
-
-        <div>
-          <label class="block text-xs font-bold text-theme-secondary uppercase mb-2 ml-1">Cantidad</label>
-          <input type="number" v-model.number="cantidadProducto" min="1" max="100"
-            class="w-full p-3 border border-theme rounded-xl bg-theme-bg text-theme-text focus:outline-none focus:ring-2 focus:ring-ctp-mauve transition-all"
-            placeholder="¿Cuántas?" />
-        </div>
-
-        <div v-if="mensajeError" class="p-3 bg-ctp-red/10 text-ctp-red text-xs font-bold rounded-lg border border-ctp-red/20">
-          ⚠️ {{ mensajeError }}
-        </div>
-      </div>
-
-      <template #footer>
-        <div class="flex gap-3">
-          <el-button @click="modalProducto = false" class="flex-1">Cancelar</el-button>
-          <el-button type="primary" @click="agregarProducto" class="flex-1">Agregar</el-button>
-        </div>
-      </template>
-    </el-dialog>
-
-    <!-- Spinner de carga -->
     <div v-if="loading" class="flex justify-center items-center mt-4">
-      <el-loading :loading="loading" text="Procesando tu pedido..." spinner-size="50"></el-loading>
+      <el-loading :loading="loading" text="Cargando..." spinner-size="50"></el-loading>
     </div>
-
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
 import { useSupabaseUser } from '#imports'
-import { ElDialog, ElButton, ElLoading } from 'element-plus';
+import { ElDialog, ElButton, ElLoading, ElSelect, ElOption, ElInputNumber } from 'element-plus';
+import * as ElementPlusIcons from '@element-plus/icons-vue';
 
 const user = useSupabaseUser();
 const dialogVisible = ref(false);
@@ -300,17 +290,7 @@ const agregarAlCarrito = () => {
   const nuevaCantidad = selectedPizza.value ? cantidad.value : cantidadProducto.value;
 
   if (totalActual + nuevaCantidad > 100) {
-    mensajeError.value = "No puedes agregar más de 100 unidades al carrito en total.";
-    return false;
-  }
-
-  if ((cantidad.value <= 0 || cantidad.value > 100) && selectedPizza.value) {
-    mensajeError.value = "La cantidad de pizzas debe ser entre 1 y 100.";
-    return false;
-  }
-
-  if ((cantidadProducto.value <= 0 || cantidadProducto.value > 100) && selectedProducto.value) {
-    mensajeError.value = "La cantidad de productos debe ser entre 1 y 100.";
+    mensajeError.value = "No puedes agregar más de 100 unidades al carrito.";
     return false;
   }
 
@@ -398,26 +378,21 @@ const limpiarCampos = () => {
   selectedPizza.value = '';
   selectedTamano.value = '';
   cantidad.value = 1;
-
   selectedProducto.value = '';
   cantidadProducto.value = 1;
-
   mensajeError.value = '';
 };
 
 const finalizarPedido = () => {
-  if (carrito.value.length === 0) {
-    alert("Tu carrito está vacío.");
-    return;
-  }
-  loading.value = true;
+  if (carrito.value.length === 0) return;
   dialogVisible.value = true;
 };
 
 const confirmarPedido = async () => {
-  const id_cliente = user.value?.identities?.[0]?.user_id;
+  const id_cliente = user.value?.id;
   const total = calcularTotal();
 
+  loading.value = true;
   try {
     const res = await fetch('/api/usuario/pedirPizza', {
       method: 'POST',
@@ -433,80 +408,34 @@ const confirmarPedido = async () => {
     const resultado = await res.json();
 
     if (res.ok) {
-      mensaje.value = 'Pedido realizado con éxito.';
+      mensaje.value = '¡Pedido realizado con éxito! 🍕';
       carrito.value = [];
+      dialogVisible.value = false;
     } else {
-      mensaje.value = resultado.message || 'Hubo un error al realizar el pedido.';
+      mensaje.value = resultado.message || 'Error al realizar el pedido.';
     }
   } catch (error) {
     console.error(error);
-    mensaje.value = 'Hubo un error al realizar el pedido.';
+    mensaje.value = 'Error al realizar el pedido.';
   } finally {
     loading.value = false;
-    dialogVisible.value = false;
   }
 };
 
 const calcularTotal = () => {
   let total = 0;
-
-  const pizzasEnCarrito = carrito.value.filter(item => item.tipo === 'pizza');
-
-  pizzasEnCarrito.forEach(item => {
-    const precioUnitario = item.precioUnitario;
-    const cantidad = item.cantidad;
-
-    const ofertasParaPizza = ofertas.value.filter(oferta => {
-      if (!oferta.activo) return false;
-      const ahora = new Date();
-      const inicio = new Date(oferta.fecha_inicio);
-      const fin = new Date(oferta.fecha_fin);
-      if (ahora < inicio || ahora > fin) return false;
-      return oferta.pizzas.includes(item.id_pizza);
-    });
-
-    if (ofertasParaPizza.length === 0) {
-      total += precioUnitario * cantidad;
+  carrito.value.forEach(item => {
+    if (item.tipo === 'pizza') {
+      total += item.precioUnitario * item.cantidad;
     } else {
-      const oferta = ofertasParaPizza[0];
-
-      if (oferta.tipo === 'descuento') {
-        const descuento = oferta.descuento ?? 0;
-        total += precioUnitario * cantidad * (1 - descuento);
-      } else if (oferta.tipo === 'n_x_m') {
-        const N = oferta.n_cantidad;
-        const M = oferta.m_paga;
-        const grupos = Math.floor(cantidad / N);
-        const sobrante = cantidad % N;
-        const pizzasAPagar = grupos * M + sobrante;
-        total += precioUnitario * pizzasAPagar;
-      } else {
-        total += precioUnitario * cantidad;
-      }
+      total += item.precioUnitario * item.cantidadProducto;
     }
   });
-
-  const productosEnCarrito = carrito.value.filter(item => item.tipo === 'producto');
-  productosEnCarrito.forEach(item => {
-    total += item.precioUnitario * item.cantidadProducto;
-  });
-
   return total;
 };
 
 const eliminarDelCarrito = (index) => {
   carrito.value.splice(index, 1);
-};
-
-const editarItem = (item) => {
-  if (item.tipo === 'pizza') {
-    selectedPizza.value = item.id_pizza;
-    selectedTamano.value = item.id_tamano;
-    cantidad.value = item.cantidad;
-  } else if (item.tipo === 'producto') {
-    selectedProducto.value = item.id_producto;
-    cantidadProducto.value = item.cantidadProducto;
-  }
 };
 
 onMounted(async () => {

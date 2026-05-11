@@ -1,126 +1,114 @@
 <template>
-  <div class="dashboard-container">
-    <h1 class="text-4xl font-bold mb-6 text-pizza-red font-pizza-title drop-shadow-lg">
+  <div class="container mx-auto p-4 sm:p-6 text-theme-text min-h-screen">
+    <h1 class="text-3xl sm:text-4xl font-bold mb-8 text-ctp-red font-pizza-title drop-shadow-sm text-center sm:text-left">
       Dashboard de Gestión
     </h1>
 
-
     <!-- FILA 1 -->
-    <el-row :gutter="20" class="dashboard-row">
-      <el-col :xs="24" :sm="24" :md="12">
-        <el-form :inline="true" style="margin-bottom: 10px;">
-          <el-form-item label="Top Ingredientes por:">
-            <el-select v-model="filtroIngredientes" @change="drawCostosIngredientesChart">
-              <el-option label="Costo Total" value="costo" />
-              <el-option label="Cantidad Usada" value="cantidad" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Mostrar">
-            <el-select v-model="topIngredientes" @change="drawCostosIngredientesChart">
-              <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <section class="charts">
-          <h2>Costos y Uso de Ingredientes</h2>
-          <canvas id="costosIngredientesChart" class="responsive-canvas"></canvas>
-        </section>
+    <el-row :gutter="20" class="mb-8">
+      <el-col :xs="24" :lg="12" class="mb-6 lg:mb-0">
+        <el-card class="shadow-lg border-theme h-full">
+          <template #header>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <span class="font-bold">Costos y Uso de Ingredientes</span>
+              <div class="flex gap-2">
+                <el-select v-model="filtroIngredientes" size="small" @change="drawCostosIngredientesChart" class="!w-32">
+                  <el-option label="Costo" value="costo" />
+                  <el-option label="Cantidad" value="cantidad" />
+                </el-select>
+                <el-select v-model="topIngredientes" size="small" @change="drawCostosIngredientesChart" class="!w-24">
+                  <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
+                </el-select>
+              </div>
+            </div>
+          </template>
+          <div class="h-[350px]">
+            <canvas id="costosIngredientesChart"></canvas>
+          </div>
+        </el-card>
       </el-col>
 
-      <el-col :xs="24" :sm="24" :md="12">
-        <el-form :inline="true" class="filtros-form">
-          <el-form-item label="Productos">
-            <el-select v-model="productosSeleccionados" multiple filterable clearable collapse-tags
-              @change="drawEvolucionVentasChart">
-              <el-option v-for="prod in productosDisponibles" :key="prod" :label="prod" :value="prod" />
-            </el-select>
-          </el-form-item>
-          <el-form-item label="Estado">
-            <el-select v-model="estadoSeleccionado" placeholder="Filtrar por estado" clearable
-              @change="drawEvolucionVentasChart">
-              <el-option label="Aprobado" value="Aprobado" />
-              <el-option label="Pendiente" value="Pendiente" />
-              <el-option label="Cancelado por el Cliente" value="Cancelado por el Cliente" />
-              <el-option label="Cancelado por el Administrador" value="Cancelado por el Administrador" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <section class="charts">
-          <h2>Evolución Mensual Ventas por Producto</h2>
-          <canvas id="evolucionVentasChart" class="responsive-canvas"></canvas>
-        </section>
+      <el-col :xs="24" :lg="12">
+        <el-card class="shadow-lg border-theme h-full">
+          <template #header>
+            <div class="flex flex-wrap items-center justify-between gap-4">
+              <span class="font-bold">Evolución de Ventas</span>
+              <div class="flex gap-2 flex-wrap">
+                <el-select v-model="productosSeleccionados" multiple collapse-tags size="small" @change="drawEvolucionVentasChart" class="!w-40" placeholder="Productos">
+                  <el-option v-for="prod in productosDisponibles" :key="prod" :label="prod" :value="prod" />
+                </el-select>
+                <el-select v-model="estadoSeleccionado" size="small" clearable @change="drawEvolucionVentasChart" class="!w-32" placeholder="Estado">
+                  <el-option label="Aprobado" value="Aprobado" />
+                  <el-option label="Pendiente" value="Pendiente" />
+                  <el-option label="Cancelado" value="Cancelado por el Cliente" />
+                </el-select>
+              </div>
+            </div>
+          </template>
+          <div class="h-[350px]">
+            <canvas id="evolucionVentasChart"></canvas>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
 
     <!-- FILA 2 -->
-    <el-row :gutter="20" class="dashboard-row">
-      <el-col :xs="24" :sm="24" :md="12">
-        <el-form :inline="true" class="filtros-form">
-          <el-form-item label="Top Productos">
-            <el-select v-model="topProductos" @change="drawProductosMasVendidosChart">
-              <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <section class="charts">
-          <h2>Productos Más Vendidos</h2>
-          <canvas id="productosMasVendidosChart" class="responsive-canvas"></canvas>
-        </section>
+    <el-row :gutter="20" class="mb-8">
+      <el-col :xs="24" :lg="12" class="mb-6 lg:mb-0">
+        <el-card class="shadow-lg border-theme h-full">
+          <template #header>
+            <div class="flex items-center justify-between">
+              <span class="font-bold">Productos Más Vendidos</span>
+              <el-select v-model="topProductos" size="small" @change="drawProductosMasVendidosChart" class="!w-24">
+                <el-option v-for="n in [5, 10, 15]" :key="n" :label="`Top ${n}`" :value="n" />
+              </el-select>
+            </div>
+          </template>
+          <div class="h-[350px]">
+            <canvas id="productosMasVendidosChart"></canvas>
+          </div>
+        </el-card>
       </el-col>
 
-      <el-col :xs="24" :sm="24" :md="12">
-        <el-form :inline="true" class="filtros-form">
-          <el-form-item label="Orden">
-            <el-select v-model="ordenCategoria" @change="drawVentasPorCategoriaChart">
-              <el-option label="Mayor a menor" value="desc" />
-              <el-option label="Menor a mayor" value="asc" />
-            </el-select>
-          </el-form-item>
-        </el-form>
-        <section class="charts">
-          <h2>Ventas Totales por Categoría</h2>
-          <canvas id="ventasPorCategoriaChart" class="responsive-canvas"></canvas>
-        </section>
+      <el-col :xs="24" :lg="12">
+        <el-card class="shadow-lg border-theme h-full">
+          <template #header>
+            <div class="flex items-center justify-between">
+              <span class="font-bold">Ventas por Categoría</span>
+              <el-select v-model="ordenCategoria" size="small" @change="drawVentasPorCategoriaChart" class="!w-32">
+                <el-option label="Mayor a menor" value="desc" />
+                <el-option label="Menor a mayor" value="asc" />
+              </el-select>
+            </div>
+          </template>
+          <div class="h-[350px]">
+            <canvas id="ventasPorCategoriaChart"></canvas>
+          </div>
+        </el-card>
       </el-col>
     </el-row>
 
-    <!-- FILA 3 -->
-    <el-row :gutter="20" class="dashboard-row">
-      <el-col :xs="24" :sm="24" :md="12">
-        <h2>Análisis K-Means</h2>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image" class="dashboard-img" alt="Análisis K-Means" />
-      </el-col>
+    <!-- ANÁLISIS IA -->
+    <h2 class="text-2xl font-bold mb-6 flex items-center gap-2 border-b border-theme pb-2">
+      <span class="text-3xl">🤖</span> Análisis Predictivo e IA
+    </h2>
 
-      <el-col :xs="24" :sm="24" :md="12">
-        <h2>Primer Cluster</h2>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0" class="dashboard-img"
-          alt="Primer Cluster" />
-      </el-col>
-    </el-row>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+      <el-card class="shadow-md border-theme">
+        <h3 class="font-bold mb-4 text-ctp-blue">Segmentación K-Means</h3>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image" class="w-full h-auto rounded-lg border border-theme" alt="K-Means" />
+      </el-card>
 
-    <!-- FILA 4 -->
-    <el-row :gutter="20" class="dashboard-row">
-      <el-col :xs="24" :sm="24" :md="12">
-        <h2>Segundo Cluster</h2>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=1" class="dashboard-img"
-          alt="Segundo Cluster" />
-      </el-col>
+      <el-card class="shadow-md border-theme">
+        <h3 class="font-bold mb-4 text-ctp-green">Cluster Principal</h3>
+        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=0" class="w-full h-auto rounded-lg border border-theme" alt="Cluster 0" />
+      </el-card>
+    </div>
 
-      <el-col :xs="24" :sm="24" :md="12">
-        <h2>Tercer Cluster</h2>
-        <img src="https://k-means-hdsk.onrender.com/kmeans-image/cluster?num=2" class="dashboard-img"
-          alt="Tercer Cluster" />
-      </el-col>
-    </el-row>
-
-    <!-- FILA 5: columna que ocupa dos columnas y dos filas -->
-    <el-row :gutter="20" class="dashboard-row">
-      <el-col :xs="24" :sm="24" :md="24" class="doble-alto-col">
-        <h2>Árboles de Decisión</h2>
-        <img src="https://k-means-hdsk.onrender.com/decision-tree-image" class="dashboard-img"
-          alt="Árboles de Decisión" />
-      </el-col>
-    </el-row>
+    <el-card class="shadow-lg border-theme mb-8">
+      <h3 class="font-bold mb-4 text-ctp-mauve">Árboles de Decisión (Predicción)</h3>
+      <img src="https://k-means-hdsk.onrender.com/decision-tree-image" class="w-full h-auto rounded-xl border-2 border-theme" alt="Decision Tree" />
+    </el-card>
   </div>
 </template>
 
@@ -147,25 +135,24 @@ const fetchDashboardData = async () => {
       productosMasVendidosData.value = res.resumen.productosMasVendidos
       ventasPorCategoriaData.value = res.resumen.ventasPorCategoria
 
-      drawCostosIngredientesChart()
-      drawEvolucionVentasChart()
-      drawProductosMasVendidosChart()
-      drawVentasPorCategoriaChart()
-    } else {
-      console.error('Error API:', res.message)
+      setTimeout(() => {
+        drawCostosIngredientesChart()
+        drawEvolucionVentasChart()
+        drawProductosMasVendidosChart()
+        drawVentasPorCategoriaChart()
+      }, 100)
     }
   } catch (error) {
-    console.error('Error al cargar datos del dashboard:', error)
+    console.error('Error dashboard data:', error)
   }
 }
 
-// Costos y Uso de Ingredientes
+// Charts
 const filtroIngredientes = ref('costo')
 const topIngredientes = ref(10)
-
 const drawCostosIngredientesChart = () => {
-  const ctx = document.getElementById('costosIngredientesChart').getContext('2d')
-  if (costosChart) costosChart.destroy()
+  const ctx = document.getElementById('costosIngredientesChart')
+  if (!ctx || costosChart) costosChart?.destroy()
 
   let datos = [...costosIngredientesData.value]
   datos.sort((a, b) => {
@@ -179,149 +166,71 @@ const drawCostosIngredientesChart = () => {
     data: {
       labels: datos.map(i => i.ingrediente),
       datasets: [
-        {
-          label: 'Cantidad Usada',
-          data: datos.map(i => Number(i.cantidad_usada)),
-          backgroundColor: 'rgba(75, 192, 192, 0.7)'
-        },
-        {
-          label: 'Costo Total',
-          data: datos.map(i => Number(i.costo_total)),
-          backgroundColor: 'rgba(153, 102, 255, 0.7)'
-        }
+        { label: 'Costo Total', data: datos.map(i => Number(i.costo_total)), backgroundColor: '#f38ba8' },
+        { label: 'Cantidad', data: datos.map(i => Number(i.cantidad_usada)), backgroundColor: '#89b4fa' }
       ]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false }
   })
 }
 
-// Evolución Mensual Ventas por Producto
 const productosSeleccionados = ref([])
 const estadoSeleccionado = ref('')
-const productosDisponibles = computed(() => {
-  return [...new Set(evolucionVentasData.value.map(v => v.producto))]
-})
-
+const productosDisponibles = computed(() => [...new Set(evolucionVentasData.value.map(v => v.producto))])
 const drawEvolucionVentasChart = () => {
-  const ctx = document.getElementById('evolucionVentasChart').getContext('2d')
-  if (evolucionChart) evolucionChart.destroy()
-  if (!evolucionVentasData.value.length) return
-
-  // Filtrar por estado
+  const ctx = document.getElementById('evolucionVentasChart')
+  if (!ctx || evolucionChart) evolucionChart?.destroy()
+  
   let dataFiltrada = [...evolucionVentasData.value]
-  if (estadoSeleccionado.value) {
-    dataFiltrada = dataFiltrada.filter(item => item.estado === estadoSeleccionado.value)
-  }
+  if (estadoSeleccionado.value) dataFiltrada = dataFiltrada.filter(item => item.estado === estadoSeleccionado.value)
 
   const meses = [...new Set(dataFiltrada.map(v => v.mes))].sort()
+  const productos = productosSeleccionados.value.length ? productosSeleccionados.value : productosDisponibles.value.slice(0, 5)
 
-  const productos = productosSeleccionados.value.length
-    ? productosSeleccionados.value
-    : [...new Set(dataFiltrada.map(v => v.producto))]
-
-  const datasets = productos.map((prod, idx) => {
-    const color = `hsl(${(idx * 60) % 360}, 70%, 50%)`
-    return {
-      label: prod,
-      data: meses.map(mes => {
-        const record = dataFiltrada.find(v => v.producto === prod && v.mes === mes)
-        return record ? Number(record.cantidad_vendida) : 0
-      }),
-      borderColor: color,
-      backgroundColor: color,
-      fill: false,
-      tension: 0.1
-    }
-  })
+  const datasets = productos.map((prod, idx) => ({
+    label: prod,
+    data: meses.map(mes => {
+      const record = dataFiltrada.find(v => v.producto === prod && v.mes === mes)
+      return record ? Number(record.cantidad_vendida) : 0
+    }),
+    borderColor: `hsl(${(idx * 60) % 360}, 70%, 60%)`,
+    tension: 0.3
+  }))
 
   evolucionChart = new Chart(ctx, {
     type: 'line',
-    data: {
-      labels: meses.map(m => new Date(m).toLocaleDateString('es-ES', { year: 'numeric', month: 'short' })),
-      datasets,
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    data: { labels: meses.map(m => new Date(m).toLocaleDateString('es-ES', { month: 'short' })), datasets },
+    options: { responsive: true, maintainAspectRatio: false }
   })
 }
 
-// Productos Más Vendidos
 const topProductos = ref(10)
-
 const drawProductosMasVendidosChart = () => {
-  const ctx = document.getElementById('productosMasVendidosChart').getContext('2d')
-  if (productosChart) productosChart.destroy()
-
-  let datos = [...productosMasVendidosData.value]
-  datos.sort((a, b) => b.total_vendido - a.total_vendido)
-  datos = datos.slice(0, topProductos.value)
-
+  const ctx = document.getElementById('productosMasVendidosChart')
+  if (!ctx || productosChart) productosChart?.destroy()
+  let datos = [...productosMasVendidosData.value].sort((a, b) => b.total_vendido - a.total_vendido).slice(0, topProductos.value)
   productosChart = new Chart(ctx, {
-    type: 'bar',
+    type: 'doughnut',
     data: {
       labels: datos.map(p => p.producto),
-      datasets: [
-        {
-          label: 'Total Vendido',
-          data: datos.map(p => Number(p.total_vendido)),
-          backgroundColor: 'rgba(255, 159, 64, 0.7)'
-        }
-      ]
+      datasets: [{ data: datos.map(p => Number(p.total_vendido)), backgroundColor: ['#fab387', '#a6e3a1', '#89dceb', '#cba6f7', '#f9e2af'] }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false }
   })
 }
 
-// Ventas Totales por Categoría
 const ordenCategoria = ref('desc')
-
 const drawVentasPorCategoriaChart = () => {
-  const ctx = document.getElementById('ventasPorCategoriaChart').getContext('2d')
-  if (categoriasChart) categoriasChart.destroy()
-
-  let datos = [...ventasPorCategoriaData.value]
-  datos.sort((a, b) => {
-    return ordenCategoria.value === 'desc'
-      ? b.total_ventas - a.total_ventas
-      : a.total_ventas - b.total_ventas
-  })
-
+  const ctx = document.getElementById('ventasPorCategoriaChart')
+  if (!ctx || categoriasChart) categoriasChart?.destroy()
+  let datos = [...ventasPorCategoriaData.value].sort((a, b) => ordenCategoria.value === 'desc' ? b.total_ventas - a.total_ventas : a.total_ventas - b.total_ventas)
   categoriasChart = new Chart(ctx, {
     type: 'bar',
     data: {
       labels: datos.map(c => c.categoria),
-      datasets: [
-        {
-          label: 'Ventas Totales',
-          data: datos.map(c => Number(c.total_ventas)),
-          backgroundColor: 'rgba(54, 162, 235, 0.7)'
-        }
-      ]
+      datasets: [{ label: 'Ventas', data: datos.map(c => Number(c.total_ventas)), backgroundColor: '#b4befe' }]
     },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        y: { beginAtZero: true }
-      }
-    }
+    options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y' }
   })
 }
 
@@ -329,5 +238,3 @@ onMounted(() => {
   fetchDashboardData()
 })
 </script>
-
-
