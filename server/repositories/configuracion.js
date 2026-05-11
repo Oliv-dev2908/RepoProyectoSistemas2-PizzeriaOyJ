@@ -10,12 +10,14 @@ export const getConfiguracion = async () => {
             nombre_pizzeria TEXT DEFAULT 'Pizzería OyJ',
             logo_url TEXT DEFAULT 'https://via.placeholder.com/96',
             theme_flavor TEXT DEFAULT 'mocha',
+            custom_colors JSONB DEFAULT '{}',
             custom_colors_light JSONB DEFAULT '{}',
             custom_colors_dark JSONB DEFAULT '{}'
         )
     `;
 
     // Asegurar que las columnas nuevas existan si la tabla ya fue creada previamente
+    await sql`ALTER TABLE "Configuracion" ADD COLUMN IF NOT EXISTS custom_colors JSONB DEFAULT '{}'`;
     await sql`ALTER TABLE "Configuracion" ADD COLUMN IF NOT EXISTS custom_colors_light JSONB DEFAULT '{}'`;
     await sql`ALTER TABLE "Configuracion" ADD COLUMN IF NOT EXISTS custom_colors_dark JSONB DEFAULT '{}'`;
 
@@ -24,8 +26,8 @@ export const getConfiguracion = async () => {
     
     if (config.length === 0) {
         const insertDefault = await sql`
-            INSERT INTO "Configuracion" (nombre_pizzeria, logo_url, theme_flavor, custom_colors_light, custom_colors_dark)
-            VALUES ('Pizzería OyJ', 'https://via.placeholder.com/96', 'mocha', '{}', '{}')
+            INSERT INTO "Configuracion" (nombre_pizzeria, logo_url, theme_flavor, custom_colors)
+            VALUES ('Pizzería OyJ', 'https://via.placeholder.com/96', 'mocha', '{}')
             RETURNING *
         `;
         return insertDefault[0];
@@ -35,7 +37,7 @@ export const getConfiguracion = async () => {
 };
 
 export const updateConfiguracion = async (config) => {
-    const { nombre_pizzeria, logo_url, theme_flavor, custom_colors_light, custom_colors_dark } = config;
+    const { nombre_pizzeria, logo_url, theme_flavor, custom_colors } = config;
     const sql = usePostres();
     
     const result = await sql`
@@ -44,8 +46,7 @@ export const updateConfiguracion = async (config) => {
             nombre_pizzeria = ${nombre_pizzeria},
             logo_url = ${logo_url},
             theme_flavor = ${theme_flavor},
-            custom_colors_light = ${JSON.stringify(custom_colors_light || {})},
-            custom_colors_dark = ${JSON.stringify(custom_colors_dark || {})}
+            custom_colors = ${JSON.stringify(custom_colors || {})}
         WHERE id = (SELECT id FROM "Configuracion" LIMIT 1)
         RETURNING *
     `;

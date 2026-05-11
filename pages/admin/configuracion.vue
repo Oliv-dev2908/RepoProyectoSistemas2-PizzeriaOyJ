@@ -2,18 +2,15 @@
   <div class="container mx-auto p-4 sm:p-6 text-theme-text min-h-screen">
     <h1 class="text-2xl sm:text-3xl font-bold mb-6 sm:mb-8 font-pizza-title flex items-center gap-3">
       <el-icon><ElementPlusIcons.Setting /></el-icon>
-      Personalización de Marca
+      Configuración de Marca
     </h1>
 
     <div class="grid grid-cols-1 xl:grid-cols-3 gap-8">
-      <!-- Columna Izquierda: Formulario (Ocupa 2/3 en pantallas grandes) -->
+      <!-- Formulario Principal -->
       <div class="xl:col-span-2 space-y-6">
         <el-card class="shadow-lg border-theme">
           <template #header>
-            <div class="flex items-center justify-between">
-              <span class="text-lg font-bold">Identidad Básica</span>
-              <el-tag type="info" size="small">Requerido</el-tag>
-            </div>
+            <span class="text-lg font-bold">Identidad Visual</span>
           </template>
 
           <el-form label-position="top">
@@ -23,72 +20,69 @@
 
             <el-form-item label="URL del Logo">
               <el-input v-model="form.logo_url" placeholder="https://ejemplo.com/mi-logo.png" />
-              <p class="text-xs text-theme-secondary mt-1">Se recomienda fondo transparente y forma circular/cuadrada.</p>
             </el-form-item>
 
-            <el-form-item label="Paleta Base (Catppuccin)">
+            <el-form-item label="Elegir Paleta de Colores">
               <el-select v-model="form.theme_flavor" class="w-full">
-                <el-option label="Latte (Claro)" value="latte" />
-                <el-option label="Frappé (Grisáceo)" value="frappe" />
-                <el-option label="Macchiato (Suave)" value="macchiato" />
-                <el-option label="Mocha (Oscuro Profundo)" value="mocha" />
+                <el-option label="🍕 Pizzería Clásica (Blanco/Rojo)" value="pizza_clasica" />
+                <el-option label="🌙 Pizzería Dark (Negro/Naranja)" value="pizza_dark" />
+                <el-option label="✨ Estilo Neón (Cyber)" value="neon" />
+                <el-option label="🎀 Catppuccin Latte" value="latte" />
+                <el-option label="🌌 Catppuccin Mocha" value="mocha" />
               </el-select>
             </el-form-item>
           </el-form>
         </el-card>
 
-        <!-- Personalización de Colores -->
+        <!-- Personalización Manual -->
         <el-card class="shadow-lg border-theme">
           <template #header>
-            <span class="text-lg font-bold">Colores Personalizados (Sobrescritura)</span>
+            <span class="text-lg font-bold">Personalizar Colores Manualmente</span>
           </template>
           
-          <el-tabs type="border-card" class="!bg-theme-bg !border-theme rounded-lg">
-            <el-tab-pane label="☀️ Modo Claro">
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 p-2">
-                <div v-for="color in configurableColors" :key="color" class="flex flex-col gap-2">
-                  <span class="text-xs font-bold uppercase text-theme-secondary">{{ color }}</span>
-                  <el-color-picker v-model="form.custom_colors_light[color]" />
-                </div>
-              </div>
-            </el-tab-pane>
-            <el-tab-pane label="🌙 Modo Oscuro">
-              <div class="grid grid-cols-2 sm:grid-cols-3 gap-4 p-2">
-                <div v-for="color in configurableColors" :key="color" class="flex flex-col gap-2">
-                  <span class="text-xs font-bold uppercase text-theme-secondary">{{ color }}</span>
-                  <el-color-picker v-model="form.custom_colors_dark[color]" />
-                </div>
-              </div>
-            </el-tab-pane>
-          </el-tabs>
-          <div class="mt-4 p-3 bg-theme-surface rounded-lg border border-theme">
-            <p class="text-xs italic text-theme-secondary">
-              * Deja el color en blanco para usar el valor por defecto de la paleta elegida.
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 p-2">
+            <div v-for="color in configurableColors" :key="color" class="flex flex-col items-center gap-2">
+              <span class="text-[10px] font-bold uppercase text-theme-secondary text-center">{{ color }}</span>
+              <el-color-picker v-model="form.custom_colors[color]" />
+            </div>
+          </div>
+          
+          <div class="mt-6 p-4 bg-theme-surface rounded-xl border border-theme">
+            <p class="text-xs text-theme-secondary text-center">
+              Los colores manuales tienen prioridad sobre la paleta elegida arriba. 
+              Borra un color para volver al valor por defecto.
             </p>
           </div>
         </el-card>
 
         <div class="flex justify-end">
-          <el-button type="primary" size="large" class="pulse-button w-full sm:w-auto px-12 h-12 text-lg" 
+          <el-button type="primary" size="large" class="pulse-button w-full sm:w-auto px-12 h-14 text-lg font-bold" 
             :loading="loading" @click="handleSave">
-            Aplicar y Guardar Cambios
+            Guardar Configuración Global
           </el-button>
         </div>
       </div>
 
-      <!-- Columna Derecha: Previsualización -->
+      <!-- Previsualización Real -->
       <div class="space-y-6">
-        <el-card class="shadow-lg border-theme bg-theme-surface sticky top-6">
+        <el-card class="shadow-xl border-theme bg-theme-surface sticky top-6">
           <template #header>
-            <span class="font-bold">Previsualización Real</span>
+            <span class="font-bold">Vista Previa Real</span>
           </template>
-          <div class="flex flex-col items-center justify-center p-8 bg-theme-bg rounded-2xl border-2 border-theme shadow-inner">
-            <img :src="form.logo_url || 'https://via.placeholder.com/128'" alt="Logo preview" 
+          
+          <div class="flex flex-col items-center justify-center p-8 bg-theme-bg rounded-2xl border-2 border-theme">
+            <img :src="form.logo_url || 'https://via.placeholder.com/128'" alt="Preview" 
               class="w-32 h-32 object-contain rounded-full shadow-lg border-4 border-ctp-red mb-6" />
-            <h2 class="text-2xl font-bold text-ctp-red font-pizza-title text-center">{{ form.nombre_pizzeria || 'Tu Pizzería' }}</h2>
-            <div class="mt-6 flex flex-wrap gap-2 justify-center">
-              <el-button type="primary" size="small" round>Botón Primario</el-button>
-              <el-button type="danger" size="small" round>Acción</el-button>
+            <h2 class="text-2xl font-bold text-ctp-red font-pizza-title text-center mb-8">{{ form.nombre_pizzeria || 'Tu Pizzería' }}</h2>
+            
+            <div class="w-full space-y-3">
+               <el-button type="primary" class="w-full">Botón Principal</el-button>
+               <el-button type="success" class="w-full">Confirmar Pedido</el-button>
+               <el-button type="danger" class="w-full" plain>Cancelar</el-button>
+               <div class="mt-4 pt-4 border-t border-theme">
+                 <p class="text-xs text-theme-secondary mb-2">Campos de Texto:</p>
+                 <el-input placeholder="Ejemplo de input" size="small" />
+               </div>
             </div>
           </div>
         </el-card>
@@ -98,7 +92,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue';
+import { reactive, onMounted } from 'vue';
 import { useConfiguracion } from '@/client/compossables/useConfiguracion';
 import * as ElementPlusIcons from '@element-plus/icons-vue';
 import { ElMessage } from 'element-plus';
@@ -106,56 +100,41 @@ import { ElMessage } from 'element-plus';
 const { configuracion, updateConfig, loading } = useConfiguracion();
 
 const configurableColors = [
-  'mauve', 'red', 'blue', 'green', 'yellow', 'peach', 'teal', 'sapphire'
+  'base', 'text', 'mauve', 'red', 'blue', 'green', 'yellow', 'peach'
 ];
 
 const form = reactive({
   nombre_pizzeria: '',
   logo_url: '',
   theme_flavor: '',
-  custom_colors_light: {},
-  custom_colors_dark: {}
+  custom_colors: {}
 });
 
 onMounted(() => {
   form.nombre_pizzeria = configuracion.value.nombre_pizzeria;
   form.logo_url = configuracion.value.logo_url;
   form.theme_flavor = configuracion.value.theme_flavor;
+  form.custom_colors = { ...configuracion.value.custom_colors };
   
-  // Clonar para evitar mutación directa reactiva antes de guardar
-  form.custom_colors_light = { ...configuracion.value.custom_colors_light };
-  form.custom_colors_dark = { ...configuracion.value.custom_colors_dark };
-  
-  // Asegurar que todos los campos existan para el color picker
+  // Inicializar colores vacíos
   configurableColors.forEach(c => {
-    if (!form.custom_colors_light[c]) form.custom_colors_light[c] = '';
-    if (!form.custom_colors_dark[c]) form.custom_colors_dark[c] = '';
+    if (!form.custom_colors[c]) form.custom_colors[c] = '';
   });
 });
 
 const handleSave = async () => {
   try {
-    // Limpiar colores vacíos antes de enviar
-    const cleanLight = {};
-    const cleanDark = {};
-    Object.entries(form.custom_colors_light).forEach(([k, v]) => { if(v) cleanLight[k] = v; });
-    Object.entries(form.custom_colors_dark).forEach(([k, v]) => { if(v) cleanDark[k] = v; });
+    const cleanColors = {};
+    Object.entries(form.custom_colors).forEach(([k, v]) => { if(v) cleanColors[k] = v; });
 
     await updateConfig({ 
       ...form,
-      custom_colors_light: cleanLight,
-      custom_colors_dark: cleanDark
+      custom_colors: cleanColors
     });
-    ElMessage.success('¡Configuración de marca actualizada con éxito!');
+    ElMessage.success('¡Configuración guardada correctamente!');
   } catch (error) {
-    ElMessage.error('Error al guardar la configuración');
+    ElMessage.error('Error al guardar');
     console.error(error);
   }
 };
 </script>
-
-<style scoped>
-:deep(.el-tabs__content) {
-  background-color: var(--theme-bg);
-}
-</style>

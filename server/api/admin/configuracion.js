@@ -9,7 +9,7 @@ export default defineEventHandler(async (event) => {
 
   try {
     const body = await readBody(event);
-    const { nombre_pizzeria, logo_url, theme_flavor, custom_colors_light, custom_colors_dark } = body;
+    const { nombre_pizzeria, logo_url, theme_flavor, custom_colors } = body;
 
     if (!nombre_pizzeria || !logo_url || !theme_flavor) {
       event.res.statusCode = 400;
@@ -20,8 +20,7 @@ export default defineEventHandler(async (event) => {
       nombre_pizzeria, 
       logo_url, 
       theme_flavor,
-      custom_colors_light: custom_colors_light || {},
-      custom_colors_dark: custom_colors_dark || {}
+      custom_colors: custom_colors || {}
     });
 
     return {

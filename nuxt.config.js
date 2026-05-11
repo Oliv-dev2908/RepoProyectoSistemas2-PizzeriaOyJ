@@ -13,12 +13,10 @@ export default defineNuxtConfig({
 
   css: [
     '@/assets/css/main.css',
-    'element-plus/theme-chalk/index.css',
-    'element-plus/theme-chalk/dark/css-vars.css'
+    'element-plus/theme-chalk/index.css'
   ],
   elementPlus: {
-    importStyle: 'css', // Importa los estilos CSS
-    themes: ['dark']    // Habilita el tema oscuro
+    importStyle: 'css'
   },
   head: {
     link: [

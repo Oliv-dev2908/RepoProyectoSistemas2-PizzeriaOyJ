@@ -35,15 +35,6 @@
             <span class="text-sm font-bold text-ctp-red text-center font-pizza-title">{{ configuracion.nombre_pizzeria }}</span>
           </div>
 
-          <!-- Toggle Dark Mode -->
-          <el-menu-item @click="toggleDark()" index="#">
-            <el-icon v-if="isDark"><ElementPlusIcons.Moon /></el-icon>
-            <el-icon v-else><ElementPlusIcons.Sunny /></el-icon>
-            <template #title>{{ isDark ? 'Modo Oscuro' : 'Modo Claro' }}</template>
-          </el-menu-item>
-
-          <el-divider v-if="!isCollapse || isMobile" class="!my-2" />
-
           <!-- Rutas Dinámicas -->
           <el-menu-item v-for="route in filteredRoutes" :key="route.path" :index="route.path" @click="navigateAndClose(route.path)">
             <el-icon><component :is="route.icon" /></el-icon>
@@ -90,8 +81,6 @@
 </template>
 
 <script setup>
-import { useDark } from '@vueuse/core';
-import { useCookie } from '#app';
 import { ref, onMounted, onUnmounted } from 'vue';
 import * as ElementPlusIcons from '@element-plus/icons-vue';
 import { useRouter } from 'vue-router';
@@ -143,15 +132,6 @@ const handleLogout = async () => {
     loadingInstance.close()
   }
 }
-
-const themeCookie = useCookie('theme');
-const isDark = useDark({
-  initialValue: themeCookie.value
-});
-const toggleDark = () => {
-  isDark.value = !isDark.value;
-  themeCookie.value = isDark.value ? 'dark' : 'light';
-};
 
 const toggleMobileSidebar = () => {
   isMobileVisible.value = !isMobileVisible.value;
